@@ -1,15 +1,8 @@
-import {
-  Select,
-  Alert,
-  List,
-} from 'antd'
+import { Select, Alert, List } from 'antd';
 
-import {
-  AppstoreOutlined
-} from '@ant-design/icons';
+import { AppstoreOutlined } from '@ant-design/icons';
 
 import styles from './index.less';
-
 
 const data = [
   {
@@ -84,10 +77,8 @@ const QueryEngine = () => {
           </List.Item>
         )}
       />
-
     </div>
-
-  )
-}
+  );
+};
 
 export default QueryEngine;

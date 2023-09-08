@@ -1,22 +1,38 @@
 // https://umijs.org/config/
-import {defineConfig} from 'umi';
-import {join} from 'path';
+import { defineConfig } from 'umi';
+import { join } from 'path';
 import defaultSettings from './defaultSettings';
 import proxy from './proxy';
 import MonacoWebpackPlugin from 'monaco-editor-webpack-plugin';
-const {REACT_APP_ENV} = process.env;
+const { REACT_APP_ENV } = process.env;
 
 const chainWebpack = (config: any) => {
-  config.plugin('monaco-editor').use(MonacoWebpackPlugin, [
-    {
-      languages: ["mysql"]
-    }
-  ]);
+  // config.plugin('monaco-editor').use(MonacoWebpackPlugin, [
+  //   {
+  //     languages: ["mysql"]
+  //   }
+  // ]);
+  config.module
+    .rule('svg')
+    .test(/\.svg(\?v=\d+\.\d+\.\d+)?$/)
+    .use([
+      {
+        loader: 'babel-loader',
+      },
+      {
+        loader: '@svgr/webpack',
+        options: {
+          babel: false,
+          icon: true,
+        },
+      },
+    ]);
+
+  return config;
 };
 
-
 export default defineConfig({
-  // chainWebpack,
+  chainWebpack,
   hash: true,
   antd: {},
   dva: {

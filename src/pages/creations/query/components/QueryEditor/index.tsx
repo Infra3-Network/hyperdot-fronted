@@ -1,18 +1,16 @@
 import MonacoEditor from 'react-monaco-editor';
-import {
-  Button
-} from 'antd';
-import {CodeOutlined, ExpandOutlined, FullscreenOutlined} from "@ant-design/icons";
+import { Button } from 'antd';
+import { CodeOutlined, ExpandOutlined, FullscreenOutlined } from '@ant-design/icons';
 const QueryEditor = () => {
   return (
-    <div>
+    <div style={{ width: '100%' }}>
       <MonacoEditor
-        width={'800px'}
+        width="100%"
         height={'400'}
         language="sql"
         theme="vs-dark"
 
-      // value={code}
+        // value={code}
         // options={options}
         // onChange={::this.onChange}
         // editorDidMount={::this.editorDidMount}
@@ -21,9 +19,7 @@ const QueryEditor = () => {
       <Button icon={<CodeOutlined />}>Run</Button>
       <Button icon={<FullscreenOutlined />}>Full Screen</Button>
     </div>
+  );
+};
 
-  )
-}
-
-
-export default QueryEditor
+export default QueryEditor;
