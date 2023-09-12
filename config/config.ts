@@ -38,7 +38,9 @@ export default defineConfig({
   dva: {
     hmr: true,
   },
-
+  define: {
+    REACT_APP_ENV: REACT_APP_ENV,
+  },
   layout: {
     // https://umijs.org/zh-CN/plugins/plugin-layout
     locale: true,

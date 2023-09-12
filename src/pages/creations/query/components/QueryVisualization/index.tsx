@@ -1,4 +1,3 @@
-import { ScatterChartOutlined } from '@/components/Icons';
 import {
   AreaChartOutlined,
   BarChartOutlined,
@@ -127,7 +126,10 @@ interface TabProps {
   children: React.ReactNode;
 }
 
-const QueryVisualization = () => {
+interface Props {
+  queryData: any;
+}
+const QueryVisualization = (props: Props) => {
   const [tabProps, setTabProps] = React.useState<TabProps[]>([]);
   const [tabActiveKey, setTabActiveKey] = React.useState<string>('1');
   const initialTabs: TabProps[] = [
