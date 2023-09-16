@@ -5,7 +5,8 @@ import type { RequestConfig, RunTimeLayoutConfig } from 'umi';
 import { history, Link } from 'umi';
 import RightContent from '@/components/RightContent';
 import Footer from '@/components/Footer';
-import { currentUser as queryCurrentUser } from './services/ant-design-pro/api';
+// import { currentUser as queryCurrentUser } from './services/ant-design-pro/api';
+import { getCurrentUser } from './services/hyperdot/api';
 import { BookOutlined, LinkOutlined } from '@ant-design/icons';
 import defaultSettings from '../config/defaultSettings';
 
@@ -22,13 +23,13 @@ export const initialStateConfig = {
  * */
 export async function getInitialState(): Promise<{
   settings?: Partial<LayoutSettings>;
-  currentUser?: API.CurrentUser;
+  currentUser?: HYPERDOT_API.CurrentUser;
   loading?: boolean;
-  fetchUserInfo?: () => Promise<API.CurrentUser | undefined>;
+  fetchUserInfo?: () => Promise<HYPERDOT_API.CurrentUser | undefined>;
 }> {
   const fetchUserInfo = async () => {
     try {
-      const msg = await queryCurrentUser();
+      const msg = await getCurrentUser();
       return msg.data;
     } catch (error) {
       history.push(loginPath);
@@ -107,18 +108,34 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
   };
 };
 
-interface ResponseStructure {
-  success: boolean;
-  data: any;
-  errorCode?: number;
-  errorMessage?: string;
-}
+// interface ResponseStructure {
+//   success: boolean;
+//   data: any;
+//   errorCode?: number;
+//   errorMessage?: string;
+// }
 
 export const request: RequestConfig = {
   // timeout: 1000,
   // headers: { 'X-Requested-With': 'XMLHttpRequest' },
-  errorConfig: {},
-  errorHandler: (error: any) => {
-    console.log(error);
-  },
+  // errorConfig: {},
+  // errorHandler: (error: any) => {
+  //   console.log(error);
+  // },
+  requestInterceptors: [
+    (url, options) => {
+      const token = localStorage.getItem('token');
+      if (token === null) {
+        history.replace({
+          pathname: '/user/login',
+        });
+        return;
+      }
+      const authHeader = { Authorization: `${token}` };
+      return {
+        url: url,
+        options: { ...options, interceptors: true, headers: authHeader },
+      };
+    },
+  ],
 };

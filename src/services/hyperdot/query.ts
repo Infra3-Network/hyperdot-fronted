@@ -1,7 +1,6 @@
 // @ts-ignore
 /* eslint-disable */
 import { request } from 'umi';
-import { getUrl } from './constant';
 
 /** Update an existing pet PUT /pet */
 export async function queryRun(body: any, options?: { [key: string]: any }) {

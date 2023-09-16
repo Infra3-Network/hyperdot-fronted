@@ -12,19 +12,17 @@ import {
   TableOutlined,
   FieldNumberOutlined,
 } from '@ant-design/icons';
-import { Tabs, Row, Col, Select, Button, message, Table } from 'antd';
+import { Tabs, Row, Col, Select, Button, message, Table, Icon } from 'antd';
 import React, { useEffect } from 'react';
 
 import { queryRun } from '@/services/hyperdot/query';
-import success from '@/pages/result/success';
-import { add, set } from 'lodash';
-import Icon from '@ant-design/icons/lib/components/Icon';
+import styles from './index.less';
 
 interface TabProps {
   id?: number;
   name: string;
   icon: React.ReactNode;
-  children: React.ReactNode;
+  children: (queryData: any) => React.ReactNode;
   closeable: boolean;
 }
 
@@ -37,6 +35,7 @@ const TabManager = {
   getId: (prev: TabArray) => {
     return prev.id;
   },
+
   add: (prev: TabArray, tab: TabProps) => {
     prev.id += 1;
     tab.id = prev.id;
@@ -177,7 +176,47 @@ const AreaChartTab = ({ queryData }: any) => {
     },
   };
 
-  return <Area {...config} />;
+  return (
+    <>
+      <Row gutter={24}>
+        <Col span={24}>
+          <div
+            style={{
+              height: '400px',
+              width: '100%',
+              border: '1px solid',
+              borderColor: 'red',
+            }}
+          >
+            <Area {...config} />
+          </div>
+        </Col>
+      </Row>
+
+      <Row gutter={24} style={{ paddingTop: '12px' }}>
+        <Col span={24}>
+          <div
+            style={{
+              height: '400px',
+              width: '100%',
+              border: '1px solid',
+              borderColor: 'red',
+            }}
+          >
+            <>
+              <Row>
+                <Col span={8}>
+                  <p>Result data</p>
+                </Col>
+                <Col span={8}>b</Col>
+                <Col span={8}>c</Col>
+              </Row>
+            </>
+          </div>
+        </Col>
+      </Row>
+    </>
+  );
 };
 
 const ScatterChartTab = ({ queryData }: any) => {
@@ -460,7 +499,7 @@ const NewVisualizationTab = (props: NewVisualizationTabProps) => {
       return TabManager.insertLastBefore(prev, {
         name: chartProps.name,
         icon: chartProps.icon,
-        children: chartProps.children(props.queryData),
+        children: chartProps.children,
         closeable: true,
       });
       // const insertAfterIndex = prev.length - 1 < 0 ? 0 : prev.length - 1; // 将新元素插入在最后一个元素后面
@@ -528,14 +567,16 @@ const QueryVisualization = (props: QueryVisualizationProps) => {
       return TabManager.add(prev, {
         name: 'New Visualization',
         icon: <BarChartOutlined />,
-        children: (
-          <NewVisualizationTab
-            tabProps={props.tabProps}
-            setTabProps={props.setTabProps}
-            setTabActiveKey={setTabActiveKey}
-            queryData={props.queryData}
-          />
-        ),
+        children: (queryData: any) => {
+          return (
+            <NewVisualizationTab
+              tabProps={props.tabProps}
+              setTabProps={props.setTabProps}
+              setTabActiveKey={setTabActiveKey}
+              queryData={queryData}
+            />
+          );
+        },
         closeable: false,
       });
 
@@ -560,6 +601,11 @@ const QueryVisualization = (props: QueryVisualizationProps) => {
     });
   }, []);
 
+  const handleCloseClick = (id: number) => {
+    props.setTabProps(TabManager.remove(props.tabProps, id));
+    setTabActiveKey(tabActiveKey);
+  };
+
   if (props.runLoading) {
     return <div>Loading...</div>;
   }
@@ -577,21 +623,31 @@ const QueryVisualization = (props: QueryVisualizationProps) => {
           setTabActiveKey(activeKey);
         }}
         items={props.tabProps.tabs.map((v: TabProps) => {
-          return {
-            label: (
-              <div>
-                <span>
-                  {v.icon}
-                  {v.name}
-                </span>
-                <Button type="primary" Icon={<CloseOutlined />}></Button>
-              </div>
-            ),
-            key: v.id?.toString(),
-            children: v.children,
-            style: {},
-            closable: v.closeable,
-          };
+          return v.id == undefined
+            ? null
+            : {
+                label: (
+                  <div>
+                    <span>
+                      {v.icon}
+                      {v.name}
+                    </span>
+                    {v.closeable ? (
+                      <span style={{ marginLeft: '12px' }}>
+                        <CloseOutlined
+                          onClick={() => {
+                            handleCloseClick(v.id);
+                          }}
+                        />
+                      </span>
+                    ) : null}
+                  </div>
+                ),
+                key: v.id?.toString(),
+                children: v.children(props.queryData),
+                style: {},
+                closable: v.closeable,
+              };
         })}
       />
     </div>
@@ -634,12 +690,19 @@ const QueryEditor = (props: Props) => {
           messageApi.error(res.errorMessage);
           return;
         }
-        setQueryData(res.data);
         setTabProps((prev: TabArray) => {
-          return TabManager.insertLastBefore(prev, {
+          const prevQueryResult: TabProps = TabManager.findByName(prev, 'Query Result');
+          let newPrev = prev;
+          if (prevQueryResult) {
+            newPrev = TabManager.remove(newPrev, prevQueryResult.id);
+          }
+
+          return TabManager.insertLastBefore(newPrev, {
             name: 'Query Result',
             icon: <TableOutlined />,
-            children: <QueryResultTableTab queryData={res.data} />,
+            children: (data: any) => {
+              return <QueryResultTableTab queryData={data} />;
+            },
             closeable: true,
           });
           // const insertAfterIndex = prev.length - 1 < 0 ? 0 : prev.length - 1; // 将新元素插入在最后一个元素后面
@@ -655,6 +718,7 @@ const QueryEditor = (props: Props) => {
 
           // return newArray;
         });
+        setQueryData(res.data);
       })
       .catch((err) => {
         messageApi.error(err.message);
@@ -673,27 +737,29 @@ const QueryEditor = (props: Props) => {
             <MonacoEditor
               width="100%"
               height={'400'}
-              language="sql"
+              language="mysql"
               theme="vs-dark"
               value={query}
               // options={options}
               onChange={handleEditorChange}
               // editorDidMount={::this.editorDidMount}
             />
-            <Button type="primary" icon={<ExpandOutlined />}>
-              Expand
-            </Button>
-            <Button
-              type="primary"
-              icon={<CodeOutlined />}
-              loading={runLoading}
-              onClick={handleRunClick}
-            >
-              Run
-            </Button>
-            <Button type="primary" icon={<FullscreenOutlined />}>
-              Full Screen
-            </Button>
+            <div className={styles.editorButton}>
+              <Button type="primary" icon={<ExpandOutlined />}>
+                Expand
+              </Button>
+              <Button
+                type="primary"
+                icon={<CodeOutlined />}
+                loading={runLoading}
+                onClick={handleRunClick}
+              >
+                Run
+              </Button>
+              <Button type="primary" icon={<FullscreenOutlined />}>
+                Full Screen
+              </Button>
+            </div>
           </div>
         </Col>
       </Row>
