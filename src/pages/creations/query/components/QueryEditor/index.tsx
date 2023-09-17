@@ -13,7 +13,8 @@ import {
   FieldNumberOutlined,
 } from '@ant-design/icons';
 import { Tabs, Row, Col, Select, Button, message, Table, Icon } from 'antd';
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import { AreaChartTab, ScatterChartTab } from './charts.tsx';
 
 import { queryRun } from '@/services/hyperdot/query';
 import styles from './index.less';
@@ -148,129 +149,6 @@ const LineChartTab = ({ queryData }: any) => {
     },
   };
   return <Line {...config} />;
-};
-
-const AreaChartTab = ({ queryData }: any) => {
-  const schemas: any[] = queryData.schemas;
-  if (schemas.length < 2) {
-    message.error('Line chart need at least 2 columns');
-    return null;
-  }
-  const xField: string = () => {
-    return schemas[0].name;
-  };
-
-  const yField: string = () => {
-    return schemas[1].name;
-  };
-
-  const data: any = queryData.rows;
-  const config = {
-    data,
-    xField: xField(),
-    yField: yField(),
-    areaStyle: () => {
-      return {
-        fill: 'l(270) 0:#ffffff 0.5:#7ec2f3 1:#1890ff',
-      };
-    },
-  };
-
-  return (
-    <>
-      <Row gutter={24}>
-        <Col span={24}>
-          <div
-            style={{
-              height: '400px',
-              width: '100%',
-              border: '1px solid',
-              borderColor: 'red',
-            }}
-          >
-            <Area {...config} />
-          </div>
-        </Col>
-      </Row>
-
-      <Row gutter={24} style={{ paddingTop: '12px' }}>
-        <Col span={24}>
-          <div
-            style={{
-              height: '400px',
-              width: '100%',
-              border: '1px solid',
-              borderColor: 'red',
-            }}
-          >
-            <>
-              <Row>
-                <Col span={8}>
-                  <p>Result data</p>
-                </Col>
-                <Col span={8}>b</Col>
-                <Col span={8}>c</Col>
-              </Row>
-            </>
-          </div>
-        </Col>
-      </Row>
-    </>
-  );
-};
-
-const ScatterChartTab = ({ queryData }: any) => {
-  const schemas: any[] = queryData.schemas;
-  if (schemas.length < 3) {
-    message.error('Line chart need at least 2 columns');
-    return null;
-  }
-  const xField: string = () => {
-    return schemas[0].name;
-  };
-
-  const yField: string = () => {
-    return schemas[1].name;
-  };
-
-  const zField: string = () => {
-    return schemas[2].name;
-  };
-
-  const data: any = queryData.rows;
-  const config = {
-    appendPadding: 30,
-    data,
-    xField: xField(),
-    yField: yField(),
-    size: 5,
-    colorField: zField(),
-    yAxis: {
-      nice: true,
-      line: {
-        style: {
-          stroke: '#aaa',
-        },
-      },
-    },
-    xAxis: {
-      min: -100,
-      grid: {
-        line: {
-          style: {
-            stroke: '#eee',
-          },
-        },
-      },
-      line: {
-        style: {
-          stroke: '#aaa',
-        },
-      },
-    },
-  };
-
-  return <Scatter {...config} />;
 };
 
 const BarChartTab = ({ queryData }: any) => {
