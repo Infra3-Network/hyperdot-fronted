@@ -1,460 +1,44 @@
 import MonacoEditor from 'react-monaco-editor';
-import { CloseOutlined, CodeOutlined, ExpandOutlined, FullscreenOutlined } from '@ant-design/icons';
-import { useRequest } from 'umi';
-import { uniq } from '@antv/util';
-import { Line, Area, Scatter, Column, Pie } from '@ant-design/charts';
 import {
-  AreaChartOutlined,
   BarChartOutlined,
-  LineChartOutlined,
-  PieChartOutlined,
-  DotChartOutlined,
-  TableOutlined,
-  FieldNumberOutlined,
+  CloseOutlined,
+  CodeOutlined,
+  ExpandOutlined,
+  EyeFilled,
+  EyeInvisibleFilled,
+  EyeInvisibleTwoTone,
+  EyeTwoTone,
+  FullscreenOutlined,
+  SaveOutlined,
 } from '@ant-design/icons';
-import { Tabs, Row, Col, Select, Button, message, Table, Icon } from 'antd';
-import React, { useEffect, useRef, useState } from 'react';
-import { AreaChartTab, ScatterChartTab } from './charts.tsx';
-
+import { Tabs, Row, Col, Button, Modal, Input, Switch, message } from 'antd';
+import React, { useEffect } from 'react';
+import { charts, NewVisualizationTab } from './charts';
 import { queryRun } from '@/services/hyperdot/query';
 import styles from './index.less';
-
-interface TabProps {
-  id?: number;
-  name: string;
-  icon: React.ReactNode;
-  children: (queryData: any) => React.ReactNode;
-  closeable: boolean;
-}
-
-interface TabArray {
-  id: number;
-  tabs: TabProps[];
-}
-
-const TabManager = {
-  getId: (prev: TabArray) => {
-    return prev.id;
-  },
-
-  add: (prev: TabArray, tab: TabProps) => {
-    prev.id += 1;
-    tab.id = prev.id;
-    prev.tabs.push(tab);
-    return prev;
-  },
-
-  remove: (prev: TabArray, id: number) => {
-    const newTabs = prev.tabs.filter((v: TabProps) => v.id !== id);
-    return {
-      id: prev.id,
-      tabs: newTabs,
-    };
-  },
-  insertLastBefore: (prev: TabArray, tab: TabProps) => {
-    if (prev.tabs.length === 0) {
-      return TabManager.add(prev, tab);
-    }
-
-    prev.id += 1;
-    tab.id = prev.id;
-    const index = prev.tabs.length - 1;
-    const newArray = [...prev.tabs];
-    newArray.splice(index, 0, tab);
-    prev.tabs = newArray;
-    return prev;
-  },
-
-  insertIndexBefore: (prev: TabArray, index: number, tab: TabProps) => {
-    prev.id += 1;
-    tab.id = prev.id;
-    const newArray = [...prev.tabs];
-    newArray.splice(index, 0, tab);
-    return {
-      id: prev.id,
-      tabs: newArray,
-    };
-  },
-
-  findByName: (tabs: TabArray, name: string) => {
-    return tabs.tabs.find((v: TabProps) => v.name === name);
-  },
-};
-
-const QueryResultTableTab = ({ queryData }: any) => {
-  const columns = () => {
-    const res: any[] = [];
-    for (const i in queryData.schemas) {
-      console.log(queryData.schemas[i]);
-      res.push({
-        title: queryData.schemas[i].name,
-        dataIndex: queryData.schemas[i].name,
-        key: queryData.schemas[i].name,
-      });
-    }
-    return res;
-  };
-
-  const data = () => {
-    const res: any[] = [];
-    for (const i in queryData.rows) {
-      res.push({
-        key: i,
-        ...queryData.rows[i],
-      });
-      // const row: any = {};
-      // for (const j in queryData.data[i]) {
-      //   row[queryData.schemas[j].name] = queryData.data[i][j];
-      // }
-      // res.push(row);
-    }
-    return res;
-  };
-
-  return <Table columns={columns()} dataSource={data()} />;
-};
-
-const LineChartTab = ({ queryData }: any) => {
-  const schemas: any[] = queryData.schemas;
-  if (schemas.length < 2) {
-    message.error('Line chart need at least 2 columns');
-    return null;
-  }
-  const xField: string = () => {
-    return schemas[0].name;
-  };
-
-  const yField: string = () => {
-    return schemas[1].name;
-  };
-
-  const data: any = queryData.rows;
-
-  const config = {
-    data,
-    xField: xField(),
-    yField: yField(),
-
-    animation: {
-      appear: {
-        animation: 'path-in',
-        duration: 500,
-      },
-    },
-    tooltip: {
-      showMarkers: false,
-    },
-    point: {
-      shape: 'breath-point',
-    },
-  };
-  return <Line {...config} />;
-};
-
-const BarChartTab = ({ queryData }: any) => {
-  const schemas: any[] = queryData.schemas;
-  if (schemas.length < 2) {
-    message.error('Line chart need at least 2 columns');
-    return null;
-  }
-  const xField: string = () => {
-    return schemas[0].name;
-  };
-
-  const yField: string = () => {
-    return schemas[1].name;
-  };
-
-  const data: any = queryData.rows;
-  const config = {
-    data,
-    xField: xField(),
-    yField: yField(),
-    label: {
-      // 可手动配置 label 数据标签位置
-      position: 'middle',
-      // 'top', 'bottom', 'middle',
-      // 配置样式
-      style: {
-        fill: '#FFFFFF',
-        opacity: 0.6,
-      },
-    },
-    xAxis: {
-      label: {
-        autoHide: true,
-        autoRotate: false,
-      },
-    },
-  };
-
-  return <Column {...config} />;
-};
-
-const PieChartTab = ({ queryData }: any) => {
-  const schemas: any[] = queryData.schemas;
-  if (schemas.length < 2) {
-    message.error('Line chart need at least 2 columns');
-    return null;
-  }
-  const xField: string = () => {
-    return schemas[0].name;
-  };
-
-  const yField: string = () => {
-    return schemas[1].name;
-  };
-
-  const data: any = queryData.rows;
-  const config = {
-    appendPadding: 10,
-    data,
-    angleField: xField(),
-    colorField: yField(),
-    radius: 0.9,
-    label: {
-      type: 'inner',
-      offset: '-30%',
-      content: ({ percent }: any) => `${(percent * 100).toFixed(0)}%`,
-      style: {
-        fontSize: 14,
-        textAlign: 'center',
-      },
-    },
-    interactions: [
-      {
-        type: 'element-active',
-      },
-    ],
-  };
-  return <Pie {...config} />;
-};
-
-interface ChartProps {
-  name: string;
-  icon: React.ReactNode;
-  children?: (queryData: any) => React.ReactNode;
-  // children: React.ReactNode;
-}
-
-const charts: Map<string, ChartProps> = new Map([
-  [
-    'bar_chart',
-    {
-      name: 'Bar Chart',
-      icon: <BarChartOutlined />,
-      children: (queryData: any) => {
-        return <BarChartTab queryData={queryData} />;
-      },
-    },
-  ],
-  [
-    'area_chart',
-    {
-      name: 'Area Chart',
-      icon: <AreaChartOutlined />,
-      children: (queryData: any) => {
-        return <AreaChartTab queryData={queryData} />;
-      },
-    },
-  ],
-  [
-    'scatter_chart',
-    {
-      name: 'Scatter Chart',
-      icon: <DotChartOutlined />,
-      children: (queryData: any) => {
-        return <ScatterChartTab queryData={queryData} />;
-      },
-    },
-  ],
-  [
-    'line_chart',
-    {
-      name: 'Line Chart',
-      icon: <LineChartOutlined />,
-      children: (queryData: any) => {
-        return <LineChartTab queryData={queryData} />;
-      },
-    },
-  ],
-  [
-    'pie_chart',
-    {
-      name: 'Pie Chart',
-      icon: <PieChartOutlined />,
-      children: (queryData: any) => {
-        return <PieChartTab queryData={queryData} />;
-      },
-    },
-  ],
-  [
-    'data_table',
-    {
-      name: 'Table',
-      icon: <TableOutlined />,
-      children: (queryData: any) => {
-        return <QueryResultTableTab queryData={queryData} />;
-      },
-    },
-  ],
-  [
-    'data_counter',
-    {
-      name: 'Counter',
-      icon: <FieldNumberOutlined />,
-    },
-  ],
-]);
-
-// const chart2icon: Map<string, React.ReactNode> = new Map([
-//   ['bar_chart', <BarChartOutlined />],
-//   ['area_chart', <AreaChartOutlined />],
-//   ['scatter_chart', <DotChartOutlined />],
-//   ['line_chart', <LineChartOutlined />],
-//   ['pie_chart', <PieChartOutlined />],
-//   ['data_table', <TableOutlined />],
-//   ['data_counter', <FieldNumberOutlined />],
-// ]);
-
-// const chartValue2Name: Map<string, string> = new Map([
-//   ['bar_chart', 'Bar Chart'],
-//   ['area_chart', 'Area Chart'],
-//   ['scatter_chart', 'Scatter Chart'],
-//   ['line_chart', 'Line Chart'],
-//   ['pie_chart', 'Pie Chart'],
-//   ['data_table', 'Data Table'],
-//   ['data_counter', 'Data Counter'],
-// ]);
-
-interface NewVisualizationTabProps {
-  tabProps: TabArray;
-  setTabProps: any;
-  setTabActiveKey: any;
-  queryData: any;
-}
-
-const NewVisualizationTab = (props: NewVisualizationTabProps) => {
-  const [chart, setChart] = React.useState<string>('bar_chart');
-  const [messageApi, contextHolder] = message.useMessage();
-  const virsualizationOptions: any[] = [
-    {
-      label: 'Chart visualization',
-      options: [
-        { label: 'Bar Chart', value: 'bar_chart' },
-        { label: 'Area Chart', value: 'area_chart' },
-        { label: 'Scatter Chart', value: 'scatter_chart' },
-        { label: 'Line Chart', value: 'line_chart' },
-        { label: 'Pie Chart', value: 'pie_chart' },
-      ],
-    },
-    {
-      label: 'Data visualization',
-      options: [
-        { label: 'Table', value: 'data_table' },
-        { label: 'Counter', value: 'data_counter' },
-      ],
-    },
-  ];
-
-  const handleChange = (value: string) => {
-    setChart(value);
-    return;
-  };
-
-  const handleOnClick = () => {
-    const chartProps: ChartProps = charts.get(chart);
-    if (!chartProps.name) {
-      messageApi.open({
-        content: `the visualization type not supported`,
-        type: 'error',
-      });
-      setChart(chartProps.name);
-      return;
-    }
-
-    props.setTabProps((prev: TabArray) => {
-      return TabManager.insertLastBefore(prev, {
-        name: chartProps.name,
-        icon: chartProps.icon,
-        children: chartProps.children,
-        closeable: true,
-      });
-      // const insertAfterIndex = prev.length - 1 < 0 ? 0 : prev.length - 1; // 将新元素插入在最后一个元素后面
-
-      // // 创建一个新的数组，将新元素插入到指定位置
-      // const newArray = [...prev];
-      // newArray.splice(insertAfterIndex, 0, {
-      //   name: chartProps.name,
-      //   icon: chartProps.icon,
-      //   children: chartProps.children(props.queryData),
-      // });
-
-      // return newArray;
-    });
-    const active: string = TabManager.getId(props.tabProps).toString();
-    props.setTabActiveKey(active);
-    console.log('Add visualization for ', chart);
-  };
-
-  return (
-    <>
-      {contextHolder}
-      <Row gutter={16}>
-        <Col>
-          <p> Select visualization type </p>
-        </Col>
-      </Row>
-
-      <Row gutter={16}>
-        <Col>
-          <Select
-            defaultValue={chart}
-            style={{ width: 200 }}
-            onChange={handleChange}
-            options={virsualizationOptions}
-          />
-        </Col>
-      </Row>
-
-      <Row gutter={16}>
-        <Col>
-          <Button onClick={handleOnClick}> Add visualization</Button>
-        </Col>
-      </Row>
-    </>
-  );
-};
+import { TabManager } from './tabmanager';
 
 interface QueryVisualizationProps {
   queryData: any;
   runLoading: boolean;
-  tabProps: TabArray;
+  tabProps: QE.TabArray;
   setTabProps: any;
+  editorSave: any;
+  setEditorSave: any;
 }
 
 const QueryVisualization = (props: QueryVisualizationProps) => {
   const [tabActiveKey, setTabActiveKey] = React.useState<string>('1');
 
   useEffect(() => {
-    props.setTabProps((prev: TabArray) => {
+    props.setTabProps((prev: QE.TabArray) => {
       if (TabManager.findByName(prev, 'New Visualization')) {
         return prev;
       }
 
       return TabManager.add(prev, {
         name: 'New Visualization',
-        icon: <BarChartOutlined />,
-        children: (queryData: any) => {
-          return (
-            <NewVisualizationTab
-              tabProps={props.tabProps}
-              setTabProps={props.setTabProps}
-              setTabActiveKey={setTabActiveKey}
-              queryData={queryData}
-            />
-          );
-        },
+        children: 'new',
         closeable: false,
       });
 
@@ -500,21 +84,36 @@ const QueryVisualization = (props: QueryVisualizationProps) => {
         onChange={(activeKey: string) => {
           setTabActiveKey(activeKey);
         }}
-        items={props.tabProps.tabs.map((v: TabProps) => {
+        items={props.tabProps.tabs.map((v: QE.TabProps) => {
+          let children, icon;
+          if (v.name === 'new') {
+            children = (qprops: QE.ChartTabProps) => {
+              const newProps = {
+                ...qprops,
+                charts: charts,
+              };
+              return <NewVisualizationTab {...newProps} />;
+            };
+            icon = <BarChartOutlined />;
+          } else {
+            const chart = charts.get(v.children);
+            icon = chart?.icon;
+            children = chart?.children;
+          }
           return v.id == undefined
             ? null
             : {
                 label: (
                   <div>
                     <span>
-                      {v.icon}
+                      {icon}
                       {v.name}
                     </span>
                     {v.closeable ? (
                       <span style={{ marginLeft: '12px' }}>
                         <CloseOutlined
                           onClick={() => {
-                            handleCloseClick(v.id);
+                            handleCloseClick(v.id || 0);
                           }}
                         />
                       </span>
@@ -522,9 +121,17 @@ const QueryVisualization = (props: QueryVisualizationProps) => {
                   </div>
                 ),
                 key: v.id?.toString(),
-                children: v.children(props.queryData),
+                children: children({
+                  id: v.id,
+                  queryData: props.queryData,
+                  setEditorSave: props.setEditorSave,
+                  tabProps: props.tabProps,
+                  setTabProps: props.setTabProps,
+                  setTabActiveKey: setTabActiveKey,
+                }),
                 style: {},
                 closable: v.closeable,
+                forceRender: false,
               };
         })}
       />
@@ -532,10 +139,44 @@ const QueryVisualization = (props: QueryVisualizationProps) => {
   );
 };
 
-interface Props {}
+interface SaveModalProps {
+  saveModalOpen: boolean;
+  handleOk: any;
+  handleCancel: any;
+}
+const SaveModal = (props: SaveModalProps) => {
+  return (
+    <>
+      <Modal
+        title="Save query"
+        open={props.saveModalOpen}
+        onOk={props.handleOk}
+        onCancel={props.handleCancel}
+        okText={'Save'}
+        cancelText={'Cancel'}
+      >
+        <Row gutter={[0, 16]}>
+          <Col span={24}>
+            <Input addonBefore="Name" defaultValue="myquery" />
+          </Col>
+          <Col span={24}>
+            <span style={{ marginRight: '12px' }}>Make privacy</span>
+            <Switch checkedChildren={<EyeInvisibleFilled />} unCheckedChildren={<EyeFilled />} />
+          </Col>
+        </Row>
+      </Modal>
+    </>
+  );
+};
 
-const QueryEditor = (props: Props) => {
-  const [tabProps, setTabProps] = React.useState<TabArray>({ id: 0, tabs: [] });
+const QueryEditor = () => {
+  // state for save editor
+  const [editorSave, setEditorSave] = React.useState<QE.EditorSaveParams>();
+
+  // state for save modal control
+  const [saveModalOpen, setSaveModalOpen] = React.useState<boolean>(false);
+
+  const [tabProps, setTabProps] = React.useState<QE.TabArray>({ id: 0, tabs: [] });
   const [query, setQuery] = React.useState('');
   const [runLoading, setRunLoading] = React.useState<boolean>(false);
   const [queryData, setQueryData] = React.useState<any>(null);
@@ -543,6 +184,24 @@ const QueryEditor = (props: Props) => {
 
   const handleEditorChange = (value: any, event: any) => {
     setQuery(value);
+  };
+
+  const handleEditorSave = () => {
+    setSaveModalOpen(true);
+    const tabs = tabProps.tabs
+      .filter((v) => v.children != 'new')
+      .map((v) => {
+        if (v.config) {
+          delete v.config.data;
+        }
+        return v;
+      });
+    const params: QE.EditorSaveParams = {
+      query,
+      queryEngine: 'bigquery',
+      charts: tabs,
+    };
+    console.log(JSON.stringify(params));
   };
 
   const handleRunClick = () => {
@@ -568,8 +227,8 @@ const QueryEditor = (props: Props) => {
           messageApi.error(res.errorMessage);
           return;
         }
-        setTabProps((prev: TabArray) => {
-          const prevQueryResult: TabProps = TabManager.findByName(prev, 'Query Result');
+        setTabProps((prev: QE.TabArray) => {
+          const prevQueryResult = TabManager.findByName(prev, 'Query Result');
           let newPrev = prev;
           if (prevQueryResult) {
             newPrev = TabManager.remove(newPrev, prevQueryResult.id);
@@ -577,10 +236,7 @@ const QueryEditor = (props: Props) => {
 
           return TabManager.insertLastBefore(newPrev, {
             name: 'Query Result',
-            icon: <TableOutlined />,
-            children: (data: any) => {
-              return <QueryResultTableTab queryData={data} />;
-            },
+            children: 'data_table',
             closeable: true,
           });
           // const insertAfterIndex = prev.length - 1 < 0 ? 0 : prev.length - 1; // 将新元素插入在最后一个元素后面
@@ -622,22 +278,40 @@ const QueryEditor = (props: Props) => {
               onChange={handleEditorChange}
               // editorDidMount={::this.editorDidMount}
             />
-            <div className={styles.editorButton}>
-              <Button type="primary" icon={<ExpandOutlined />}>
-                Expand
-              </Button>
-              <Button
-                type="primary"
-                icon={<CodeOutlined />}
-                loading={runLoading}
-                onClick={handleRunClick}
-              >
-                Run
-              </Button>
-              <Button type="primary" icon={<FullscreenOutlined />}>
-                Full Screen
-              </Button>
-            </div>
+            <Row gutter={8} className={styles.editorButton}>
+              {/* Expand Button */}
+              <Col>
+                <Button type="primary" icon={<ExpandOutlined />}>
+                  Expand
+                </Button>
+              </Col>
+
+              {/* Run Button */}
+              <Col>
+                <Button
+                  type="primary"
+                  icon={<CodeOutlined />}
+                  loading={runLoading}
+                  onClick={handleRunClick}
+                >
+                  Run
+                </Button>
+              </Col>
+
+              {/* Full Scree Button */}
+              <Col>
+                <Button type="primary" icon={<FullscreenOutlined />}>
+                  Full Screen
+                </Button>
+              </Col>
+
+              {/* Save Button */}
+              <Col>
+                <Button type="primary" icon={<SaveOutlined />} onClick={handleEditorSave}>
+                  Save
+                </Button>
+              </Col>
+            </Row>
           </div>
         </Col>
       </Row>
@@ -649,10 +323,26 @@ const QueryEditor = (props: Props) => {
               runLoading={runLoading}
               tabProps={tabProps}
               setTabProps={setTabProps}
+              editorSave={editorSave}
+              setEditorSave={setEditorSave}
             />
           ) : null}
         </Col>
       </Row>
+
+      <SaveModal
+        {...{
+          saveModalOpen: saveModalOpen,
+          handleOk: () => {
+            alert('save');
+            setSaveModalOpen(false);
+          },
+          handleCancel: () => {
+            alert('cancel');
+            setSaveModalOpen(false);
+          },
+        }}
+      />
     </>
   );
 };
