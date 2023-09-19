@@ -100,11 +100,18 @@ export default defineConfig({
       icon: 'dashboard',
       routes: [
         {
+          name: 'Query detail',
+          path: 'queries/:id',
+          component: './creations/queries/details',
+          hideInMenu: true,
+        },
+        {
           name: 'New Query',
           icon: 'smile',
-          path: 'new-query',
-          component: './creations/query',
+          path: 'queries',
+          component: './creations/queries',
         },
+
         {
           name: 'New Dashboard',
           icon: 'smile',

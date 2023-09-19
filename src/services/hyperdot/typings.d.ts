@@ -1,4 +1,11 @@
 declare namespace HYPERDOT_API {
+  type BaseResponse = {
+    success: boolean;
+    errorMessage?: string;
+    errorCode?: int;
+    data?: any;
+  };
+
   type CurrentUser = {
     id: number;
     provider: string;
@@ -36,5 +43,22 @@ declare namespace HYPERDOT_API {
     errorMessage?: string;
     errorCode?: int;
     data?: any;
+  };
+
+  type UserQuery = {
+    id?: number;
+    userId: number;
+    name: string;
+    query: string;
+    queryEngine: string;
+    isPrivacy: boolean;
+    charts?: QE.TabProps[];
+  };
+
+  type UserQueryResponse = {
+    success: boolean;
+    errorMessage?: string;
+    errorCode?: int;
+    data?: UserQuery;
   };
 }

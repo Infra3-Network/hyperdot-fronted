@@ -91,7 +91,6 @@ export const NewVisualizationTab = (props: NewVisualizationTabProps) => {
     });
     const active: string = TabManager.getId(props.tabProps).toString();
     props.setTabActiveKey(active);
-    console.log('Add visualization for ', chart);
   };
 
   return (

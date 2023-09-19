@@ -20,16 +20,9 @@ declare namespace QE {
     config: any;
   }
 
-  interface EditorSaveParams {
-    query: string;
-    queryEngine: string;
-    charts: TabProps[];
-  }
-
   interface ChartTabProps {
     id: number;
     queryData: any;
-    setEditorSave: any;
     tabProps: any;
     setTabProps: any;
     setTabActiveKey: any;
