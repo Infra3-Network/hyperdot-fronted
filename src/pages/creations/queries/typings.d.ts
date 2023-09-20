@@ -26,5 +26,7 @@ declare namespace QE {
     tabProps: any;
     setTabProps: any;
     setTabActiveKey: any;
+    name?: any;
+    config?: any;
   }
 }

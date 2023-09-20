@@ -4,8 +4,24 @@ import QueryEngine from './components/QueryEngine';
 import QueryEditor from './components/QueryEditor';
 import QueryVisualization from '@/pages/creations/query/components/QueryVisualization';
 import React from 'react';
+import { TabManager } from './components/QueryEditor/tabmanager';
 
 export const CreationQuery = () => {
+  const [tabProps, setTabProps] = React.useState<QE.TabArray>({ id: 0, tabs: [] });
+
+  React.useEffect(() => {
+    setTabProps((prev: QE.TabArray) => {
+      if (TabManager.findByName(prev, 'New Visualization')) {
+        return prev;
+      }
+
+      return TabManager.add(prev, {
+        name: 'New Visualization',
+        children: 'new',
+        closeable: false,
+      });
+    });
+  }, []);
   return (
     <GridContent>
       <>
@@ -17,7 +33,12 @@ export const CreationQuery = () => {
           </Col>
 
           <Col xl={18} lg={24} md={24} sm={24} xs={24} style={{ marginBottom: 24 }}>
-            <QueryEditor />
+            <QueryEditor
+              {...{
+                tabProps: tabProps,
+                setTabProps: setTabProps,
+              }}
+            />
           </Col>
         </Row>
       </>

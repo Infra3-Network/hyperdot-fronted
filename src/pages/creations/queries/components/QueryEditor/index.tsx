@@ -17,7 +17,7 @@ import styles from './index.less';
 import { TabManager } from './tabmanager';
 import { getInitialState } from '@/app';
 import { history } from 'umi';
-import { userCreateQuery } from '@/services/hyperdot/api';
+import { getUserQuery, userCreateQuery } from '@/services/hyperdot/api';
 
 interface QueryVisualizationProps {
   queryData: any;
@@ -28,39 +28,6 @@ interface QueryVisualizationProps {
 
 const QueryVisualization = (props: QueryVisualizationProps) => {
   const [tabActiveKey, setTabActiveKey] = React.useState<string>('1');
-
-  useEffect(() => {
-    props.setTabProps((prev: QE.TabArray) => {
-      if (TabManager.findByName(prev, 'New Visualization')) {
-        return prev;
-      }
-
-      return TabManager.add(prev, {
-        name: 'New Visualization',
-        children: 'new',
-        closeable: false,
-      });
-
-      // const foundNew: boolean = prev.find((v: any, i: number) => v.name === 'New Visualization');
-      // if (foundNew) {
-      //   return prev;
-      // }
-
-      // prev.push({
-      //   name: 'New Visualization',
-      //   icon: <BarChartOutlined />,
-      //   children: (
-      //     <NewVisualizationTab
-      //       tabProps={props.tabProps}
-      //       setTabProps={props.setTabProps}
-      //       setTabActiveKey={setTabActiveKey}
-      //       queryData={props.queryData}
-      //     />
-      //   ),
-      // });
-      // return prev;
-    });
-  }, []);
 
   const handleCloseClick = (id: number) => {
     props.setTabProps(TabManager.remove(props.tabProps, id));
@@ -74,6 +41,57 @@ const QueryVisualization = (props: QueryVisualizationProps) => {
   if (!props.queryData) {
     return null;
   }
+  const items = props.tabProps.tabs.map((v: QE.TabProps) => {
+    let children, icon;
+    if (v.children === 'new') {
+      children = (qprops: QE.ChartTabProps) => {
+        const newProps = {
+          ...qprops,
+          charts: charts,
+        };
+        return <NewVisualizationTab {...newProps} />;
+      };
+      icon = <BarChartOutlined />;
+    } else {
+      const chart = charts.get(v.children);
+      icon = chart?.icon;
+      children = chart?.children;
+    }
+    return v.id == undefined
+      ? null
+      : {
+          label: (
+            <div>
+              <span>
+                {icon}
+                {v.name}
+              </span>
+              {v.closeable ? (
+                <span style={{ marginLeft: '12px' }}>
+                  <CloseOutlined
+                    onClick={() => {
+                      handleCloseClick(v.id || 0);
+                    }}
+                  />
+                </span>
+              ) : null}
+            </div>
+          ),
+          key: v.id?.toString(),
+          children: children({
+            id: v.id,
+            name: v.name,
+            config: v.config,
+            queryData: props.queryData,
+            tabProps: props.tabProps,
+            setTabProps: props.setTabProps,
+            setTabActiveKey: setTabActiveKey,
+          }),
+          style: {},
+          closable: v.closeable,
+          forceRender: false,
+        };
+  });
 
   return (
     <div>
@@ -83,55 +101,7 @@ const QueryVisualization = (props: QueryVisualizationProps) => {
         onChange={(activeKey: string) => {
           setTabActiveKey(activeKey);
         }}
-        items={props.tabProps.tabs.map((v: QE.TabProps) => {
-          let children, icon;
-          if (v.children === 'new') {
-            children = (qprops: QE.ChartTabProps) => {
-              const newProps = {
-                ...qprops,
-                charts: charts,
-              };
-              return <NewVisualizationTab {...newProps} />;
-            };
-            icon = <BarChartOutlined />;
-          } else {
-            const chart = charts.get(v.children);
-            icon = chart?.icon;
-            children = chart?.children;
-          }
-          return v.id == undefined
-            ? null
-            : {
-                label: (
-                  <div>
-                    <span>
-                      {icon}
-                      {v.name}
-                    </span>
-                    {v.closeable ? (
-                      <span style={{ marginLeft: '12px' }}>
-                        <CloseOutlined
-                          onClick={() => {
-                            handleCloseClick(v.id || 0);
-                          }}
-                        />
-                      </span>
-                    ) : null}
-                  </div>
-                ),
-                key: v.id?.toString(),
-                children: children({
-                  id: v.id,
-                  queryData: props.queryData,
-                  tabProps: props.tabProps,
-                  setTabProps: props.setTabProps,
-                  setTabActiveKey: setTabActiveKey,
-                }),
-                style: {},
-                closable: v.closeable,
-                forceRender: false,
-              };
-        })}
+        items={items}
       />
     </div>
   );
@@ -201,7 +171,11 @@ interface QueryNormalState {
   engine: string;
 }
 
-const QueryEditor = () => {
+interface Props {
+  id?: number;
+}
+
+const QueryEditor = (props: Props) => {
   // state for save modal control
   const [saveModalOpen, setSaveModalOpen] = React.useState<boolean>(false);
 
@@ -217,6 +191,99 @@ const QueryEditor = () => {
   const [runLoading, setRunLoading] = React.useState<boolean>(false);
   const [queryData, setQueryData] = React.useState<any>(null);
   const [messageApi, contextHolder] = message.useMessage();
+
+  // If props.id is defined, then
+  //  1. fetch saved query,
+  //  2. run query to fetch queryData
+  /// 3. set TabProps, queryNomal state
+  useEffect(() => {
+    if (props.id != undefined) {
+      getUserQuery(props.id, {
+        errorHandler: () => {
+          history.push('/exception/404');
+        },
+      })
+        .then((res) => {
+          const data = res.data;
+          if (data == undefined) {
+            history.push('/exception/404');
+            return;
+          }
+
+          setRunLoading(true);
+          queryRun(
+            {
+              engine: data.queryEngine,
+              query: data.query,
+            },
+            {
+              errorHandler: (error: any) => {
+                messageApi.error(error.message);
+              },
+            },
+          )
+            .then((queryRes) => {
+              if (!queryRes.success) {
+                messageApi.error(res.errorMessage);
+                return;
+              }
+
+              setQueryData(queryRes.data);
+            })
+            .catch((err) => {
+              messageApi.error(err.message);
+            })
+            .finally(() => {
+              setRunLoading(false);
+            });
+
+          setQueryNormal({
+            query: data.query,
+            engine: 'bigquery',
+            privacy: data.isPrivacy,
+            name: data.name,
+          });
+
+          if (data.charts == undefined) {
+            return;
+          }
+          const tabs = [
+            ...data.charts,
+            {
+              id: 0,
+              name: 'New Visualization',
+              children: 'new',
+              closeable: false,
+            },
+          ];
+
+          const nextId = tabs.reduce(
+            (max, obj) => (obj.id ? (obj.id > max ? obj.id : max) : max),
+            1,
+          );
+          setTabProps({
+            id: nextId,
+            tabs,
+          });
+          console.log(tabProps);
+        })
+        .catch((err) => {
+          message.error(err);
+        });
+    } else {
+      setTabProps((prev: QE.TabArray) => {
+        if (TabManager.findByName(prev, 'New Visualization')) {
+          return prev;
+        }
+
+        return TabManager.add(prev, {
+          name: 'New Visualization',
+          children: 'new',
+          closeable: false,
+        });
+      });
+    }
+  }, []);
 
   const handleEditorChange = (value: any) => {
     setQueryNormal((prev) => {
@@ -307,18 +374,6 @@ const QueryEditor = () => {
             children: 'data_table',
             closeable: true,
           });
-          // const insertAfterIndex = prev.length - 1 < 0 ? 0 : prev.length - 1; // 将新元素插入在最后一个元素后面
-
-          // // 创建一个新的数组，将新元素插入到指定位置
-          // const newArray = [...prev];
-          // newArray.splice(insertAfterIndex, 0, {
-          //   name: 'Query Result',
-
-          //   icon: <TableOutlined />,
-          //   children: <QueryResultTableTab queryData={res.data} />,
-          // });
-
-          // return newArray;
         });
         setQueryData(res.data);
       })
