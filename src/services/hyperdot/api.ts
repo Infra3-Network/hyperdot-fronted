@@ -39,6 +39,32 @@ export async function userCreateQuery(
   });
 }
 
+/** run user query GET /apis/v1/user/query/run */
+export async function queryRun(query: string, engine: string, options?: { [key: string]: any }) {
+  return request<HYPERDOT_API.UserQueryResponse>(
+    '/apis/v1/query/run?q=' + query + '&engine=' + engine,
+    {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      ...(options || {}),
+    },
+  );
+}
+
+/** update user query PUT /apis/user/query */
+export async function updateQuery(body: HYPERDOT_API.UserQuery, options?: { [key: string]: any }) {
+  return request<HYPERDOT_API.UserQueryResponse>('/apis/v1/query', {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
+    ...(options || {}),
+  });
+}
+
 /** get user query GET /apis/v1/user/query/:id */
 export async function getUserQuery(id: number, options?: { [key: string]: any }) {
   return request<HYPERDOT_API.UserQueryResponse>('/apis/v1/user/query/' + id, {

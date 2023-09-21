@@ -9,15 +9,14 @@ import {
   FullscreenOutlined,
   SaveOutlined,
 } from '@ant-design/icons';
-import { Tabs, Row, Col, Button, Modal, Input, Switch, message } from 'antd';
+import { Tabs, Row, Col, Button, Modal, Input, Switch, message, Spin } from 'antd';
 import React, { useEffect } from 'react';
 import { charts, NewVisualizationTab } from './charts';
-import { queryRun } from '@/services/hyperdot/query';
 import styles from './index.less';
 import { TabManager } from './tabmanager';
 import { getInitialState } from '@/app';
-import { history } from 'umi';
-import { getUserQuery, userCreateQuery } from '@/services/hyperdot/api';
+import { useHistory } from 'umi';
+import { queryRun, updateQuery, userCreateQuery } from '@/services/hyperdot/api';
 
 interface QueryVisualizationProps {
   queryData: any;
@@ -33,10 +32,6 @@ const QueryVisualization = (props: QueryVisualizationProps) => {
     props.setTabProps(TabManager.remove(props.tabProps, id));
     setTabActiveKey(tabActiveKey);
   };
-
-  if (props.runLoading) {
-    return <div>Loading...</div>;
-  }
 
   if (!props.queryData) {
     return null;
@@ -96,7 +91,6 @@ const QueryVisualization = (props: QueryVisualizationProps) => {
   return (
     <div>
       <Tabs
-        type="primary"
         activeKey={tabActiveKey}
         onChange={(activeKey: string) => {
           setTabActiveKey(activeKey);
@@ -172,7 +166,7 @@ interface QueryNormalState {
 }
 
 interface Props {
-  id?: number;
+  userQuery?: HYPERDOT_API.UserQuery;
 }
 
 const QueryEditor = (props: Props) => {
@@ -182,7 +176,7 @@ const QueryEditor = (props: Props) => {
   // state for editor query save state
   const [queryNormal, setQueryNormal] = React.useState<QueryNormalState>({
     query: '',
-    name: 'myquery',
+    name: 'Unsaved',
     privacy: false,
     engine: 'bigquery', // TODO: from props
   });
@@ -191,85 +185,86 @@ const QueryEditor = (props: Props) => {
   const [runLoading, setRunLoading] = React.useState<boolean>(false);
   const [queryData, setQueryData] = React.useState<any>(null);
   const [messageApi, contextHolder] = message.useMessage();
+  const history = useHistory();
 
   // If props.id is defined, then
   //  1. fetch saved query,
-  //  2. run query to fetch queryData
+  //  2. run query to fetch queryData if queryData is null
   /// 3. set TabProps, queryNomal state
   useEffect(() => {
-    if (props.id != undefined) {
-      getUserQuery(props.id, {
-        errorHandler: () => {
-          history.push('/exception/404');
+    console.log(history.location, props.userQuery == undefined);
+    if (props.userQuery != undefined) {
+      const userQuery = props.userQuery;
+      console.log(userQuery);
+      setRunLoading(true);
+      queryRun(userQuery.query, userQuery.queryEngine, {
+        errorHandler: (error: any) => {
+          messageApi.error(error.message);
         },
       })
-        .then((res) => {
-          const data = res.data;
-          if (data == undefined) {
-            history.push('/exception/404');
+        .then((queryRes) => {
+          if (!queryRes.success) {
+            messageApi.error(queryRes.errorMessage);
             return;
           }
 
-          setRunLoading(true);
-          queryRun(
-            {
-              engine: data.queryEngine,
-              query: data.query,
-            },
-            {
-              errorHandler: (error: any) => {
-                messageApi.error(error.message);
-              },
-            },
-          )
-            .then((queryRes) => {
-              if (!queryRes.success) {
-                messageApi.error(res.errorMessage);
-                return;
-              }
-
-              setQueryData(queryRes.data);
-            })
-            .catch((err) => {
-              messageApi.error(err.message);
-            })
-            .finally(() => {
-              setRunLoading(false);
-            });
-
-          setQueryNormal({
-            query: data.query,
-            engine: 'bigquery',
-            privacy: data.isPrivacy,
-            name: data.name,
-          });
-
-          if (data.charts == undefined) {
-            return;
-          }
-          const tabs = [
-            ...data.charts,
-            {
-              id: 0,
-              name: 'New Visualization',
-              children: 'new',
-              closeable: false,
-            },
-          ];
-
-          const nextId = tabs.reduce(
-            (max, obj) => (obj.id ? (obj.id > max ? obj.id : max) : max),
-            1,
-          );
-          setTabProps({
-            id: nextId,
-            tabs,
-          });
-          console.log(tabProps);
+          console.log(queryRes.data);
+          setQueryData(queryRes.data);
         })
         .catch((err) => {
-          message.error(err);
+          messageApi.error(err.message);
+        })
+        .finally(() => {
+          setRunLoading(false);
         });
+
+      setQueryNormal({
+        query: userQuery.query,
+        engine: userQuery.queryEngine,
+        privacy: userQuery.isPrivacy ? userQuery.isPrivacy : false,
+        name: userQuery.name ? userQuery.name : 'Unsaved',
+      });
+
+      if (userQuery.unsaved ? userQuery.unsaved : false) {
+        // if unsaved query, we create these tabs
+        const tabs = [
+          {
+            id: 1,
+            name: 'Query Result',
+            children: 'data_table',
+            closeable: true,
+          },
+          {
+            id: 0,
+            name: 'New Visualization',
+            children: 'new',
+            closeable: false,
+          },
+        ];
+        setTabProps({
+          id: 2,
+          tabs,
+        });
+      }
+
+      if (userQuery.charts == undefined) {
+        return;
+      }
+      const tabs = [
+        ...userQuery.charts,
+        {
+          id: 0,
+          name: 'New Visualization',
+          children: 'new',
+          closeable: false,
+        },
+      ];
+
+      const nextId = tabs.reduce((max, obj) => (obj.id ? (obj.id > max ? obj.id : max) : max), 1);
+      setTabProps({
+        id: nextId,
+        tabs,
+      });
     } else {
       setTabProps((prev: QE.TabArray) => {
         if (TabManager.findByName(prev, 'New Visualization')) {
@@ -322,6 +317,7 @@ const QueryEditor = (props: Props) => {
         });
 
       const body: HYPERDOT_API.UserQuery = {
+        id: props.userQuery ? props.userQuery.id : 0,
         userId: currentUser.id,
         name: queryNormal.name,
         query: queryNormal.query,
@@ -329,7 +325,8 @@ const QueryEditor = (props: Props) => {
         isPrivacy: queryNormal.privacy,
         charts: tabs.length == 0 ? [] : tabs,
       };
-      const res = await userCreateQuery(body, {});
+      console.log(body);
+      const res = await updateQuery(body, {});
       if (res.success) {
         messageApi.info('save success');
         return;
@@ -345,11 +342,50 @@ const QueryEditor = (props: Props) => {
       return;
     }
 
-    setRunLoading(true);
-    queryRun(
+    if (!queryNormal.engine) {
+      messageApi.warning('Please select query engine');
+      return;
+    }
+
+    if (props.userQuery != undefined) {
+      if (
+        queryNormal.query == props.userQuery.query &&
+        queryNormal.engine == props.userQuery.queryEngine
+      ) {
+        // not change
+        messageApi.info('Query not change');
+        return;
+      }
+      // if exists userQuery, we only run new input query
+      setRunLoading(true);
+      queryRun(queryNormal.query, queryNormal.engine, {
+        errorHandler: (error: any) => {
+          messageApi.error(error.message);
+        },
+      })
+        .then((res) => {
+          if (!res.success) {
+            messageApi.error(res.errorMessage);
+            return;
+          }
+          setQueryData(res.data);
+        })
+        .catch((err) => {
+          messageApi.error(err.message);
+        })
+        .finally(() => {
+          setRunLoading(false);
+        });
+      return;
+    }
+
+    // first create unsaved query to get id
+    userCreateQuery(
       {
-        engine: queryNormal.engine,
         query: queryNormal.query,
+        queryEngine: queryNormal.engine,
+        isPrivacy: false,
+        unsaved: true,
       },
       {
         errorHandler: (error: any) => {
@@ -362,26 +398,16 @@ const QueryEditor = (props: Props) => {
           messageApi.error(res.errorMessage);
           return;
         }
-        setTabProps((prev: QE.TabArray) => {
-          const prevQueryResult = TabManager.findByName(prev, 'Query Result');
-          let newPrev = prev;
-          if (prevQueryResult) {
-            newPrev = TabManager.remove(newPrev, prevQueryResult.id);
-          }
 
-          return TabManager.insertLastBefore(newPrev, {
-            name: 'Query Result',
-            children: 'data_table',
-            closeable: true,
-          });
-        });
-        setQueryData(res.data);
+        if (res.data == undefined) {
+          messageApi.error('Unkown error');
+          return;
+        }
+
+        history.push('/creations/queries/' + res.data.id);
       })
       .catch((err) => {
         messageApi.error(err.message);
-      })
-      .finally(() => {
-        setRunLoading(false);
       });
   };
 
@@ -448,14 +474,16 @@ const QueryEditor = (props: Props) => {
       </Row>
       <Row gutter={24}>
         <Col span={24}>
-          {queryData ? (
-            <QueryVisualization
-              queryData={queryData}
-              runLoading={runLoading}
-              tabProps={tabProps}
-              setTabProps={setTabProps}
-            />
-          ) : null}
+          <Spin tip="Loading" spinning={runLoading}>
+            {queryData ? (
+              <QueryVisualization
+                queryData={queryData}
+                runLoading={runLoading}
+                tabProps={tabProps}
+                setTabProps={setTabProps}
+              />
+            ) : null}
+          </Spin>
         </Col>
       </Row>
 

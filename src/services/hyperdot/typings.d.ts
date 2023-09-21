@@ -47,11 +47,11 @@ declare namespace HYPERDOT_API {
 
   type UserQuery = {
     id?: number;
-    userId: number;
-    name: string;
+    userId?: number;
+    name?: string;
     query: string;
     queryEngine: string;
-    isPrivacy: boolean;
+    isPrivacy?: boolean;
     charts?: QE.TabProps[];
   };
 
