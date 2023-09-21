@@ -52,6 +52,7 @@ declare namespace HYPERDOT_API {
     query: string;
     queryEngine: string;
     isPrivacy?: boolean;
+    unsaved?: boolean;
     charts?: QE.TabProps[];
   };
 
