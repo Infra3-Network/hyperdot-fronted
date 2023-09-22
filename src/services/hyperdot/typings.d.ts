@@ -1,3 +1,5 @@
+import { HYPERDOT_CHART } from '@/components/Charts/typings';
+
 declare namespace HYPERDOT_API {
   type BaseResponse = {
     success: boolean;
@@ -53,7 +55,7 @@ declare namespace HYPERDOT_API {
     queryEngine: string;
     isPrivacy?: boolean;
     unsaved?: boolean;
-    charts?: QE.TabProps[];
+    charts?: HYPERDOT_CHART.ChartParams[];
   };
 
   type UserQueryResponse = {
