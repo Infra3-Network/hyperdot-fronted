@@ -95,6 +95,30 @@ export default defineConfig({
       ],
     },
     {
+      path: '/explore',
+      name: 'Discovery',
+      icon: 'dashboard',
+      routes: [
+        {
+          path: '/explore',
+          icon: 'smile',
+          component: './explore',
+        },
+        {
+          name: 'Queries',
+          icon: 'smile',
+          path: '/explore/queries',
+          component: './explore/queries',
+        },
+        {
+          name: 'Dashboards',
+          icon: 'smile',
+          path: '/explore/dashboards',
+          component: './explore/dashboards',
+        },
+      ],
+    },
+    {
       path: 'creations',
       name: 'Creations',
       icon: 'dashboard',
@@ -120,35 +144,35 @@ export default defineConfig({
         },
       ],
     },
-    {
-      path: '/dashboard',
-      name: 'dashboard',
-      icon: 'dashboard',
-      routes: [
-        {
-          path: '/dashboard',
-          redirect: '/dashboard/analysis',
-        },
-        {
-          name: 'analysis',
-          icon: 'smile',
-          path: '/dashboard/analysis',
-          component: './dashboard/analysis',
-        },
-        {
-          name: 'monitor',
-          icon: 'smile',
-          path: '/dashboard/monitor',
-          component: './dashboard/monitor',
-        },
-        {
-          name: 'workplace',
-          icon: 'smile',
-          path: '/dashboard/workplace',
-          component: './dashboard/workplace',
-        },
-      ],
-    },
+    // {
+    //   path: '/dashboard',
+    //   name: 'dashboard',
+    //   icon: 'dashboard',
+    //   routes: [
+    //     {
+    //       path: '/dashboard',
+    //       redirect: '/dashboard/analysis',
+    //     },
+    //     {
+    //       name: 'analysis',
+    //       icon: 'smile',
+    //       path: '/dashboard/analysis',
+    //       component: './dashboard/analysis',
+    //     },
+    //     {
+    //       name: 'monitor',
+    //       icon: 'smile',
+    //       path: '/dashboard/monitor',
+    //       component: './dashboard/monitor',
+    //     },
+    //     {
+    //       name: 'workplace',
+    //       icon: 'smile',
+    //       path: '/dashboard/workplace',
+    //       component: './dashboard/workplace',
+    //     },
+    //   ],
+    // },
     {
       path: '/form',
       icon: 'form',
@@ -365,7 +389,7 @@ export default defineConfig({
     },
     {
       path: '/',
-      redirect: '/dashboard/analysis',
+      redirect: '/explore',
     },
     {
       component: '404',

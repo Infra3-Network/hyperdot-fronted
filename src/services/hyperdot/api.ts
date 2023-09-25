@@ -29,7 +29,7 @@ export async function userCreateQuery(
   body: HYPERDOT_API.UserQuery,
   options?: { [key: string]: any },
 ) {
-  return request<HYPERDOT_API.UserQueryResponse>('/apis/v1/user/query', {
+  return request<HYPERDOT_API.UserQueryResponse>('/apis/v1/query', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -67,7 +67,7 @@ export async function updateQuery(body: HYPERDOT_API.UserQuery, options?: { [key
 
 /** get user query GET /apis/v1/user/query/:id */
 export async function getUserQuery(id: number, options?: { [key: string]: any }) {
-  return request<HYPERDOT_API.UserQueryResponse>('/apis/v1/user/query/' + id, {
+  return request<HYPERDOT_API.UserQueryResponse>('/apis/v1/query/' + id, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',

@@ -29,7 +29,7 @@ import {
 import { TabManager } from './tabmanager';
 import styles from './charts.less';
 import { WaterMark } from '@ant-design/pro-layout';
-import { AreaChart } from '@/components/Charts/Area';
+import { AreaChart } from '@/components/Charts/Template';
 import { ChartManager } from '@/components/Charts/manager';
 import { HYPERDOT_CHART } from '@/components/Charts/typings';
 import { ChartParams } from '@/components/Charts/types';

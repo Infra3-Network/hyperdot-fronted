@@ -1,12 +1,18 @@
-import { AreaChart } from './Area';
-import { AreaChartOutlined, TableOutlined } from '@ant-design/icons';
+import { TemplateChart } from './Template';
+import {
+  AreaChartOutlined,
+  BarChartOutlined,
+  DotChartOutlined,
+  LineChartOutlined,
+  TableOutlined,
+} from '@ant-design/icons';
 import { TableChart } from './Table';
 import { type ChartProps } from './types';
 
 interface ChartNodeProps {
   name: string;
   icon: React.ReactNode;
-  children: (props: HYPERDOT_CHART.ChartProps) => React.ReactNode;
+  children: (props: ChartProps) => React.ReactNode;
 }
 
 export const ChartNodeMap: Map<string, ChartNodeProps> = new Map([
@@ -20,47 +26,47 @@ export const ChartNodeMap: Map<string, ChartNodeProps> = new Map([
   //     },
   //   },
   // ],
-  //   [
-  //     'bar_chart',
-  //     {
-  //       name: 'Bar Chart',
-  //       icon: <BarChartOutlined />,
-  //       children: (props: QE.ChartTabProps) => {
-  //         return <BarChartTab {...props} />;
-  //       },
-  //     },
-  //   ],
+  [
+    'bar_chart',
+    {
+      name: 'Bar Chart',
+      icon: <BarChartOutlined />,
+      children: (props: ChartProps) => {
+        return <TemplateChart {...{ type: 'bar', props: props }} />;
+      },
+    },
+  ],
   [
     'area_chart',
     {
       name: 'Area Chart',
       icon: <AreaChartOutlined />,
       children: (props: ChartProps) => {
-        return <AreaChart {...props} />;
+        return <TemplateChart {...{ type: 'area', props: props }} />;
       },
     },
   ],
 
-  //   [
-  //     'scatter_chart',
-  //     {
-  //       name: 'Scatter Chart',
-  //       icon: <DotChartOutlined />,
-  //       children: (props: QE.ChartTabProps) => {
-  //         return <ScatterChartTab {...props} />;
-  //       },
-  //     },
-  //   ],
-  //   [
-  //     'line_chart',
-  //     {
-  //       name: 'Line Chart',
-  //       icon: <LineChartOutlined />,
-  //       children: (props: QE.ChartTabProps) => {
-  //         return <LineChart {...props} />;
-  //       },
-  //     },
-  //   ],
+  [
+    'scatter_chart',
+    {
+      name: 'Scatter Chart',
+      icon: <DotChartOutlined />,
+      children: (props: ChartProps) => {
+        return <TemplateChart {...{ type: 'scatter', props: props }} />;
+      },
+    },
+  ],
+  [
+    'line_chart',
+    {
+      name: 'Line Chart',
+      icon: <LineChartOutlined />,
+      children: (props: ChartProps) => {
+        return <TemplateChart {...{ type: 'line', props: props }} />;
+      },
+    },
+  ],
   //   [
   //     'pie_chart',
   //     {

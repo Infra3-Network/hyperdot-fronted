@@ -6,7 +6,7 @@ const Settings: LayoutSettings & {
 } = {
   navTheme: 'light',
   primaryColor: '#2F54EB',
-  layout: 'top',
+  layout: 'mix',
   contentWidth: 'Fluid',
   fixedHeader: true,
   fixSiderbar: true,
@@ -14,7 +14,7 @@ const Settings: LayoutSettings & {
   logo: 'https://gw.alipayobjects.com/zos/rmsportal/KDpgvguMpGfqaHPjicRK.svg',
   headerHeight: 48,
   title: 'Hyperdot',
-  splitMenus: false,
+  splitMenus: true,
 };
 
 //   {
