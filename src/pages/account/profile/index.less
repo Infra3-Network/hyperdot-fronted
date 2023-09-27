@@ -1,0 +1,19 @@
+.separator {
+  display: flex;
+  align-items: center; /* 垂直居中 */
+  justify-content: center; /* 水平居中 */
+}
+
+.separator .line {
+  flex-grow: 1;
+  border: none;
+  border-top: 1px solid #000; /* 分割线样式，可以根据需要调整 */
+}
+
+.separator .textLeft::before,
+.separator .textRight::after {
+  flex-grow: 1;
+  margin: 0 10px; /* 调整左右文本与分割线的间距，根据需要调整 */
+  border-top: 1px solid #000; /* 分割线样式，与中间分割线一致 */
+  content: '';
+}

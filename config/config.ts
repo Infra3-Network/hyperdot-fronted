@@ -102,19 +102,22 @@ export default defineConfig({
         {
           path: '/explore',
           icon: 'smile',
-          component: './explore',
+          redirect: '/explore/dashboards',
         },
         {
           name: 'Queries',
           icon: 'smile',
           path: '/explore/queries',
           component: './explore/queries',
+          hideInMenu: true,
         },
         {
           name: 'Dashboards',
           icon: 'smile',
           path: '/explore/dashboards',
           component: './explore/dashboards',
+
+          hideInMenu: true,
         },
       ],
     },
@@ -348,7 +351,7 @@ export default defineConfig({
           name: 'center',
           icon: 'smile',
           path: '/account/center',
-          component: './account/center',
+          component: './account/profile',
         },
         {
           name: 'settings',

@@ -1,9 +1,39 @@
-import React from 'react';
+import { AppstoreOutlined, MailOutlined, SettingOutlined } from '@ant-design/icons';
+import type { MenuProps } from 'antd';
+import { Menu } from 'antd';
+import { useState } from 'react';
 
-type Props = {};
+const items: MenuProps['items'] = [
+  {
+    label: 'Navigation One',
+    key: 'mail',
+    icon: <MailOutlined />,
+  },
+  {
+    label: 'Navigation Two',
+    key: 'app',
+    icon: <AppstoreOutlined />,
+    disabled: true,
+  },
+];
 
-const Explore = (props: Props) => {
-  return <div>Explore</div>;
+const Explore: React.FC = () => {
+  const [current, setCurrent] = useState('mail');
+
+  const onClick: MenuProps['onClick'] = (e) => {
+    console.log('click ', e);
+    setCurrent(e.key);
+  };
+
+  return (
+    <Menu
+      style={{ background: 'transparent' }}
+      onClick={onClick}
+      selectedKeys={[current]}
+      mode="horizontal"
+      items={items}
+    />
+  );
 };
 
 export default Explore;
