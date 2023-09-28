@@ -53,6 +53,31 @@ export async function queryRun(query: string, engine: string, options?: { [key: 
   );
 }
 
+/** get user query GET /apis/v1/user/query/:id */
+export async function getQuery(id: number, options?: { [key: string]: any }) {
+  return request<HYPERDOT_API.UserQueryResponse>('/apis/v1/query/' + id, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    ...(options || {}),
+  });
+}
+
+/** get user query GET /apis/v1/user/query/:id */
+export async function listQuery(page: number, pageSize: number, options?: { [key: string]: any }) {
+  return request<HYPERDOT_API.ListQueryResponse>(
+    '/apis/v1/query?page=' + page + '&&page_size=' + pageSize,
+    {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      ...(options || {}),
+    },
+  );
+}
+
 /** update user query PUT /apis/user/query */
 export async function updateQuery(body: HYPERDOT_API.UserQuery, options?: { [key: string]: any }) {
   return request<HYPERDOT_API.UserQueryResponse>('/apis/v1/query', {
@@ -61,17 +86,6 @@ export async function updateQuery(body: HYPERDOT_API.UserQuery, options?: { [key
       'Content-Type': 'application/json',
     },
     data: body,
-    ...(options || {}),
-  });
-}
-
-/** get user query GET /apis/v1/user/query/:id */
-export async function getUserQuery(id: number, options?: { [key: string]: any }) {
-  return request<HYPERDOT_API.UserQueryResponse>('/apis/v1/query/' + id, {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-    },
     ...(options || {}),
   });
 }

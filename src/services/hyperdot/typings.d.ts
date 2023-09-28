@@ -1,5 +1,3 @@
-import { HYPERDOT_CHART } from '@/components/Charts/typings';
-
 declare namespace HYPERDOT_API {
   type BaseResponse = {
     success: boolean;
@@ -49,11 +47,11 @@ declare namespace HYPERDOT_API {
 
   type UserQuery = {
     id?: number;
-    userId?: number;
+    user_id?: number;
     name?: string;
     query: string;
-    queryEngine: string;
-    isPrivacy?: boolean;
+    query_engine: string;
+    is_privacy?: boolean;
     unsaved?: boolean;
     charts?: HYPERDOT_CHART.ChartParams[];
   };
@@ -63,5 +61,29 @@ declare namespace HYPERDOT_API {
     errorMessage?: string;
     errorCode?: int;
     data?: UserQuery;
+  };
+
+  type ListQueryData = {
+    id: number;
+    name: string;
+    description: string;
+    is_privacy: boolean;
+    query: string;
+    query_engine: string;
+    stars: number;
+    charts: any;
+    created_at: string;
+    updated_at: string;
+    deleted_at: string;
+    uid: string;
+    username: string;
+    email: any;
+  };
+
+  type ListQueryResponse = {
+    success: boolean;
+    errorMessage?: string;
+    errorCode?: int;
+    data?: ListQueryData[];
   };
 }

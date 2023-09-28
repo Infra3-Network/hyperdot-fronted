@@ -1,4 +1,4 @@
-import { getUserQuery } from '@/services/hyperdot/api';
+import { getQuery } from '@/services/hyperdot/api';
 import { Row, Col, message } from 'antd';
 import React, { useState } from 'react';
 import { history, useParams } from 'umi';
@@ -15,7 +15,7 @@ export const CreationQueryDetail = () => {
       return;
     }
 
-    getUserQuery(id, {
+    getQuery(id, {
       errorHandler: () => {
         history.push('/exception/404');
       },

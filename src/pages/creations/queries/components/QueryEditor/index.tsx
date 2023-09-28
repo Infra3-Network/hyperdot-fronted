@@ -25,7 +25,6 @@ import {
 } from '@/components/Charts/types';
 // import { HYPERDOT_CHART } from '@/components/Charts/typings';
 import { ChartNodeMap } from '@/components/Charts';
-import { HYPERDOT_API } from '@/services/hyperdot/typings';
 
 interface NewVisualizationTabProps {
   // tabProps: any;
@@ -310,8 +309,8 @@ const QueryEditor = (props: Props) => {
   const updateStateByUserQuery = (userQuery: HYPERDOT_API.UserQuery) => {
     setQueryNormal({
       query: userQuery.query,
-      engine: userQuery.queryEngine,
-      privacy: userQuery.isPrivacy ? userQuery.isPrivacy : false,
+      engine: userQuery.query_engine,
+      privacy: userQuery.is_privacy ? userQuery.is_privacy : false,
       name: userQuery.name ? userQuery.name : 'Unsaved',
     });
 
@@ -361,7 +360,7 @@ const QueryEditor = (props: Props) => {
       const userQuery = props.userQuery;
       console.log(userQuery);
       setRunLoading(true);
-      queryRun(userQuery.query, userQuery.queryEngine, {
+      queryRun(userQuery.query, userQuery.query_engine, {
         errorHandler: (error: any) => {
           messageApi.error(error.message);
         },
@@ -488,11 +487,11 @@ const QueryEditor = (props: Props) => {
 
       const body: HYPERDOT_API.UserQuery = {
         id: props.userQuery ? props.userQuery.id : 0,
-        userId: currentUser.id,
+        user_id: currentUser.id,
         name: queryNormal.name,
         query: queryNormal.query,
-        queryEngine: queryNormal.engine,
-        isPrivacy: queryNormal.privacy,
+        query_engine: queryNormal.engine,
+        is_privacy: queryNormal.privacy,
         charts: charts,
       };
       const res = await updateQuery(body, {});
@@ -526,7 +525,7 @@ const QueryEditor = (props: Props) => {
     if (props.userQuery != undefined) {
       if (
         queryNormal.query == props.userQuery.query &&
-        queryNormal.engine == props.userQuery.queryEngine
+        queryNormal.engine == props.userQuery.query_engine
       ) {
         // not change
         messageApi.info('Query not change');
@@ -559,8 +558,8 @@ const QueryEditor = (props: Props) => {
     userCreateQuery(
       {
         query: queryNormal.query,
-        queryEngine: queryNormal.engine,
-        isPrivacy: false,
+        query_engine: queryNormal.engine,
+        is_privacy: false,
         unsaved: true,
       },
       {
