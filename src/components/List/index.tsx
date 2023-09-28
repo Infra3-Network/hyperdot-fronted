@@ -2,6 +2,7 @@ import { LikeOutlined, MessageOutlined, StarOutlined } from '@ant-design/icons';
 
 import { Avatar, List, Space } from 'antd';
 import React from 'react';
+import { Link } from 'umi';
 // import { styles } from './style.less'
 
 import styles from './index.less';
@@ -124,7 +125,7 @@ const ContentList: React.FC = (props: Props) => (
       >
         <List.Item.Meta
           avatar={<Avatar src={''} />}
-          title={<a href={'/creations/queries/' + item.id}>{item.name}</a>}
+          title={<Link to={'/creations/queries/' + item.id}>{item.name}</Link>}
           // description={item.description}
         />
         <ListContent {...item} />

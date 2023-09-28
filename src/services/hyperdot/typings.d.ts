@@ -12,6 +12,13 @@ declare namespace HYPERDOT_API {
     uid?: string;
     username?: string;
     email?: string;
+    bio?: string;
+    icon_url?: string;
+    twitter?: string;
+    github?: string;
+    telgram?: string;
+    discord?: string;
+
     // userid?: string;
     // email?: string;
     // signature?: string;

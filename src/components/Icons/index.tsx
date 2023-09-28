@@ -1,10 +1,7 @@
-import React from 'react';
 import { createFromIconfontCN } from '@ant-design/icons';
 
-export const ScatterChartOutlined = createFromIconfontCN({
-  scriptUrl: '//at.alicdn.com/t/c/font_4243725_qv5khri7x6h.js',
+const MyIcon = createFromIconfontCN({
+  scriptUrl: '//at.alicdn.com/t/c/font_4243725_w4dm0e5jvth.js',
 });
 
-export default {
-  ScatterChartOutlined,
-};
+export default MyIcon;

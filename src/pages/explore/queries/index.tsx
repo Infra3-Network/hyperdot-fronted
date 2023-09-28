@@ -1,4 +1,5 @@
 import ContentList from '@/components/List';
+import { listQuery } from '@/services/hyperdot/api';
 import { Card, Col, Row } from 'antd';
 import React from 'react';
 import ExploreMenu from '../components/Menu';
@@ -8,6 +9,19 @@ import Tags from '../components/Tags';
 type Props = {};
 
 const Queries = (props: Props) => {
+  const page = 1;
+  const pageSize = 10;
+  const [data, setData] = React.useState<HYPERDOT_API.ListQueryData[]>([]);
+  React.useEffect(() => {
+    listQuery(page, pageSize)
+      .then((res) => {
+        if (res.data == undefined) {
+          return;
+        }
+        setData(res.data);
+      })
+      .catch((err) => {});
+  }, []);
   return (
     <Row gutter={[24, 24]}>
       <Col span={24}>
@@ -22,7 +36,7 @@ const Queries = (props: Props) => {
           // bodyStyle={{ padding: '0 32px 40px 32px' }}
           // extra={extraContent}
         >
-          <ContentList />
+          <ContentList data={data} />
         </Card>
       </Col>
 
