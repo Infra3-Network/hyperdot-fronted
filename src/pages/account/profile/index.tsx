@@ -7,21 +7,35 @@ import {
   StarFilled,
   TwitterOutlined,
 } from '@ant-design/icons';
-import { history } from 'umi';
+import { history, useParams } from 'umi';
 import { Avatar, Card, Col, Divider, Row } from 'antd';
 import React from 'react';
 import styles from './index.less';
-type Props = {
-  user_id?: number;
+import { formatNumberWithCommas } from '@/utils';
+import { getUser, listQuery, listUserQuery } from '@/services/hyperdot/api';
+import ContentList from '@/components/List';
+
+type Props = {};
+
+const Queries = (user: HYPERDOT_API.CurrentUser) => {
+  const [data, setData] = React.useState<HYPERDOT_API.ListQueryData[]>([]);
+  React.useEffect(() => {
+    listUserQuery(1, 10, user.id)
+      .then((res) => {
+        if (res.data == undefined) {
+          return;
+        }
+        setData(res.data);
+      })
+      .catch((err) => {});
+  }, []);
+  return <>{data && <ContentList data={data} />}</>;
 };
 
-const Introduce = (props: Props) => {
+const Social = (user: HYPERDOT_API.CurrentUser) => {
   return (
-    <>
-      <Row>
-        <Col span={24}>
-          <h1> springzhang </h1>
-        </Col>
+    <Row>
+      {user.bio && (
         <Col span={24}>
           <div style={{ alignItems: 'start' }}>
             <span style={{ marginRight: '2px' }}>
@@ -32,7 +46,9 @@ const Introduce = (props: Props) => {
             </span>
           </div>
         </Col>
+      )}
 
+      {user.twitter && (
         <Col span={12}>
           <div className={styles.introduce}>
             <span>
@@ -41,7 +57,9 @@ const Introduce = (props: Props) => {
             <span>@superamscom</span>
           </div>
         </Col>
+      )}
 
+      {user.github && (
         <Col span={12}>
           <div className={styles.introduce}>
             <span>
@@ -50,7 +68,9 @@ const Introduce = (props: Props) => {
             <span>@superamscom</span>
           </div>
         </Col>
+      )}
 
+      {user.telgram && (
         <Col span={12}>
           <div className={styles.introduce}>
             <span>
@@ -59,7 +79,9 @@ const Introduce = (props: Props) => {
             <span>@superamscom</span>
           </div>
         </Col>
+      )}
 
+      {user.discord && (
         <Col span={12}>
           <div className={styles.introduce}>
             <span>
@@ -68,28 +90,32 @@ const Introduce = (props: Props) => {
             <span>@superamscom</span>
           </div>
         </Col>
-      </Row>
-    </>
+      )}
+    </Row>
   );
 };
 
-const Horner = (props: Props) => {
+// const formatNumberWithCommas = (num: number): string => {
+//   return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+// }
+
+const Statistics = (user: HYPERDOT_API.CurrentUser) => {
   return (
     <>
       <Row className={styles.horner}>
         <Col span={24}>
           <span>
-            12,662 stars <StarFilled />{' '}
+            {formatNumberWithCommas(user.stars)} stars <StarFilled />{' '}
           </span>
         </Col>
         <Col span={24}>
           <span>
-            1,279 queries <CodeOutlined />{' '}
+            {formatNumberWithCommas(user.queries)} queries <CodeOutlined />{' '}
           </span>
         </Col>
         <Col span={24}>
           <span>
-            56 dashboards <DashboardOutlined />{' '}
+            {formatNumberWithCommas(user.dashboards)} dashboards <DashboardOutlined />{' '}
           </span>
         </Col>
       </Row>
@@ -97,10 +123,69 @@ const Horner = (props: Props) => {
   );
 };
 
+const Introduce = (user: HYPERDOT_API.CurrentUser) => {
+  return (
+    <>
+      <Row justify={'center'} align="top">
+        <Col span={24}>
+          <h1> {user.username} </h1>
+        </Col>
+
+        <Col span={24}>
+          <Row>
+            <Col span={16}>
+              <Social {...user} />
+            </Col>
+
+            <Col span={5}>
+              <Statistics {...user} />
+            </Col>
+          </Row>
+        </Col>
+      </Row>
+    </>
+  );
+};
+
+const UserIcon = (user: HYPERDOT_API.CurrentUser) => {
+  if (user.icon_url) {
+    return (
+      <Avatar
+        style={{ width: '128px', height: '128px', borderRadius: '50%', objectFit: 'cover' }}
+        src="https://prod-dune-media.s3.eu-west-1.amazonaws.com/profile_img_fed5a1a7-edb3-4209-a33b-0f65ef1ce9ad_anjsy.png"
+      />
+    );
+  }
+
+  return (
+    <Avatar
+      size={'large'}
+      style={{
+        width: '128px',
+        height: '128px',
+        verticalAlign: 'middle',
+        textAlign: 'center',
+        backgroundColor: '#7265e6',
+      }}
+    >
+      {user.username}
+    </Avatar>
+  );
+};
+
 const Profile = (props: Props) => {
+  let { userId } = useParams<any>();
+  userId = Number(userId);
   const [user, setUser] = React.useState<HYPERDOT_API.CurrentUser>();
   React.useEffect(() => {
-    if (props.user_id) {
+    if (userId) {
+      getUser(userId)
+        .then((res) => {
+          setUser(res.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
       return;
     }
 
@@ -114,26 +199,19 @@ const Profile = (props: Props) => {
       });
   }, []);
 
-  console.log(user);
-
   return (
     <>
       {user ? (
-        <Row gutter={[0, 0]} justify="center" align="bottom">
+        <Row gutter={[0, 0]} justify="center" align="top">
           <Col span={3}>
-            <div>
-              <img
-                style={{ width: '128px', height: '128px', borderRadius: '50%', objectFit: 'cover' }}
-                src="https://prod-dune-media.s3.eu-west-1.amazonaws.com/profile_img_fed5a1a7-edb3-4209-a33b-0f65ef1ce9ad_anjsy.png"
-              />
-            </div>
+            <UserIcon {...user} />
           </Col>
-          <Col span={8}>
-            <Introduce />
+          <Col span={16}>
+            <Introduce {...user} />
           </Col>
-          <Col span={2}>
+          {/* <Col span={3}>
             <Horner />
-          </Col>
+          </Col> */}
 
           <Col span={18} style={{ marginTop: '48px' }}>
             <div className={styles.separator}>
@@ -144,11 +222,13 @@ const Profile = (props: Props) => {
           </Col>
 
           <Col span={18} style={{ marginTop: '48px' }}>
-            <Card title="springzhang dashboards"></Card>
+            <Card title={user.username + ' dashboards'}>
+              <Queries {...user} />
+            </Card>
           </Col>
 
           <Col span={18} style={{ marginTop: '48px' }}>
-            <Card title="springzhang queries"></Card>
+            <Card title={user.username + ' queries'}></Card>
           </Col>
         </Row>
       ) : null}

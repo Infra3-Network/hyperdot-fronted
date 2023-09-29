@@ -348,6 +348,12 @@ export default defineConfig({
           redirect: '/account/center',
         },
         {
+          name: 'user_center',
+          icon: 'smile',
+          path: '/account/center/:userId',
+          component: './account/profile',
+        },
+        {
           name: 'center',
           icon: 'smile',
           path: '/account/center',

@@ -18,7 +18,9 @@ declare namespace HYPERDOT_API {
     github?: string;
     telgram?: string;
     discord?: string;
-
+    stars: number;
+    queries: number;
+    dashboards: number;
     // userid?: string;
     // email?: string;
     // signature?: string;
@@ -72,6 +74,7 @@ declare namespace HYPERDOT_API {
 
   type ListQueryData = {
     id: number;
+    user_id: number;
     name: string;
     description: string;
     is_privacy: boolean;

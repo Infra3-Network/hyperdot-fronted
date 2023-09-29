@@ -66,7 +66,7 @@ const ListContent = (data: HYPERDOT_API.ListQueryData) => {
       <div className={styles.listContent}>
         <div className={styles.listContentItem}>
           <span>
-            <a href="">@{data.username}</a>
+            <Link to={'/account/center/' + data.user_id}>@{data.username}</Link>
           </span>
         </div>
         <div className={styles.listContentItem}>

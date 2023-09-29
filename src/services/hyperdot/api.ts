@@ -24,6 +24,15 @@ export async function getCurrentUser(options?: { [key: string]: any }) {
   });
 }
 
+export async function getUser(id: number, options?: { [key: string]: any }) {
+  return request<{
+    data: HYPERDOT_API.CurrentUser;
+  }>('/apis/v1/user/' + id, {
+    method: 'GET',
+    ...(options || {}),
+  });
+}
+
 /** create user query POST /apis/v1/user/query */
 export async function userCreateQuery(
   body: HYPERDOT_API.UserQuery,
@@ -64,10 +73,27 @@ export async function getQuery(id: number, options?: { [key: string]: any }) {
   });
 }
 
-/** get user query GET /apis/v1/user/query/:id */
 export async function listQuery(page: number, pageSize: number, options?: { [key: string]: any }) {
   return request<HYPERDOT_API.ListQueryResponse>(
     '/apis/v1/query?page=' + page + '&&page_size=' + pageSize,
+    {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      ...(options || {}),
+    },
+  );
+}
+
+export async function listUserQuery(
+  page: number,
+  pageSize: number,
+  userId: number,
+  options?: { [key: string]: any },
+) {
+  return request<HYPERDOT_API.ListQueryResponse>(
+    '/apis/v1/query/user/' + userId + '?page=' + page + '&&page_size=' + pageSize,
     {
       method: 'GET',
       headers: {

@@ -485,15 +485,16 @@ const QueryEditor = (props: Props) => {
           return v;
         });
 
-      const body: HYPERDOT_API.UserQuery = {
+      const body = {
         id: props.userQuery ? props.userQuery.id : 0,
-        user_id: currentUser.id,
+        user_id: Number(currentUser.id),
         name: queryNormal.name,
         query: queryNormal.query,
         query_engine: queryNormal.engine,
         is_privacy: queryNormal.privacy,
         charts: charts,
       };
+      console.log(body);
       const res = await updateQuery(body, {});
       if (res.success) {
         messageApi.info('save success');
