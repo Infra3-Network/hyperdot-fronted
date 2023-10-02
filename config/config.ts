@@ -342,6 +342,7 @@ export default defineConfig({
       name: 'account',
       icon: 'user',
       path: '/account',
+      hideInMenu: true,
       routes: [
         {
           path: '/account',
@@ -352,18 +353,21 @@ export default defineConfig({
           icon: 'smile',
           path: '/account/center/:userId',
           component: './account/profile',
+          hideInMenu: true,
         },
         {
           name: 'center',
           icon: 'smile',
           path: '/account/center',
           component: './account/profile',
+          hideInMenu: true,
         },
         {
           name: 'settings',
           icon: 'smile',
           path: '/account/settings',
           component: './account/settings',
+          hideInMenu: true,
         },
       ],
     },

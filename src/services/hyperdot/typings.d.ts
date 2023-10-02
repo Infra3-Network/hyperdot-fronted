@@ -21,6 +21,8 @@ declare namespace HYPERDOT_API {
     stars: number;
     queries: number;
     dashboards: number;
+    location: string;
+    encrypted_password?: string;
     // userid?: string;
     // email?: string;
     // signature?: string;
@@ -52,6 +54,13 @@ declare namespace HYPERDOT_API {
     errorMessage?: string;
     errorCode?: int;
     data?: any;
+  };
+
+  type UpdateUserResponse = {
+    success: boolean;
+    errorMessage?: string;
+    errorCode?: int;
+    data: CurrentUser;
   };
 
   type UserQuery = {
@@ -95,5 +104,10 @@ declare namespace HYPERDOT_API {
     errorMessage?: string;
     errorCode?: int;
     data?: ListQueryData[];
+  };
+
+  type UpdateUserPasswordRequest = {
+    current_password: string;
+    new_password: string;
   };
 }

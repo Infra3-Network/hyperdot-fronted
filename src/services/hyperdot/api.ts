@@ -33,6 +33,29 @@ export async function getUser(id: number, options?: { [key: string]: any }) {
   });
 }
 
+export async function updateUser(body: HYPERDOT_API.CurrentUser, options?: { [key: string]: any }) {
+  return request<{
+    data: HYPERDOT_API.UpdateUserResponse;
+  }>('/apis/v1/user', {
+    method: 'PUT',
+    data: body,
+    ...(options || {}),
+  });
+}
+
+export async function updateUserPassword(
+  body: HYPERDOT_API.UpdateUserPasswordRequest,
+  options?: { [key: string]: any },
+) {
+  return request<{
+    data: HYPERDOT_API.UpdateUserResponse;
+  }>('/apis/v1/user/password', {
+    method: 'PUT',
+    data: body,
+    ...(options || {}),
+  });
+}
+
 /** create user query POST /apis/v1/user/query */
 export async function userCreateQuery(
   body: HYPERDOT_API.UserQuery,

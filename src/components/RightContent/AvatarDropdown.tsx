@@ -5,6 +5,7 @@ import { history, useModel } from 'umi';
 import { stringify } from 'querystring';
 import HeaderDropdown from '../HeaderDropdown';
 import styles from './index.less';
+import { Link } from 'umi';
 import { outLogin } from '@/services/ant-design-pro/api';
 import type { MenuInfo } from 'rc-menu/lib/interface';
 
@@ -74,20 +75,24 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
       {menu && (
         <Menu.Item key="center">
           <UserOutlined />
-          个人中心
+          <Link to="/account/center" key={'account_profiles'}>
+            Profiles
+          </Link>
         </Menu.Item>
       )}
       {menu && (
         <Menu.Item key="settings">
           <SettingOutlined />
-          个人设置
+          <Link to="/account/settings" key={'account_settings'}>
+            Settings
+          </Link>
         </Menu.Item>
       )}
       {menu && <Menu.Divider />}
 
       <Menu.Item key="logout">
         <LogoutOutlined />
-        退出登录
+        Logout
       </Menu.Item>
     </Menu>
   );
