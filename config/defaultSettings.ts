@@ -6,10 +6,12 @@ const Settings: LayoutSettings & {
 } = {
   navTheme: 'light',
   primaryColor: '#2F54EB',
-  layout: 'mix',
+  layout: 'top',
   contentWidth: 'Fluid',
   fixedHeader: true,
   fixSiderbar: true,
+  footerRender: false,
+  menuRender: false,
   pwa: false,
   logo: 'https://gw.alipayobjects.com/zos/rmsportal/KDpgvguMpGfqaHPjicRK.svg',
   headerHeight: 48,
