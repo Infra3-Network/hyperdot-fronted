@@ -117,4 +117,35 @@ declare namespace HYPERDOT_API {
     current_password: string;
     new_password: string;
   };
+
+  type DashboardPanel = {
+    id: number;
+    user_id: number;
+    dashboard_id: number;
+    query_id: number;
+    chart_id: number;
+    name: string;
+    description: string;
+    type: number;
+    text: string;
+    width: string;
+    height: string;
+    x_pos: number;
+    y_pos: number;
+    created_at: string;
+    updated_at: string;
+  };
 }
+
+type Dashboard = {
+  id: number;
+  user_id: number;
+  name: string;
+  description: string;
+  is_privacy: boolean;
+  starts: number;
+  panels: HYPERDOT_API.DashboardPanel[];
+  created_at: string;
+  updated_at: string;
+  deleted_at: string;
+};
