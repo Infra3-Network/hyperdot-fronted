@@ -10,7 +10,7 @@ import { getCurrentUser } from './services/hyperdot/api';
 import { BookOutlined, LinkOutlined } from '@ant-design/icons';
 import defaultSettings from '../config/defaultSettings';
 import CreationDashboard from './pages/creations/dashboard';
-import { Button } from 'antd';
+import { Menu } from 'antd';
 
 const isDev = process.env.NODE_ENV === 'development';
 const loginPath = '/user/login';
@@ -28,6 +28,7 @@ export async function getInitialState(): Promise<{
   currentUser?: HYPERDOT_API.CurrentUser;
   loading?: boolean;
   fetchUserInfo?: () => Promise<HYPERDOT_API.CurrentUser | undefined>;
+  CreationDashboardModalOpen: boolean;
 }> {
   const fetchUserInfo = async () => {
     try {
@@ -50,6 +51,7 @@ export async function getInitialState(): Promise<{
   return {
     fetchUserInfo,
     settings: defaultSettings,
+    CreationDashboardModalOpen: false,
   };
 }
 
@@ -71,30 +73,29 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
     },
     links: isDev
       ? [
-          <Link key="openapi" to="/umi/plugin/openapi" target="_blank">
-            <LinkOutlined />
-            <span>OpenAPI 文档</span>
-          </Link>,
-          <Link to="/~docs" key="docs">
-            <BookOutlined />
-            <span>业务组件文档</span>
-          </Link>,
+          // <Link key="openapi" to="/umi/plugin/openapi" target="_blank">
+          //   <LinkOutlined />
+          //   <span>OpenAPI 文档</span>
+          // </Link>,
+          // <Link to="/~docs" key="docs">
+          //   <BookOutlined />
+          //   <span>业务组件文档</span>
+          // </Link>,
         ]
       : [],
+    // headerContentRender(props, defaultDom) {
+    //   console.log(props)
+    //   return (
+    //     <Menu mode="horizontal" items={props.route.routes} />
+    //   )
+    // },
+    // headerContentRender: (props, dom) => {
+    //   console.log(props)
+    //   console.log(props.items)
+    //   console.log(dom)
+    // },
     menuHeaderRender: undefined,
     menuItemRender: (item, dom) => {
-      if (item.path == '/creations/new-dashboard') {
-        return (
-          <a
-            href={'#'}
-            onClick={() => {
-              return <CreationDashboard />;
-            }}
-          >
-            {dom}
-          </a>
-        );
-      }
       return <Link to={item.path || '/'}>{dom}</Link>;
     },
 
