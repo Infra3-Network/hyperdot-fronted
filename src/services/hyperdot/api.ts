@@ -73,21 +73,6 @@ export async function updateUserPassword(
   });
 }
 
-/** create user query POST /apis/v1/user/query */
-export async function userCreateQuery(
-  body: HYPERDOT_API.UserQuery,
-  options?: { [key: string]: any },
-) {
-  return request<HYPERDOT_API.UserQueryResponse>('/apis/v1/query', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    data: body,
-    ...(options || {}),
-  });
-}
-
 /** run user query GET /apis/v1/user/query/run */
 export async function queryRun(query: string, engine: string, options?: { [key: string]: any }) {
   return request<HYPERDOT_API.UserQueryResponse>(
@@ -100,6 +85,18 @@ export async function queryRun(query: string, engine: string, options?: { [key: 
       ...(options || {}),
     },
   );
+}
+
+/** create user query POST /apis/v1/user/query */
+export async function createQuery(body: HYPERDOT_API.UserQuery, options?: { [key: string]: any }) {
+  return request<HYPERDOT_API.UserQueryResponse>('/apis/v1/query', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
+    ...(options || {}),
+  });
 }
 
 /** get user query GET /apis/v1/user/query/:id */

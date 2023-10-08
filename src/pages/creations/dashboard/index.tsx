@@ -122,35 +122,6 @@ export const CreationDashboard = () => {
               );
             })}
           </ul>
-
-          {/* <Rnd
-            style={{ backgroundColor: 'gray' }}
-            default={{
-              width: 200,
-              height: 200,
-              x: 0,
-              y: 0,
-            }}
-            resizeGrid={[20, 30]}
-            dragGrid={[20, 30]}
-          >
-            001
-          </Rnd>
-
-          <Rnd
-
-            style={{ backgroundColor: 'gray' }}
-            default={{
-              width: 200,
-              height: 200,
-              x: 0,
-              y: 0,
-            }}
-            resizeGrid={[20, 30]}
-            dragGrid={[20, 30]}
-          >
-            002
-          </Rnd> */}
         </Col>
       </Row>
     </>

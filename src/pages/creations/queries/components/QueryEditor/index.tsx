@@ -15,7 +15,7 @@ import React, { useEffect } from 'react';
 import styles from './index.less';
 import { getInitialState } from '@/app';
 import { useHistory } from 'umi';
-import { queryRun, updateQuery, userCreateQuery } from '@/services/hyperdot/api';
+import { createQuery, queryRun, updateQuery, userCreateQuery } from '@/services/hyperdot/api';
 import {
   ChartManager,
   type ChartArray,
@@ -331,22 +331,19 @@ const QueryEditor = (props: Props) => {
         },
       ];
       chartMgr.reset(charts);
-    }
+    } else {
+      const charts: ChartParams[] = [
+        ...(userQuery.charts ? userQuery.charts : []),
+        {
+          id: 0,
+          name: 'New Visualization',
+          type: 'new',
+          closeable: false,
+        },
+      ];
 
-    if (userQuery.charts == undefined) {
-      return;
+      chartMgr.reset(charts);
     }
-    const charts: ChartParams[] = [
-      ...userQuery.charts,
-      {
-        id: 0,
-        name: 'New Visualization',
-        type: 'new',
-        closeable: false,
-      },
-    ];
-
-    chartMgr.reset(charts);
   };
 
   // If props.id is defined, then
@@ -354,11 +351,8 @@ const QueryEditor = (props: Props) => {
   //  2. run query to fetch queryData if queryData is null
   /// 3. set TabProps, queryNomal state
   useEffect(() => {
-    console.log(ChartNodeMap);
-    console.log(history.location, props.userQuery == undefined);
     if (props.userQuery != undefined) {
       const userQuery = props.userQuery;
-      console.log(userQuery);
       setRunLoading(true);
       queryRun(userQuery.query, userQuery.query_engine, {
         errorHandler: (error: any) => {
@@ -371,7 +365,6 @@ const QueryEditor = (props: Props) => {
             return;
           }
 
-          console.log(queryRes.data);
           setQueryData(queryRes.data);
         })
         .catch((err) => {
@@ -381,53 +374,6 @@ const QueryEditor = (props: Props) => {
           setRunLoading(false);
         });
       updateStateByUserQuery(userQuery);
-      // setQueryNormal({
-      //   query: userQuery.query,
-      //   engine: userQuery.queryEngine,
-      //   privacy: userQuery.isPrivacy ? userQuery.isPrivacy : false,
-      //   name: userQuery.name ? userQuery.name : 'Unsaved',
-      // });
-
-      // if (userQuery.unsaved ? userQuery.unsaved : false) {
-      //   // if unsaved query, we create these tabs
-      //   const tabs = [
-      //     {
-      //       id: 1,
-      //       name: 'Query Result',
-      //       children: 'data_table',
-      //       closeable: true,
-      //     },
-      //     {
-      //       id: 0,
-      //       name: 'New Visualization',
-      //       children: 'new',
-      //       closeable: false,
-      //     },
-      //   ];
-      //   setTabProps({
-      //     id: 2,
-      //     tabs,
-      //   });
-      // }
-
-      // if (userQuery.charts == undefined) {
-      //   return;
-      // }
-      // const tabs = [
-      //   ...userQuery.charts,
-      //   {
-      //     id: 0,
-      //     name: 'New Visualization',
-      //     children: 'new',
-      //     closeable: false,
-      //   },
-      // ];
-
-      // const nextId = tabs.reduce((max, obj) => (obj.id ? (obj.id > max ? obj.id : max) : max), 1);
-      // setTabProps({
-      //   id: nextId,
-      //   tabs,
-      // });
     } else {
       if (chartMgr.getByName('New Visualization')) {
         return;
@@ -492,7 +438,12 @@ const QueryEditor = (props: Props) => {
         query: queryNormal.query,
         query_engine: queryNormal.engine,
         is_privacy: queryNormal.privacy,
-        charts: charts,
+        charts: charts.map((v) => {
+          if (v.config && v.config.data) {
+            delete v.config.data;
+          }
+          return v;
+        }),
       };
       console.log(body);
       const res = await updateQuery(body, {});
@@ -556,7 +507,7 @@ const QueryEditor = (props: Props) => {
     }
 
     // first create unsaved query to get id
-    userCreateQuery(
+    createQuery(
       {
         query: queryNormal.query,
         query_engine: queryNormal.engine,

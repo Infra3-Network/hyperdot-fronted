@@ -41,9 +41,7 @@ const Social = (user: HYPERDOT_API.CurrentUser) => {
             <span style={{ marginRight: '2px' }}>
               <BookOutlined />
             </span>
-            <span>
-              Looking for cooperation opportunities in Data Analytics, WEB3/WEB2 Development.
-            </span>
+            <span>{user.bio}</span>
           </div>
         </Col>
       )}
@@ -54,7 +52,15 @@ const Social = (user: HYPERDOT_API.CurrentUser) => {
             <span>
               <TwitterOutlined />
             </span>
-            <span>@superamscom</span>
+            <span>
+              <a
+                target="_blank"
+                rel="noopener noreferrer"
+                href={'https://twitter.com/' + user.twitter}
+              >
+                @{user.twitter}
+              </a>
+            </span>
           </div>
         </Col>
       )}
@@ -65,7 +71,15 @@ const Social = (user: HYPERDOT_API.CurrentUser) => {
             <span>
               <MyIcon type="icon-github" />
             </span>
-            <span>@superamscom</span>
+            <span>
+              <a
+                target="_blank"
+                rel="noopener noreferrer"
+                href={'https://github.com/' + user.github}
+              >
+                @{user.github}
+              </a>
+            </span>
           </div>
         </Col>
       )}
@@ -76,7 +90,11 @@ const Social = (user: HYPERDOT_API.CurrentUser) => {
             <span>
               <MyIcon type="icon-telgram" />
             </span>
-            <span>@superamscom</span>
+            <span>
+              <a target="_blank" rel="noopener noreferrer" href={'https://t.me/' + user.telgram}>
+                @{user.telgram}
+              </a>
+            </span>
           </div>
         </Col>
       )}
@@ -87,7 +105,15 @@ const Social = (user: HYPERDOT_API.CurrentUser) => {
             <span>
               <MyIcon type="icon-discord" />
             </span>
-            <span>@superamscom</span>
+            <span>
+              <a
+                target="_blank"
+                rel="noopener noreferrer"
+                href={'https://discord.com/users' + user.discord}
+              >
+                @{user.discord}
+              </a>
+            </span>
           </div>
         </Col>
       )}
@@ -149,28 +175,10 @@ const Introduce = (user: HYPERDOT_API.CurrentUser) => {
 
 const UserIcon = (user: HYPERDOT_API.CurrentUser) => {
   if (user.icon_url) {
-    return (
-      <Avatar
-        style={{ width: '128px', height: '128px', borderRadius: '50%', objectFit: 'cover' }}
-        src="https://prod-dune-media.s3.eu-west-1.amazonaws.com/profile_img_fed5a1a7-edb3-4209-a33b-0f65ef1ce9ad_anjsy.png"
-      />
-    );
+    return <Avatar size={128} src={'/apis/v1/file?file=' + user.icon_url} />;
   }
 
-  return (
-    <Avatar
-      size={'large'}
-      style={{
-        width: '128px',
-        height: '128px',
-        verticalAlign: 'middle',
-        textAlign: 'center',
-        backgroundColor: '#7265e6',
-      }}
-    >
-      {user.username}
-    </Avatar>
-  );
+  return <Avatar size={128}>{user.username}</Avatar>;
 };
 
 const Profile = (props: Props) => {
@@ -213,13 +221,13 @@ const Profile = (props: Props) => {
             <Horner />
           </Col> */}
 
-          <Col span={18} style={{ marginTop: '48px' }}>
+          {/* <Col span={18} style={{ marginTop: '48px' }}>
             <div className={styles.separator}>
               <span className={styles.textLeft}>左侧文本</span>
               <hr className={styles.line} />
               <span className={styles.textRight}>右侧文本</span>
             </div>
-          </Col>
+          </Col> */}
 
           <Col span={18} style={{ marginTop: '48px' }}>
             <Card title={user.username + ' dashboards'}>

@@ -305,8 +305,17 @@ export const TemplateChart = (props: TemplateChartProps) => {
   // };
 
   const defaultState = generateState(props.type, props.props);
-
   const [state, setState] = React.useState<any>(defaultState);
+
+  // initial default config
+  if (!params.config) {
+    manager.update({
+      ...params,
+      config: {
+        ...state.config,
+      },
+    });
+  }
 
   // const [title, setTitle] = React.useState<string>(name ? name : 'Area Chart');
   // const [areaConfig, setConfig] = React.useState<HYPERDOT_CHART.AreaChartConfig>(
@@ -319,17 +328,19 @@ export const TemplateChart = (props: TemplateChartProps) => {
   // );
 
   // useEffect(() => {
-  //   if (config != undefined) {
+  //   if (params.config) {
   //     // initial tabs by using defaultConfig
   //     //   props.setTabProps({ ...TabManager.updateConfig(props.tabProps, props.id, defaultConfig) });
   //     // } else {
   //     // config changes, reset data
-  //     config.data = data.rows;
-  //     setState((prev: any) => {
-  //       return { ...prev, config: config };
+  //     manager.update({
+  //       ...params,
+  //       config: {
+  //         ...params.config,
+  //       }
   //     });
   //   }
-  // }, [config, data]);
+  // }, [params.config]);
 
   const columns = getColumns(props.props.data);
   columns.splice(0, 0, { value: '', label: '' });
