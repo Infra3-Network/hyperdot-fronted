@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { TwitterOutlined, UploadOutlined } from '@ant-design/icons';
 import { Button, Input, Upload, message, Avatar } from 'antd';
 import ProForm, {
@@ -14,8 +14,13 @@ import { queryProvince, queryCity } from '../service';
 
 import styles from './BaseView.less';
 import MyIcon from '@/components/Icons';
-import { updateUser } from '@/services/hyperdot/api';
+import { getFile, updateUser, uploadUserAvatar } from '@/services/hyperdot/api';
 import { P } from '@antv/g2plot';
+import { RcFile, UploadFile } from 'antd/lib/upload';
+import ImgCrop from 'antd-img-crop';
+// import fs from 'fs';
+import os from 'os';
+import path from 'path';
 
 const validatorPhone = (rule: any, value: string[], callback: (message?: string) => void) => {
   if (!value[0]) {
@@ -27,26 +32,96 @@ const validatorPhone = (rule: any, value: string[], callback: (message?: string)
   callback();
 };
 // 头像组件 方便以后独立，增加裁剪之类的功能
-const AvatarView = ({ avatar }: { avatar: string }) => (
-  <>
-    {/* <div className={styles.avatar_title}>头像</div> */}
-    <div className={styles.avatar}>
-      <Avatar
-        src={avatar}
-        style={{ width: '128px', height: '128px', borderRadius: '50%', objectFit: 'cover' }}
-      />
-    </div>
+const AvatarView = ({
+  avatar,
+  setAvatar,
+  username,
+}: {
+  avatar: string;
+  setAvatar: React.Dispatch<React.SetStateAction<string>>;
+  username: string;
+}) => {
+  const [avatarFiles, setAvatarFiles] = useState<UploadFile[]>();
 
-    <Upload showUploadList={false}>
-      <div className={styles.button_view}>
-        <Button>
-          <UploadOutlined />
-          Edit
-        </Button>
-      </div>
-    </Upload>
-  </>
-);
+  const beforeUpload = (file: RcFile) => {
+    const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
+    if (!isJpgOrPng) {
+      message.error('You can only upload JPG/PNG file!');
+      return false;
+    }
+    const isLt2M = file.size / 1024 / 1024 < 2;
+    if (!isLt2M) {
+      message.error('Image must smaller than 2MB!');
+      return false;
+    }
+
+    setAvatarFiles([file]);
+    // manual upload, so hack it
+    return false;
+  };
+
+  const handleUpload = () => {
+    if (!avatarFiles || avatarFiles.length < 1) {
+      message.error('Please select an image');
+      return;
+    }
+
+    const avatarFile = avatarFiles[0];
+    if (!avatarFile) {
+      message.error('Please select an image');
+      return;
+    }
+
+    const rcFile = avatarFile as RcFile;
+
+    const formData = new FormData();
+    formData.append('avatar', rcFile);
+
+    uploadUserAvatar(formData)
+      .then((res) => {
+        message.info('Avatar upload success');
+        setAvatar(res.data.object_key);
+      })
+      .catch((err) => {
+        message.error('Avatar upload failed: ' + err);
+      });
+  };
+
+  return (
+    <>
+      <ImgCrop
+        modalTitle="Edit image"
+        modalOk="Confirm"
+        modalCancel="Cancel"
+        onModalOk={handleUpload}
+        rotationSlider
+      >
+        <Upload
+          name="avatar"
+          fileList={avatarFiles}
+          beforeUpload={beforeUpload}
+          showUploadList={false}
+        >
+          {/* <div className={styles.button_view}>
+          <Button onClick={handleUpload}>
+            <UploadOutlined />
+            Edit
+          </Button>
+        </div> */}
+          {avatar != '' ? (
+            <div className={styles.avatar}>
+              <Avatar size={128} src={'/apis/v1/file?file=' + avatar} />
+            </div>
+          ) : (
+            <div className={styles.avatar}>
+              <Avatar size={128}>{username}</Avatar>
+            </div>
+          )}
+        </Upload>
+      </ImgCrop>
+    </>
+  );
+};
 
 type Props = {
   user: HYPERDOT_API.CurrentUser;
@@ -54,19 +129,7 @@ type Props = {
 };
 
 const BaseView = ({ user, setUser }: Props) => {
-  const getAvatarURL = () => {
-    if (user.icon_url) {
-      return user.icon_url;
-    }
-    // if (currentUser) {
-    //   if (currentUser.avatar) {
-    //     return currentUser.avatar;
-    //   }
-    //   const url = 'https://gw.alipayobjects.com/zos/rmsportal/BiazfanxmamNRoxxVxka.png';
-    //   return url;
-    // }
-    return '';
-  };
+  const [avatar, setAvatar] = useState<string>(user.icon_url ? user.icon_url : '');
 
   const handleFinish = async (formData: any) => {
     const res = await updateUser(formData);
@@ -85,10 +148,6 @@ const BaseView = ({ user, setUser }: Props) => {
                 submitText: 'Update profile',
               },
               render: (_, dom) => dom[1],
-
-              // onSubmit(value) {
-              //   console.log(value)
-              // },
             }}
             initialValues={{
               ...user,
@@ -186,7 +245,11 @@ const BaseView = ({ user, setUser }: Props) => {
           </ProForm>
         </div>
         <div className={styles.right}>
-          <AvatarView avatar={getAvatarURL()} />
+          <AvatarView
+            avatar={avatar}
+            setAvatar={setAvatar}
+            username={user.username ? user.username : 'User'}
+          />
         </div>
       </>
     </div>

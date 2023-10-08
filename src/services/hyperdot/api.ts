@@ -43,6 +43,23 @@ export async function updateUser(body: HYPERDOT_API.CurrentUser, options?: { [ke
   });
 }
 
+export async function getFile(filename: string, options?: { [key: string]: any }) {
+  return request('/apis/v1/file?file=' + filename, {
+    method: 'GEt',
+    ...(options || {}),
+  });
+}
+
+export async function uploadUserAvatar(body: any, options?: { [key: string]: any }) {
+  return request<{
+    data: HYPERDOT_API.UploadUserAvatarResponse;
+  }>('/apis/v1/user/avatar/upload', {
+    method: 'POST',
+    data: body,
+    ...(options || {}),
+  });
+}
+
 export async function updateUserPassword(
   body: HYPERDOT_API.UpdateUserPasswordRequest,
   options?: { [key: string]: any },

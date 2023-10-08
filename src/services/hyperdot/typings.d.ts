@@ -63,6 +63,13 @@ declare namespace HYPERDOT_API {
     data: CurrentUser;
   };
 
+  type UploadUserAvatarResponse = {
+    success: boolean;
+    errorMessage?: string;
+    errorCode?: int;
+    data: any;
+  };
+
   type UserQuery = {
     id?: number;
     user_id?: number;
