@@ -141,9 +141,64 @@ export async function listUserQuery(
   );
 }
 
+export async function listCurrentUserChart(
+  page: number,
+  pageSize: number,
+  options?: { [key: string]: any },
+) {
+  return request<HYPERDOT_API.ListCurrentUserChartResponse>(
+    '/apis/v1/query/chart/user/' + '?page=' + page + '&&page_size=' + pageSize,
+    {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      ...(options || {}),
+    },
+  );
+}
+
 /** update user query PUT /apis/user/query */
 export async function updateQuery(body: HYPERDOT_API.UserQuery, options?: { [key: string]: any }) {
   return request<HYPERDOT_API.UserQueryResponse>('/apis/v1/query', {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
+    ...(options || {}),
+  });
+}
+
+export async function getDashboard(id: number, options?: { [key: string]: any }) {
+  return request<HYPERDOT_API.GetDashboardResponse>('/apis/v1/dashboard/' + id, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    ...(options || {}),
+  });
+}
+
+export async function createDashboard(
+  body: HYPERDOT_API.Dashboard,
+  options?: { [key: string]: any },
+) {
+  return request<HYPERDOT_API.CreateDashboardResponse>('/apis/v1/dashboard', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
+    ...(options || {}),
+  });
+}
+
+export async function updateDashboard(
+  body: HYPERDOT_API.Dashboard,
+  options?: { [key: string]: any },
+) {
+  return request<HYPERDOT_API.UpdateDashboardResponse>('/apis/v1/dashboard', {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',

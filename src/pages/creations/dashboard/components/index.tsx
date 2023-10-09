@@ -1,20 +1,14 @@
 import MyIcon from '@/components/Icons';
+import { updateDashboard } from '@/services/hyperdot/api';
 import { HomeOutlined, UserOutlined } from '@ant-design/icons';
-import { Breadcrumb, Button, Card, Col, List, Row, Space } from 'antd';
+import { Breadcrumb, Button, Card, Col, List, message, Row, Space } from 'antd';
 import React from 'react';
 
 import { Rnd } from 'react-rnd';
 import SettingsModal from './SettingsModal';
 import TextWidgetModal from './TextWidgetModal';
+import TextWidgetPanel from './TextWidgetPanel';
 import VisualizationModal from './VisualizationModal';
-
-type Dashboard = {
-  x: number;
-  y: number;
-  width: string;
-  height: string;
-  chart: string;
-};
 
 type WindowState = {
   width: number;
@@ -22,19 +16,11 @@ type WindowState = {
 };
 
 type Props = {
-  dashboard: Dashboard;
+  editable: boolean;
+  dashboard: HYPERDOT_API.Dashboard;
 };
 
-const EditButtonGroup = (action: StateAction) => {
-  const handleEditDoneClick = () => {
-    action.setControlState((prev) => {
-      return {
-        ...prev,
-        edit: false,
-      };
-    });
-  };
-
+const EditButtonGroup = (ctl: ControlState, action: StateAction, onSave: any) => {
   const handleSettingsClick = () => {
     action.setControlState((prev) => {
       return {
@@ -76,15 +62,15 @@ const EditButtonGroup = (action: StateAction) => {
         {' '}
         Add Visualization{' '}
       </Button>
-      <Button type="default" onClick={handleEditDoneClick}>
+      <Button loading={ctl.saveLoading} type="default" onClick={onSave}>
         {' '}
-        Done{' '}
+        Save{' '}
       </Button>
     </Space>
   );
 };
 
-const ViewButtonGroup = (action: StateAction) => {
+const ViewButtonGroup = (action: StateAction, editable: boolean) => {
   const handleEditClick = () => {
     action.setControlState((prev) => {
       return {
@@ -96,49 +82,111 @@ const ViewButtonGroup = (action: StateAction) => {
   return (
     <Space>
       <Button type="primary"> Star </Button>
-      <Button type="primary" onClick={handleEditClick}>
-        {' '}
-        Edit{' '}
-      </Button>
+      {editable && (
+        <Button type="primary" onClick={handleEditClick}>
+          {' '}
+          Edit{' '}
+        </Button>
+      )}
     </Space>
   );
 };
 
+const getPanel = (panel: HYPERDOT_API.DashboardPanel) => {
+  if (panel.type === 0) {
+    return <TextWidgetPanel panel={panel} />;
+  }
+};
+
 export const CreationDashboard = (props: Props) => {
   const gridColsPercent = 0.45;
-  const gridCols = 2;
-  const gridRows = 3;
+  // const gridCols = 2;
+  // const gridRows = 3;
   const [windowState, setWindowState] = React.useState<WindowState>();
-  const [dashboards, setDashboards] = React.useState<Dashboard[]>([]);
+  // const [dashboards, setDashboards] = React.useState<Dashboard[]>([]);
 
   const [controlState, setControlState] = React.useState<ControlState>({
     edit: false,
     settingsModalOpen: false,
     textWidgetModalOpen: false,
     visualizationModalOpen: false,
+    saveLoading: false,
   });
 
-  const [dashboard, setDashboard] = React.useState<Dashboard>(props.dashboard);
-
+  const [dashboard, setDashboard] = React.useState<HYPERDOT_API.Dashboard>(props.dashboard);
   const stateAction: StateAction = {
     setControlState: setControlState,
     setDashboard: setDashboard,
   };
 
-  const data = [
-    {
-      title: 'Title 1',
-    },
-    {
-      title: 'Title 2',
-    },
-    {
-      title: 'Title 3',
-    },
-    {
-      title: 'Title 4',
-    },
-  ];
+  const handlePanelResizeStop = (index, e, direction, ref, delta, position) => {
+    const width = ref.style.width;
+    const height = ref.style.height;
+    const panels = dashboard.panels;
+    if (panels && panels[index]) {
+      panels[index] = {
+        ...panels[index],
+        width: width,
+        height: height,
+      };
+      setDashboard((prev) => {
+        return {
+          ...prev,
+          panels: panels,
+        };
+      });
+    }
+  };
+
+  const handlePanelDragStop = (index, e, d) => {
+    const x_pos = d.x;
+    const y_pos = d.y;
+    const panels = dashboard.panels;
+    if (panels && panels[index]) {
+      panels[index] = {
+        ...panels[index],
+        x_pos: x_pos,
+        y_pos: y_pos,
+      };
+      setDashboard((prev) => {
+        return {
+          ...prev,
+          panels: panels,
+        };
+      });
+    }
+  };
+
+  const handleEditSaveClick = () => {
+    stateAction.setControlState((prev) => {
+      return {
+        ...prev,
+        saveLoading: true,
+      };
+    });
+
+    updateDashboard(dashboard)
+      .then((res) => {
+        if (!res.success) {
+          message.error(res.errorMessage);
+          return;
+        }
+
+        setDashboard(res.data);
+      })
+      .catch((err) => {
+        message.error(err);
+      })
+      .finally(() => {
+        stateAction.setControlState((prev) => {
+          return {
+            ...prev,
+            edit: false,
+            saveLoading: false,
+          };
+        });
+      });
+  };
 
   React.useEffect(() => {
     setWindowState({
@@ -148,27 +196,8 @@ export const CreationDashboard = (props: Props) => {
 
     const width = window.innerWidth * gridColsPercent;
     const height = (window.innerHeight / 2) * 0.8;
-
-    const its: Dashboard[] = data.map((v, index) => {
-      return {
-        x: 0,
-        y: 0,
-        width,
-        height,
-        chart: v.title,
-      };
-    });
-
-    setDashboards(its);
   }, []);
 
-  if (!dashboards) {
-    return null;
-  }
-
-  console.log(history);
-
-  console.log(dashboards);
   return (
     <>
       <Row gutter={[0, 24]}>
@@ -192,33 +221,36 @@ export const CreationDashboard = (props: Props) => {
             </Col>
 
             <Col>
-              {controlState.edit ? EditButtonGroup(stateAction) : ViewButtonGroup(stateAction)}
+              {controlState.edit
+                ? EditButtonGroup(controlState, stateAction, handleEditSaveClick)
+                : ViewButtonGroup(stateAction, props.editable)}
             </Col>
           </Row>
         </Col>
 
         <Col span={24}>
-          <ul>
-            {dashboards.map((dash, index) => {
-              return (
-                <li key={index} style={{ position: 'relative' }}>
-                  <Rnd
-                    style={{ backgroundColor: 'gray' }}
-                    default={{
-                      width: dash.width,
-                      height: dash.height,
-                      x: dash.x,
-                      y: dash.y,
-                    }}
-                    resizeGrid={[20, 30]}
-                    dragGrid={[20, 30]}
-                  >
-                    {dash.chart}
-                  </Rnd>
-                </li>
-              );
-            })}
-          </ul>
+          {dashboard.panels && (
+            <ul>
+              {dashboard.panels.map((panel, index) => {
+                return (
+                  <li key={index} style={{ position: 'relative' }}>
+                    <Rnd
+                      size={{ width: panel.width, height: panel.height }}
+                      position={{ x: panel.x_pos, y: panel.y_pos }}
+                      onResizeStop={(e, direction, ref, delta, position) =>
+                        handlePanelResizeStop(index, e, direction, ref, delta, position)
+                      }
+                      onDragStop={(e, d) => handlePanelDragStop(index, e, d)}
+                      resizeGrid={[20, 30]}
+                      dragGrid={[20, 30]}
+                    >
+                      {getPanel(panel)}
+                    </Rnd>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
         </Col>
       </Row>
 

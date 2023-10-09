@@ -1,43 +1,69 @@
 import { getInitialState } from '@/app';
-import { Modal, Row, Col, Input, Space, Checkbox } from 'antd';
-import React, { useEffect, useState } from 'react';
+import { getDashboard, getQuery } from '@/services/hyperdot/api';
+import { Row, Col, message } from 'antd';
+import React, { useState } from 'react';
+import { history, useParams } from 'umi';
+import CreationDashboard from './components';
 
-type Props = {};
+export const CreationQueryDetail = () => {
+  let { id } = useParams<any>();
+  id = Number(id);
+  const [editable, setEditable] = useState<boolean | undefined>(undefined);
+  const [dashboard, setDashboard] = useState<HYPERDOT_API.Dashboard>();
 
-export default function CreationDashboard({}: Props) {
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(true);
+  React.useEffect(() => {
+    if (!id) {
+      history.push('/exception/403');
+      return;
+    }
 
-  const handleOk = () => {
-    setIsModalOpen(false);
-  };
+    getDashboard(id, {
+      errorHandler: () => {
+        history.push('/exception/404');
+      },
+    })
+      .then((res) => {
+        if (!res.success) {
+          message.error(res.errorMessage, 3);
+          return;
+        }
 
-  const handleCancel = () => {
-    setIsModalOpen(false);
-  };
+        setDashboard(res.data);
+
+        getInitialState().then(({ currentUser }) => {
+          if (!currentUser || !currentUser.id) {
+            // redirect login
+            history.push('/user/login');
+            return;
+          }
+          if (res.data.user_id && currentUser.id == res.data.user_id) {
+            setEditable(true);
+          } else {
+            setEditable(false);
+          }
+        });
+      })
+      .catch((err) => {
+        message.error(err, 3);
+      });
+  }, []);
+
+  if (!id) {
+    history.push('/exception/403');
+    return null;
+  }
 
   return (
-    <Modal
-      open={isModalOpen}
-      onOk={handleOk}
-      onCancel={handleCancel}
-      okText="Save and open"
-      cancelText="Cancel"
-    >
-      <Row gutter={[0, 12]}>
+    <>
+      <Row>
         <Col span={24}>
-          <p>Dashboard name</p>
-          <Input placeholder="My dashboard" />
-        </Col>
-        <Col span={24}>
-          <p>Description</p>
-          <Input.TextArea placeholder="My dashboard description" />
-        </Col>
-
-        <Col span={24}>
-          <p>Privacy</p>
-          <Checkbox> Make Private </Checkbox>
+          {dashboard && editable != undefined ? (
+            <CreationDashboard dashboard={dashboard} editable={editable} />
+          ) : null}
         </Col>
       </Row>
-    </Modal>
+    </>
   );
-}
+};
+
+export default CreationQueryDetail;

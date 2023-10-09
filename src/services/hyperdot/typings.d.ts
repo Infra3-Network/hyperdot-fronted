@@ -118,6 +118,23 @@ declare namespace HYPERDOT_API {
     new_password: string;
   };
 
+  type Chart = {
+    id?: number;
+    index?: number;
+    query_id?: number;
+    user_id?: number;
+    name?: string;
+    type?: string;
+    config?: any;
+  };
+
+  type ListCurrentUserChartResponse = {
+    success: boolean;
+    errorMessage?: string;
+    errorCode?: int;
+    data: Chart[];
+  };
+
   type DashboardPanel = {
     id: number;
     user_id: number;
@@ -135,17 +152,38 @@ declare namespace HYPERDOT_API {
     created_at: string;
     updated_at: string;
   };
-}
 
-type Dashboard = {
-  id: number;
-  user_id: number;
-  name: string;
-  description: string;
-  is_privacy: boolean;
-  starts: number;
-  panels: HYPERDOT_API.DashboardPanel[];
-  created_at: string;
-  updated_at: string;
-  deleted_at: string;
-};
+  type Dashboard = {
+    id?: number;
+    user_id?: number;
+    name?: string;
+    description?: string;
+    is_privacy?: boolean;
+    starts?: number;
+    panels?: HYPERDOT_API.DashboardPanel[];
+    created_at?: string;
+    updated_at?: string;
+    deleted_at?: string;
+  };
+
+  type GetDashboardResponse = {
+    success: boolean;
+    errorMessage?: string;
+    errorCode?: int;
+    data: Dashboard;
+  };
+
+  type CreateDashboardResponse = {
+    success: boolean;
+    errorMessage?: string;
+    errorCode?: int;
+    data: Dashboard;
+  };
+
+  type UpdateDashboardResponse = {
+    success: boolean;
+    errorMessage?: string;
+    errorCode?: int;
+    data: Dashboard;
+  };
+}

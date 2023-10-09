@@ -5,12 +5,9 @@ import type { RequestConfig, RunTimeLayoutConfig } from 'umi';
 import { history, Link } from 'umi';
 import RightContent from '@/components/RightContent';
 import Footer from '@/components/Footer';
-// import { currentUser as queryCurrentUser } from './services/ant-design-pro/api';
 import { getCurrentUser } from './services/hyperdot/api';
-import { BookOutlined, LinkOutlined } from '@ant-design/icons';
 import defaultSettings from '../config/defaultSettings';
-import CreationDashboard from './pages/creations/dashboard';
-import { Menu } from 'antd';
+import CreationDropdownMenu from './pages/creations/components/Menu';
 
 const isDev = process.env.NODE_ENV === 'development';
 const loginPath = '/user/login';
@@ -94,6 +91,16 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
     //   console.log(props.items)
     //   console.log(dom)
     // },
+    headerHeight: 32,
+    headerContentRender: (props, defaultDom) => {
+      return (
+        <div style={{ display: 'flex', justifyContent: 'start', alignItems: 'center' }}>
+          {defaultDom}
+          /
+          <CreationDropdownMenu />
+        </div>
+      );
+    },
     menuHeaderRender: undefined,
     menuItemRender: (item, dom) => {
       return <Link to={item.path || '/'}>{dom}</Link>;

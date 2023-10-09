@@ -125,6 +125,7 @@ export default defineConfig({
       path: 'creations',
       name: 'Creations',
       icon: 'dashboard',
+      hideInMenu: true,
       routes: [
         {
           name: 'Query detail',
@@ -137,6 +138,36 @@ export default defineConfig({
           icon: 'smile',
           path: 'queries',
           component: './creations/queries',
+          hideInMenu: true,
+        },
+
+        {
+          name: 'Dashboard',
+          icon: 'smile',
+          path: 'dashboards/:id',
+          component: './creations/dashboard',
+          hideInMenu: true,
+        },
+      ],
+    },
+    {
+      path: 'favorites',
+      name: 'Favorites',
+      icon: 'dashboard',
+      hideInMenu: false,
+      routes: [
+        {
+          name: 'Query detail',
+          path: 'queries/:id',
+          component: './creations/queries/details',
+          hideInMenu: true,
+        },
+        {
+          name: 'New Query',
+          icon: 'smile',
+          path: 'queries',
+          component: './creations/queries',
+          hideInMenu: true,
         },
 
         {
@@ -144,6 +175,36 @@ export default defineConfig({
           icon: 'smile',
           path: 'new-dashboard',
           component: './creations/dashboard',
+          hideInMenu: true,
+        },
+      ],
+    },
+    {
+      path: 'library',
+      name: 'Library',
+      icon: 'dashboard',
+      hideInMenu: false,
+      routes: [
+        {
+          name: 'Query detail',
+          path: 'queries/:id',
+          component: './creations/queries/details',
+          hideInMenu: true,
+        },
+        {
+          name: 'New Query',
+          icon: 'smile',
+          path: 'queries',
+          component: './creations/queries',
+          hideInMenu: true,
+        },
+
+        {
+          name: 'New Dashboard',
+          icon: 'smile',
+          path: 'new-dashboard',
+          component: './creations/dashboard',
+          hideInMenu: true,
         },
       ],
     },
