@@ -8,6 +8,7 @@ import {
 } from '@ant-design/icons';
 import { TableChart } from './Table';
 import { type ChartProps } from './types';
+import React from 'react';
 
 interface ChartNodeProps {
   name: string;
@@ -96,5 +97,21 @@ export const ChartNodeMap: Map<string, ChartNodeProps> = new Map([
   //         return <QueryResultTableTab {...props} />;
   //       },
   //     },
+  //   ],
+]);
+
+export const ChartIconMap: Map<string, React.ReactNode> = new Map([
+  ['bar_chart', <BarChartOutlined style={{ fontSize: '20px', color: '#08c' }} />],
+  ['area_chart', <AreaChartOutlined style={{ fontSize: '20px', color: '#08c' }} />],
+  ['scatter_chart', <DotChartOutlined style={{ fontSize: '20px', color: '#08c' }} />],
+  ['line_chart', <LineChartOutlined style={{ fontSize: '20px', color: '#08c' }} />],
+  //   [
+  //     'pie_chart',
+  //     <PieChartOutlined style={{ fontSize: '20px', color: '#08c' }} />,
+  //   ],
+  ['data_table', <TableOutlined style={{ fontSize: '20px', color: '#08c' }} />],
+  //   [
+  //     'data_counter',
+  //     <FieldNumberOutlined style={{ fontSize: '20px', color: '#08c' }} />,
   //   ],
 ]);

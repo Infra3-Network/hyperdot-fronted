@@ -119,9 +119,21 @@ declare namespace HYPERDOT_API {
   };
 
   type Chart = {
+    // query table
+    query_name?: string;
+    query_description?: string;
+    query?: string;
+    query_engine?: string;
+    is_privacy?: boolean;
+    unsaved?: boolean;
+    query_stars?: number;
+    query_created_at?: string;
+    query_updated_at?: string;
+    // chart table
     id?: number;
     index?: number;
     query_id?: number;
+    chart_id?: number;
     user_id?: number;
     name?: string;
     type?: string;
@@ -132,7 +144,17 @@ declare namespace HYPERDOT_API {
     success: boolean;
     errorMessage?: string;
     errorCode?: int;
-    data: Chart[];
+    data: {
+      charts: Chart[];
+      total: number;
+    };
+  };
+
+  type GetCurrentUserChartResponse = {
+    success: boolean;
+    errorMessage?: string;
+    errorCode?: int;
+    data: Chart;
   };
 
   type DashboardPanel = {

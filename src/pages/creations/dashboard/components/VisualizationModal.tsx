@@ -1,20 +1,86 @@
-import { AreaChartOutlined } from '@ant-design/icons';
-import { Button, Col, Input, List, Modal, Row } from 'antd';
-import { useState } from 'react';
+import { ChartIconMap } from '@/components/Charts';
+import { listCurrentUserChart } from '@/services/hyperdot/api';
+import { Button, Col, Input, List, message, Modal, Row, Space } from 'antd';
+import { useEffect, useState } from 'react';
+import { Link } from 'umi';
 
 type Props = {
   ctl: ControlState;
   action: StateAction;
+  currentUser: HYPERDOT_API.CurrentUser;
+};
+
+type InnerState = {
+  initLoading: boolean;
+  loadingMore: boolean;
+  page: number;
+  total: number;
 };
 
 const VisualizationModal = (props: Props) => {
-  const data = [
-    'Racing car sprays burning fuel into crowd.',
-    'Japanese princess to wed commoner.',
-    'Australian walks 100km after outback crash.',
-    'Man charged over missing wedding girl.',
-    'Los Angeles battles huge wildfires.',
-  ];
+  const pageSize = 5;
+  const [data, setData] = useState<HYPERDOT_API.Chart[]>([]);
+  const [state, setState] = useState<InnerState>({
+    initLoading: true,
+    loadingMore: false,
+    page: 1,
+    total: 0,
+  });
+
+  useEffect(() => {
+    listCurrentUserChart(state.page, pageSize)
+      .then((res) => {
+        if (!res.success) {
+          message.error(res.errorMessage);
+          return;
+        }
+
+        setData(res.data.charts);
+
+        setState((prev) => {
+          return {
+            ...prev,
+            initLoading: false,
+            page: prev.page + 1,
+            total: res.data.total,
+          };
+        });
+      })
+      .catch((err) => {
+        setState((prev) => {
+          return {
+            ...prev,
+            loadingMore: false,
+          };
+        });
+        message.error(err.message);
+      });
+  }, []);
+
+  const handleAdd = (chart: HYPERDOT_API.Chart) => {
+    // make HYPERDOT_API.DashboardPanel from chart
+    const panel: HYPERDOT_API.DashboardPanel = {
+      type: 1,
+      x_pos: 0,
+      y_pos: 0,
+      width: 'auto',
+      height: 'atuo',
+      chart_id: chart.chart_id || 0,
+      query_id: chart.query_id || 0,
+    };
+
+    // add panel to dashboard
+    props.action.setDashboard((prev) => {
+      if (!prev.panels) {
+        prev.panels = [];
+      }
+
+      return {
+        ...prev,
+        panels: [...prev.panels, panel],
+      };
+    });
+  };
 
   const handleOk = () => {
     props.action.setControlState((prev) => {
@@ -34,6 +100,75 @@ const VisualizationModal = (props: Props) => {
     });
   };
 
+  const onLoadMore = () => {
+    setState((prev) => {
+      return {
+        ...prev,
+        loadingMore: true,
+      };
+    });
+
+    listCurrentUserChart(state.page, pageSize)
+      .then((res) => {
+        if (!res.success) {
+          message.error(res.errorMessage);
+          return;
+        }
+
+        if (!res.data.charts || res.data.charts.length === 0) {
+          setState((prev) => {
+            return {
+              ...prev,
+              loadingMore: false,
+            };
+          });
+          return;
+        }
+
+        setData((prev) => {
+          return [...prev, ...res.data.charts];
+        });
+
+        setState((prev) => {
+          return {
+            ...prev,
+            loadingMore: false,
+            page: prev.page + 1,
+            total: res.data.total,
+          };
+        });
+      })
+      .catch((err) => {
+        setState((prev) => {
+          return {
+            ...prev,
+            loadingMore: false,
+          };
+        });
+        message.error(err.message);
+      });
+  };
+
+  const loadMore =
+    !state.initLoading && !state.loadingMore ? (
+      <div
+        style={{
+          textAlign: 'center',
+          marginTop: 12,
+          height: 32,
+          lineHeight: '32px',
+        }}
+      >
+        {data.length < state.total ? (
+          <Button onClick={onLoadMore}>loading more</Button>
+        ) : (
+          <Button disabled type="text">
+            It is all, nothing more 🤐
+          </Button>
+        )}
+      </div>
+    ) : null;
+
   return (
     <>
       <Modal
@@ -49,32 +184,48 @@ const VisualizationModal = (props: Props) => {
           </Col>
 
           <Col span={24}>
-            <List
-              bordered
-              dataSource={data}
-              renderItem={(item) => (
-                <List.Item
-                  style={{
-                    backgroundColor: 'gray',
-                    borderBottom: '1px solid white',
-                  }}
-                >
-                  <div
+            <div
+              style={{
+                overflow: 'auto',
+              }}
+            >
+              <List
+                bordered
+                dataSource={data}
+                loading={state.initLoading}
+                loadMore={loadMore}
+                renderItem={(item) => (
+                  <List.Item
                     style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
+                      // backgroundColor: 'gray',
+                      borderBottom: '1px solid white',
                     }}
                   >
-                    <p>
-                      <AreaChartOutlined />
-                      {item}
-                    </p>
-                  </div>
-                  <Button type="primary">Add</Button>
-                </List.Item>
-              )}
-            />
+                    <div
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                      }}
+                    >
+                      <Space>
+                        {item.type && ChartIconMap.get(item.type)}
+                        <span>
+                          <Link to={''} style={{ textDecoration: 'none', color: 'inherit' }}>
+                            @{props.currentUser.username}
+                          </Link>
+                          /{item.query_name}
+                        </span>
+                        <span>{item.name}</span>
+                      </Space>
+                    </div>
+                    <Button type="primary" onClick={() => handleAdd(item)}>
+                      Add
+                    </Button>
+                  </List.Item>
+                )}
+              />
+            </div>
           </Col>
         </Row>
       </Modal>

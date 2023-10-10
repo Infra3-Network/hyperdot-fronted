@@ -147,7 +147,7 @@ export async function listCurrentUserChart(
   options?: { [key: string]: any },
 ) {
   return request<HYPERDOT_API.ListCurrentUserChartResponse>(
-    '/apis/v1/query/chart/user/' + '?page=' + page + '&&page_size=' + pageSize,
+    '/apis/v1/query/user/chart/' + '?page=' + page + '&&page_size=' + pageSize,
     {
       method: 'GET',
       headers: {
@@ -156,6 +156,24 @@ export async function listCurrentUserChart(
       ...(options || {}),
     },
   );
+}
+
+export async function getCurrentUserChart(
+  chart_id: number,
+  query_id?: number,
+  options?: { [key: string]: any },
+) {
+  let url = '/apis/v1/query/user/chart/' + chart_id;
+  if (query_id) {
+    url += '?query_id=' + query_id;
+  }
+  return request<HYPERDOT_API.GetCurrentUserChartResponse>(url, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    ...(options || {}),
+  });
 }
 
 /** update user query PUT /apis/user/query */

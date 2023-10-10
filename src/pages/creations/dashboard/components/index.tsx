@@ -1,3 +1,4 @@
+import { getInitialState } from '@/app';
 import MyIcon from '@/components/Icons';
 import { updateDashboard } from '@/services/hyperdot/api';
 import { HomeOutlined, UserOutlined } from '@ant-design/icons';
@@ -5,10 +6,12 @@ import { Breadcrumb, Button, Card, Col, List, message, Row, Space } from 'antd';
 import React from 'react';
 
 import { Rnd } from 'react-rnd';
+import { history } from 'umi';
 import SettingsModal from './SettingsModal';
 import TextWidgetModal from './TextWidgetModal';
 import TextWidgetPanel from './TextWidgetPanel';
 import VisualizationModal from './VisualizationModal';
+import VisualizationPanel from './VisualizationPanel';
 
 type WindowState = {
   width: number;
@@ -95,6 +98,8 @@ const ViewButtonGroup = (action: StateAction, editable: boolean) => {
 const getPanel = (panel: HYPERDOT_API.DashboardPanel) => {
   if (panel.type === 0) {
     return <TextWidgetPanel panel={panel} />;
+  } else if (panel.type === 1) {
+    return <VisualizationPanel panel={panel} />;
   }
 };
 
@@ -118,6 +123,16 @@ export const CreationDashboard = (props: Props) => {
     setControlState: setControlState,
     setDashboard: setDashboard,
   };
+  const [currentUser, setCurrentUser] = React.useState<HYPERDOT_API.CurrentUser>();
+  React.useEffect(() => {
+    getInitialState().then((res) => {
+      if (!res.currentUser) {
+        history.push('/user/login');
+        return;
+      }
+      setCurrentUser(res.currentUser);
+    });
+  }, []);
 
   const handlePanelResizeStop = (index, e, direction, ref, delta, position) => {
     const width = ref.style.width;
@@ -256,7 +271,9 @@ export const CreationDashboard = (props: Props) => {
 
       <SettingsModal ctl={controlState} action={stateAction} />
       <TextWidgetModal ctl={controlState} action={stateAction} />
-      <VisualizationModal ctl={controlState} action={stateAction} />
+      {currentUser && (
+        <VisualizationModal ctl={controlState} action={stateAction} currentUser={currentUser} />
+      )}
     </>
   );
 };
