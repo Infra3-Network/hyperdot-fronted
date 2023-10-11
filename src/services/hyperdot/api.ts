@@ -75,16 +75,13 @@ export async function updateUserPassword(
 
 /** run user query GET /apis/v1/user/query/run */
 export async function queryRun(query: string, engine: string, options?: { [key: string]: any }) {
-  return request<HYPERDOT_API.UserQueryResponse>(
-    '/apis/v1/query/run?q=' + query + '&engine=' + engine,
-    {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      ...(options || {}),
+  return request<any>('/apis/v1/query/run?q=' + query + '&engine=' + engine, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
     },
-  );
+    ...(options || {}),
+  });
 }
 
 /** create user query POST /apis/v1/user/query */

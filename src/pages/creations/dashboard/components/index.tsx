@@ -1,9 +1,10 @@
 import { getInitialState } from '@/app';
 import MyIcon from '@/components/Icons';
 import { updateDashboard } from '@/services/hyperdot/api';
+import { parseWindowString } from '@/utils';
 import { HomeOutlined, UserOutlined } from '@ant-design/icons';
 import { Breadcrumb, Button, Card, Col, List, message, Row, Space } from 'antd';
-import React from 'react';
+import React, { memo } from 'react';
 
 import { Rnd } from 'react-rnd';
 import { history } from 'umi';
@@ -12,6 +13,8 @@ import TextWidgetModal from './TextWidgetModal';
 import TextWidgetPanel from './TextWidgetPanel';
 import VisualizationModal from './VisualizationModal';
 import VisualizationPanel from './VisualizationPanel';
+
+import styles from './index.less';
 
 type WindowState = {
   width: number;
@@ -95,13 +98,15 @@ const ViewButtonGroup = (action: StateAction, editable: boolean) => {
   );
 };
 
-const getPanel = (panel: HYPERDOT_API.DashboardPanel) => {
-  if (panel.type === 0) {
-    return <TextWidgetPanel panel={panel} />;
-  } else if (panel.type === 1) {
-    return <VisualizationPanel panel={panel} />;
-  }
-};
+const PanelComponent = memo((props: { panel: HYPERDOT_API.DashboardPanel }) => {
+  const { panel } = props;
+  return (
+    <div>
+      {panel.type === 0 && <TextWidgetPanel panel={panel} />}
+      {panel.type === 1 && <VisualizationPanel panel={panel} />}
+    </div>
+  );
+});
 
 export const CreationDashboard = (props: Props) => {
   const gridColsPercent = 0.45;
@@ -109,6 +114,9 @@ export const CreationDashboard = (props: Props) => {
   // const gridRows = 3;
   const [windowState, setWindowState] = React.useState<WindowState>();
   // const [dashboards, setDashboards] = React.useState<Dashboard[]>([]);
+  const [isDragging, setIsDragging] = React.useState<boolean>(false);
+  const [draggedIndex, setDraggedIndex] = React.useState(null); // 存储当前拖拽的元素索引
+  const [offset, setOffset] = React.useState({ x: 0, y: 0 });
 
   const [controlState, setControlState] = React.useState<ControlState>({
     edit: false,
@@ -153,20 +161,61 @@ export const CreationDashboard = (props: Props) => {
     }
   };
 
-  const handlePanelDragStop = (index, e, d) => {
-    const x_pos = d.x;
-    const y_pos = d.y;
+  const handleDragStart = (
+    node: any,
+    x: number,
+    y: number,
+    deltaX: number,
+    deltaY: number,
+    lastX: number,
+    lastY: number,
+    index: any,
+  ) => {
+    if (!controlState.edit) {
+      return;
+    }
+    setIsDragging(true);
+    setDraggedIndex(index);
+    setOffset({ x, y });
+  };
+
+  const handleDragStop = () => {
+    setIsDragging(false);
+    setDraggedIndex(null);
+    setOffset({ x: 0, y: 0 });
+  };
+
+  const handlePanelDrag = (
+    e: any,
+    d: { x: number; y: number; deltaX: number; deltaY: number; lastX: number; lastY: number },
+    index: number,
+  ) => {
+    console.log(controlState.edit);
+    if (!controlState.edit) {
+      return;
+    }
+
+    const screenWidth = window.innerWidth;
     const panels = dashboard.panels;
     if (panels && panels[index]) {
-      panels[index] = {
-        ...panels[index],
-        x_pos: x_pos,
-        y_pos: y_pos,
+      const panelWidthNumeric = parseWindowString(panels[index].width, 'width');
+      if (panelWidthNumeric) {
+        if (d.x < 0 || d.x + panelWidthNumeric > screenWidth) {
+          return;
+        }
+      }
+
+      const newPanels = [...panels];
+      newPanels[index] = {
+        ...newPanels[index],
+        x_pos: d.x,
+        y_pos: d.y,
       };
+
       setDashboard((prev) => {
         return {
-          ...prev,
-          panels: panels,
+          ...dashboard,
+          panels: newPanels,
         };
       });
     }
@@ -203,16 +252,6 @@ export const CreationDashboard = (props: Props) => {
       });
   };
 
-  React.useEffect(() => {
-    setWindowState({
-      width: window.innerWidth,
-      height: window.innerHeight,
-    });
-
-    const width = window.innerWidth * gridColsPercent;
-    const height = (window.innerHeight / 2) * 0.8;
-  }, []);
-
   return (
     <>
       <Row gutter={[0, 24]}>
@@ -244,28 +283,77 @@ export const CreationDashboard = (props: Props) => {
         </Col>
 
         <Col span={24}>
-          {dashboard.panels && (
-            <ul>
-              {dashboard.panels.map((panel, index) => {
-                return (
-                  <li key={index} style={{ position: 'relative' }}>
-                    <Rnd
-                      size={{ width: panel.width, height: panel.height }}
-                      position={{ x: panel.x_pos, y: panel.y_pos }}
-                      onResizeStop={(e, direction, ref, delta, position) =>
-                        handlePanelResizeStop(index, e, direction, ref, delta, position)
-                      }
-                      onDragStop={(e, d) => handlePanelDragStop(index, e, d)}
-                      resizeGrid={[20, 30]}
-                      dragGrid={[20, 30]}
-                    >
-                      {getPanel(panel)}
-                    </Rnd>
-                  </li>
-                );
-              })}
-            </ul>
-          )}
+          <Card
+            style={{
+              position: 'relative',
+              overflow: 'auto',
+              width: window.innerWidth,
+              height: window.innerHeight,
+            }}
+          >
+            {dashboard.panels && (
+              <ul>
+                {dashboard.panels.map((panel, index) => {
+                  return (
+                    <li key={index}>
+                      <div className={`${styles.draggingBox} ${isDragging ? styles.dragging : ''}`}>
+                        <Rnd
+                          size={{ width: panel.width, height: panel.height }}
+                          position={{ x: panel.x_pos, y: panel.y_pos }}
+                          enableResizing={
+                            controlState.edit
+                              ? {
+                                  top: false,
+                                  right: true,
+                                  bottom: true,
+                                  left: false,
+                                  topRight: false,
+                                  bottomRight: true,
+                                  bottomLeft: false,
+                                  topLeft: false,
+                                }
+                              : false
+                          }
+                          onResizeStop={(e, direction, ref, delta, position) => {
+                            if (!controlState.edit) {
+                              return;
+                            }
+                            handlePanelResizeStop(index, e, direction, ref, delta, position);
+                          }}
+                          dragAxis={controlState.edit ? 'both' : 'none'}
+                          onDrag={(e, d) => handlePanelDrag(e, d, index)}
+                          onDragStart={(node: any, { x, y, deltaX, deltaY }) => {
+                            handleDragStart(
+                              node,
+                              x,
+                              y,
+                              deltaX,
+                              deltaY,
+                              node.offsetLeft,
+                              node.offsetTop,
+                              index,
+                            );
+                          }}
+                          onDragStop={handleDragStop}
+                          resizeGrid={[30, 50]}
+                          dragGrid={[30, 50]}
+                        >
+                          <div
+                            className={`${styles.draggingBox} ${
+                              index === draggedIndex && isDragging ? styles.dragging : ''
+                            }`}
+                          >
+                            {/* {getPanel(panel)} */}
+                            <PanelComponent panel={panel} />
+                          </div>
+                        </Rnd>
+                      </div>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+          </Card>
         </Col>
       </Row>
 
