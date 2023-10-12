@@ -7,7 +7,7 @@ import { Breadcrumb, Button, Card, Col, List, message, Row, Space } from 'antd';
 import React, { memo } from 'react';
 
 import { Rnd } from 'react-rnd';
-import { history } from 'umi';
+import { history, Link } from 'umi';
 import SettingsModal from './SettingsModal';
 import TextWidgetModal from './TextWidgetModal';
 import TextWidgetPanel from './TextWidgetPanel';
@@ -15,6 +15,7 @@ import VisualizationModal from './VisualizationModal';
 import VisualizationPanel from './VisualizationPanel';
 
 import styles from './index.less';
+import UserAvatar from '@/components/UserAvatar';
 
 type WindowState = {
   width: number;
@@ -23,6 +24,7 @@ type WindowState = {
 
 type Props = {
   editable: boolean;
+  user: HYPERDOT_API.CurrentUser;
   dashboard: HYPERDOT_API.Dashboard;
 };
 
@@ -98,15 +100,17 @@ const ViewButtonGroup = (action: StateAction, editable: boolean) => {
   );
 };
 
-const PanelComponent = memo((props: { panel: HYPERDOT_API.DashboardPanel }) => {
-  const { panel } = props;
-  return (
-    <div>
-      {panel.type === 0 && <TextWidgetPanel panel={panel} />}
-      {panel.type === 1 && <VisualizationPanel panel={panel} />}
-    </div>
-  );
-});
+const PanelComponent = memo(
+  (props: { panel: HYPERDOT_API.DashboardPanel; user: HYPERDOT_API.CurrentUser }) => {
+    const { panel, user } = props;
+    return (
+      <div>
+        {panel.type === 0 && <TextWidgetPanel panel={panel} />}
+        {panel.type === 1 && <VisualizationPanel panel={panel} user={user} />}
+      </div>
+    );
+  },
+);
 
 export const CreationDashboard = (props: Props) => {
   const gridColsPercent = 0.45;
@@ -131,16 +135,16 @@ export const CreationDashboard = (props: Props) => {
     setControlState: setControlState,
     setDashboard: setDashboard,
   };
-  const [currentUser, setCurrentUser] = React.useState<HYPERDOT_API.CurrentUser>();
-  React.useEffect(() => {
-    getInitialState().then((res) => {
-      if (!res.currentUser) {
-        history.push('/user/login');
-        return;
-      }
-      setCurrentUser(res.currentUser);
-    });
-  }, []);
+  // const [currentUser, setCurrentUser] = React.useState<HYPERDOT_API.CurrentUser>();
+  // React.useEffect(() => {
+  //   getInitialState().then((res) => {
+  //     if (!res.currentUser) {
+  //       history.push('/user/login');
+  //       return;
+  //     }
+  //     setCurrentUser(res.currentUser);
+  //   });
+  // }, []);
 
   const handlePanelResizeStop = (index, e, direction, ref, delta, position) => {
     const width = ref.style.width;
@@ -255,22 +259,31 @@ export const CreationDashboard = (props: Props) => {
   return (
     <>
       <Row gutter={[0, 24]}>
-        {/* <Col span={24}>
-          <Pages layout={Layout.Grid} />
-        </Col> */}
-
         <Col span={24}>
           <Row justify={'space-between'}>
             <Col>
               <Breadcrumb>
-                <Breadcrumb.Item href="">
+                <Breadcrumb.Item href="/">
                   <HomeOutlined />
                 </Breadcrumb.Item>
-                <Breadcrumb.Item href="">
-                  <UserOutlined />
-                  <span>Application List</span>
+                <Breadcrumb.Item href="#">
+                  <Space>
+                    <UserAvatar
+                      size={24}
+                      username={props.user.username}
+                      icon_url={props.user.icon_url}
+                    />
+                    <span>
+                      <Link
+                        to={'/account/center/' + props.user.id}
+                        style={{ textDecoration: 'none', color: 'inherit' }}
+                      >
+                        @{props.user.username}
+                      </Link>
+                    </span>
+                  </Space>
                 </Breadcrumb.Item>
-                <Breadcrumb.Item>Application</Breadcrumb.Item>
+                <Breadcrumb.Item href="#">{dashboard.name}</Breadcrumb.Item>
               </Breadcrumb>
             </Col>
 
@@ -287,7 +300,7 @@ export const CreationDashboard = (props: Props) => {
             style={{
               position: 'relative',
               overflow: 'auto',
-              width: window.innerWidth,
+              width: window.innerWidth - 65,
               height: window.innerHeight,
             }}
           >
@@ -344,7 +357,7 @@ export const CreationDashboard = (props: Props) => {
                             }`}
                           >
                             {/* {getPanel(panel)} */}
-                            <PanelComponent panel={panel} />
+                            <PanelComponent panel={panel} user={props.user} />
                           </div>
                         </Rnd>
                       </div>
@@ -359,8 +372,8 @@ export const CreationDashboard = (props: Props) => {
 
       <SettingsModal ctl={controlState} action={stateAction} />
       <TextWidgetModal ctl={controlState} action={stateAction} />
-      {currentUser && (
-        <VisualizationModal ctl={controlState} action={stateAction} currentUser={currentUser} />
+      {props.user && (
+        <VisualizationModal ctl={controlState} action={stateAction} user={props.user} />
       )}
     </>
   );

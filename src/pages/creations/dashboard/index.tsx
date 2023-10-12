@@ -1,5 +1,5 @@
 import { getInitialState } from '@/app';
-import { getDashboard, getQuery } from '@/services/hyperdot/api';
+import { getDashboard, getQuery, getUser } from '@/services/hyperdot/api';
 import { Row, Col, message } from 'antd';
 import React, { useState } from 'react';
 import { history, useParams } from 'umi';
@@ -10,6 +10,7 @@ export const CreationQueryDetail = () => {
   id = Number(id);
   const [editable, setEditable] = useState<boolean | undefined>(undefined);
   const [dashboard, setDashboard] = useState<HYPERDOT_API.Dashboard>();
+  const [user, setUser] = useState<HYPERDOT_API.CurrentUser>();
 
   React.useEffect(() => {
     if (!id) {
@@ -36,10 +37,27 @@ export const CreationQueryDetail = () => {
             history.push('/user/login');
             return;
           }
-          if (res.data.user_id && currentUser.id == res.data.user_id) {
+          if (!res.data.user_id) {
+            message.error('dashboard has no user_id', 3);
+            return;
+          }
+
+          if (currentUser.id == res.data.user_id) {
             setEditable(true);
+            setUser(currentUser);
           } else {
-            setEditable(false);
+            getUser(res.data.user_id)
+              .then((userRes) => {
+                if (!userRes.success) {
+                  message.error(res.errorMessage, 3);
+                  return;
+                }
+                setUser(userRes.data);
+                setEditable(false);
+              })
+              .catch((err) => {
+                message.error(err, 3);
+              });
           }
         });
       })
@@ -57,8 +75,8 @@ export const CreationQueryDetail = () => {
     <>
       <Row>
         <Col span={24}>
-          {dashboard && editable != undefined ? (
-            <CreationDashboard dashboard={dashboard} editable={editable} />
+          {dashboard && user && editable != undefined ? (
+            <CreationDashboard dashboard={dashboard} editable={editable} user={user} />
           ) : null}
         </Col>
       </Row>

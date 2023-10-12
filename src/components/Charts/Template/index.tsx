@@ -5,13 +5,7 @@ import React, { useEffect } from 'react';
 import { Area, Line, Bar, Scatter } from '@ant-design/charts';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import { WaterMark } from '@ant-design/pro-layout';
-import {
-  type AreaChartConfig,
-  type ChartManager,
-  ChartParams,
-  type ChartProps,
-  ChartData,
-} from '../types';
+import { type ChartProps } from '../types';
 import { getColumns } from '../utils';
 
 type TemplateChartProps = {

@@ -25,9 +25,7 @@ export async function getCurrentUser(options?: { [key: string]: any }) {
 }
 
 export async function getUser(id: number, options?: { [key: string]: any }) {
-  return request<{
-    data: HYPERDOT_API.CurrentUser;
-  }>('/apis/v1/user/' + id, {
+  return request<HYPERDOT_API.GetUserResponse>('/apis/v1/user/' + id, {
     method: 'GET',
     ...(options || {}),
   });
@@ -107,17 +105,23 @@ export async function getQuery(id: number, options?: { [key: string]: any }) {
   });
 }
 
-export async function listQuery(page: number, pageSize: number, options?: { [key: string]: any }) {
-  return request<HYPERDOT_API.ListQueryResponse>(
-    '/apis/v1/query?page=' + page + '&&page_size=' + pageSize,
-    {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      ...(options || {}),
+export async function listQuery(
+  page: number,
+  pageSize: number,
+  userId?: number,
+  options?: { [key: string]: any },
+) {
+  let url = '/apis/v1/query?page=' + page + '&&page_size=' + pageSize;
+  if (userId) {
+    url += '&user_id=' + userId;
+  }
+  return request<HYPERDOT_API.ListQueryResponse>(url, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
     },
-  );
+    ...(options || {}),
+  });
 }
 
 export async function listUserQuery(
@@ -138,31 +142,48 @@ export async function listUserQuery(
   );
 }
 
-export async function listCurrentUserChart(
+export async function listUserQueryChart(
   page: number,
   pageSize: number,
+  userId?: number,
   options?: { [key: string]: any },
 ) {
-  return request<HYPERDOT_API.ListCurrentUserChartResponse>(
-    '/apis/v1/query/user/chart/' + '?page=' + page + '&&page_size=' + pageSize,
-    {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      ...(options || {}),
+  let url = '/apis/v1/query/charts/' + '?page=' + page + '&&page_size=' + pageSize;
+  if (userId) {
+    url = '/apis/v1/query/charts/user/' + userId + '?page=' + page + '&&page_size=' + pageSize;
+  }
+  return request<HYPERDOT_API.ListCurrentUserChartResponse>(url, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
     },
-  );
+    ...(options || {}),
+  });
 }
 
-export async function getCurrentUserChart(
-  chart_id: number,
-  query_id?: number,
+export async function getUserQueryChart(
+  {
+    chart_id,
+    query_id,
+    user_id,
+  }: {
+    chart_id: number;
+    query_id?: number;
+    user_id?: number;
+  },
   options?: { [key: string]: any },
 ) {
-  let url = '/apis/v1/query/user/chart/' + chart_id;
-  if (query_id) {
-    url += '?query_id=' + query_id;
+  let url = '';
+  if (!user_id) {
+    url = '/apis/v1/query/chart/' + chart_id;
+    if (query_id) {
+      url += '?query_id=' + query_id;
+    }
+  } else {
+    url = '/apis/v1/query/chart/' + chart_id + '/user/' + user_id;
+    if (query_id) {
+      url += '?query_id=' + query_id;
+    }
   }
   return request<HYPERDOT_API.GetCurrentUserChartResponse>(url, {
     method: 'GET',
@@ -193,6 +214,41 @@ export async function getDashboard(id: number, options?: { [key: string]: any })
     },
     ...(options || {}),
   });
+}
+
+export async function listDashboard(
+  page: number,
+  pageSize: number,
+  options?: { [key: string]: any },
+) {
+  return request<HYPERDOT_API.ListDashboardResponse>(
+    `/apis/v1/dashboard?page=${page}&page_size=${pageSize}`,
+    {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      ...(options || {}),
+    },
+  );
+}
+
+export async function listUserDashboard(
+  page: number,
+  pageSize: number,
+  userId: number,
+  options?: { [key: string]: any },
+) {
+  return request<HYPERDOT_API.ListDashboardResponse>(
+    `/apis/v1/dashboard?user_id=${userId}&page=${page}&page_size=${pageSize}`,
+    {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      ...(options || {}),
+    },
+  );
 }
 
 export async function createDashboard(

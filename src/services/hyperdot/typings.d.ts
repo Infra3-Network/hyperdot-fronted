@@ -41,6 +41,13 @@ declare namespace HYPERDOT_API {
     // phone?: string;
   };
 
+  type GetUserResponse = {
+    success: boolean;
+    errorMessage?: string;
+    errorCode?: int;
+    data?: CurrentUser;
+  };
+
   type LoginParams = {
     userId?: string;
     email?: string;
@@ -85,13 +92,14 @@ declare namespace HYPERDOT_API {
     success: boolean;
     errorMessage?: string;
     errorCode?: int;
-    data?: UserQuery;
+    data: UserQuery;
   };
 
   type ListQueryData = {
     id: number;
     user_id: number;
     name: string;
+    icon_url: string;
     description: string;
     is_privacy: boolean;
     query: string;
@@ -110,7 +118,10 @@ declare namespace HYPERDOT_API {
     success: boolean;
     errorMessage?: string;
     errorCode?: int;
-    data?: ListQueryData[];
+    data: {
+      queries: ListQueryData[];
+      total: number;
+    };
   };
 
   type UpdateUserPasswordRequest = {
@@ -178,10 +189,12 @@ declare namespace HYPERDOT_API {
   type Dashboard = {
     id?: number;
     user_id?: number;
+    username?: string;
+    icon_url?: string;
     name?: string;
     description?: string;
     is_privacy?: boolean;
-    starts?: number;
+    stars?: number;
     panels?: HYPERDOT_API.DashboardPanel[];
     created_at?: string;
     updated_at?: string;
@@ -193,6 +206,16 @@ declare namespace HYPERDOT_API {
     errorMessage?: string;
     errorCode?: int;
     data: Dashboard;
+  };
+
+  type ListDashboardResponse = {
+    success: boolean;
+    errorMessage?: string;
+    errorCode?: int;
+    data: {
+      dashboards: Dashboard[];
+      total: number;
+    };
   };
 
   type CreateDashboardResponse = {

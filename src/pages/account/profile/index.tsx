@@ -8,28 +8,113 @@ import {
   TwitterOutlined,
 } from '@ant-design/icons';
 import { history, useParams } from 'umi';
-import { Avatar, Card, Col, Divider, Row } from 'antd';
+import { Avatar, Card, Col, message, Row } from 'antd';
 import React from 'react';
 import styles from './index.less';
 import { formatNumberWithCommas } from '@/utils';
-import { getUser, listQuery, listUserQuery } from '@/services/hyperdot/api';
-import ContentList from '@/components/List';
+import { getUser, listQuery, listUserDashboard, listUserQuery } from '@/services/hyperdot/api';
+import QueryList from '@/components/QueryList';
+import DashboardList from '@/components/DashboardList';
 
 type Props = {};
 
 const Queries = (user: HYPERDOT_API.CurrentUser) => {
+  const pageSize = 3;
+  const [page, setPage] = React.useState(1);
+  const [total, setTotal] = React.useState(0);
   const [data, setData] = React.useState<HYPERDOT_API.ListQueryData[]>([]);
   React.useEffect(() => {
-    listUserQuery(1, 10, user.id)
+    listQuery(page, pageSize, user.id)
       .then((res) => {
         if (res.data == undefined) {
           return;
         }
-        setData(res.data);
+        setData(res.data.queries);
+        setTotal(res.data.total);
       })
-      .catch((err) => {});
+      .catch((err) => {
+        message.error(err);
+      });
   }, []);
-  return <>{data && <ContentList data={data} />}</>;
+
+  const onChange = (p: number, ps: number) => {
+    setPage(p);
+    listQuery(p, ps)
+      .then((res) => {
+        if (res.data == undefined) {
+          return;
+        }
+        setData(res.data.queries);
+        setTotal(res.data.total);
+      })
+      .catch((err) => {
+        message.error(err);
+      });
+  };
+
+  return (
+    <>
+      {data && (
+        <QueryList
+          {...{
+            data,
+            total,
+            pageSize,
+            onChange,
+          }}
+        />
+      )}
+    </>
+  );
+};
+
+const Dashboards = (user: HYPERDOT_API.CurrentUser) => {
+  const pageSize = 3;
+  const [page, setPage] = React.useState(1);
+  const [data, setData] = React.useState<HYPERDOT_API.Dashboard[]>([]);
+  const [total, setTotal] = React.useState(0);
+  React.useEffect(() => {
+    listUserDashboard(1, 10, user.id)
+      .then((res) => {
+        if (res.data == undefined) {
+          return;
+        }
+        setData(res.data.dashboards);
+        setTotal(res.data.total);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, []);
+
+  const onChange = (p: number, ps: number) => {
+    setPage(p);
+    listUserDashboard(p, ps, user.id)
+      .then((res) => {
+        if (res.data == undefined) {
+          return;
+        }
+        setData(res.data.dashboards);
+        setTotal(res.data.total);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+  return (
+    <>
+      {data && (
+        <DashboardList
+          {...{
+            data,
+            total,
+            pageSize,
+            onChange,
+          }}
+        />
+      )}
+    </>
+  );
 };
 
 const Social = (user: HYPERDOT_API.CurrentUser) => {
@@ -189,10 +274,14 @@ const Profile = (props: Props) => {
     if (userId) {
       getUser(userId)
         .then((res) => {
+          if (!res.success) {
+            message.error(res.errorMessage);
+            return;
+          }
           setUser(res.data);
         })
         .catch((err) => {
-          console.log(err);
+          message.error(err);
         });
       return;
     }
@@ -231,12 +320,14 @@ const Profile = (props: Props) => {
 
           <Col span={18} style={{ marginTop: '48px' }}>
             <Card title={user.username + ' dashboards'}>
-              <Queries {...user} />
+              <Dashboards {...user} />
             </Card>
           </Col>
 
           <Col span={18} style={{ marginTop: '48px' }}>
-            <Card title={user.username + ' queries'}></Card>
+            <Card title={user.username + ' queries'}>
+              <Queries {...user} />
+            </Card>
           </Col>
         </Row>
       ) : null}

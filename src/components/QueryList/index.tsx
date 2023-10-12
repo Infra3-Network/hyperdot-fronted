@@ -1,9 +1,10 @@
-import { LikeOutlined, MessageOutlined, StarOutlined } from '@ant-design/icons';
+import { StarOutlined } from '@ant-design/icons';
 
-import { Avatar, List, Space } from 'antd';
+import { List, Space } from 'antd';
 import React from 'react';
 import { Link } from 'umi';
-// import { styles } from './style.less'
+import UserAvatar from '../UserAvatar';
+// import { styles } from './style.less
 
 import styles from './index.less';
 
@@ -79,18 +80,20 @@ const ListContent = (data: HYPERDOT_API.ListQueryData) => {
 
 type Props = {
   data: HYPERDOT_API.ListQueryData[];
+  total: number;
+  pageSize: number;
+  onChange: (page: number, pageSize: number) => void;
 };
 
-const ContentList: React.FC = (props: Props) => (
+const QueryList = (props: Props) => (
   <List
     itemLayout="vertical"
     size="large"
     pagination={{
-      onChange: (page) => {
-        console.log(page);
-      },
+      onChange: props.onChange,
+      pageSize: props.pageSize,
+      total: props.total,
       size: 'small',
-      pageSize: 10,
       style: { textAlign: 'center' },
     }}
     dataSource={props.data}
@@ -112,7 +115,7 @@ const ContentList: React.FC = (props: Props) => (
         extra={
           <IconText
             icon={StarOutlined}
-            text={item.stars ? item.stars : 0}
+            text={item.stars ? item.stars.toString() : '0'}
             key="list-vertical-star-o"
           />
 
@@ -124,7 +127,7 @@ const ContentList: React.FC = (props: Props) => (
         }
       >
         <List.Item.Meta
-          avatar={<Avatar src={''} />}
+          avatar={<UserAvatar size={26} username={item.username} icon_url={item.icon_url} />}
           title={<Link to={'/creations/queries/' + item.id}>{item.name}</Link>}
           // description={item.description}
         />
@@ -134,4 +137,4 @@ const ContentList: React.FC = (props: Props) => (
   />
 );
 
-export default ContentList;
+export default QueryList;

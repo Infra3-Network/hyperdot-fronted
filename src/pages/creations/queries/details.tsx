@@ -1,13 +1,19 @@
-import { getQuery } from '@/services/hyperdot/api';
-import { Row, Col, message } from 'antd';
-import React, { useState } from 'react';
+import { getInitialState } from '@/app';
+import { getQuery, getUser } from '@/services/hyperdot/api';
+import { LoadingTip } from '@/utils';
+import { GridContent } from '@ant-design/pro-layout';
+import { Row, Col, message, Spin } from 'antd';
+import React from 'react';
 import { history, useParams } from 'umi';
 import QueryEditor from './components/QueryEditor';
 
 export const CreationQueryDetail = () => {
   let { id } = useParams<any>();
   id = Number(id);
-  const [userQuery, setUserQuery] = useState<HYPERDOT_API.UserQuery>();
+  const [editable, setEditable] = React.useState<boolean | undefined>(undefined);
+  const [user, setUser] = React.useState<HYPERDOT_API.CurrentUser>();
+  const [userQuery, setUserQuery] = React.useState<HYPERDOT_API.UserQuery>();
+  const [loding, setLoading] = React.useState<boolean>(false);
 
   React.useEffect(() => {
     if (!id) {
@@ -15,22 +21,59 @@ export const CreationQueryDetail = () => {
       return;
     }
 
+    setLoading(true);
+
     getQuery(id, {
       errorHandler: () => {
         history.push('/exception/404');
       },
     })
       .then((res) => {
-        const data = res.data;
-        if (data == undefined) {
-          history.push('/exception/404');
+        setUserQuery(res.data);
+        if (!res.data.user_id) {
+          message.error('query has no user_id', 3);
           return;
         }
-        console.log(res.data);
-        setUserQuery(res.data);
+
+        getInitialState()
+          .then(({ currentUser }) => {
+            if (!currentUser || !currentUser.id) {
+              // redirect login
+              history.push('/user/login');
+              return;
+            }
+
+            if (currentUser.id == res.data.user_id) {
+              setUserQuery(res.data);
+              setUser(currentUser);
+              setEditable(true);
+              return;
+            }
+
+            getUser(res.data.user_id)
+              .then((userRes) => {
+                if (!userRes.success) {
+                  message.error(res.errorMessage, 3);
+                  return;
+                }
+                setUserQuery(res.data);
+                setUser(userRes.data);
+                setEditable(false);
+                console.log(userQuery, editable, user);
+              })
+              .catch((err) => {
+                message.error(err, 3);
+              });
+          })
+          .catch((err) => {
+            message.error(err, 3);
+          });
       })
       .catch((err) => {
         message.error(err);
+      })
+      .finally(() => {
+        setLoading(false);
       });
   }, []);
 
@@ -40,11 +83,17 @@ export const CreationQueryDetail = () => {
   }
 
   return (
-    <>
+    <GridContent>
       <Row>
-        <Col span={24}>{userQuery ? <QueryEditor userQuery={userQuery} /> : null}</Col>
+        <Spin tip={LoadingTip} spinning={loding}>
+          <Col span={24}>
+            {userQuery && editable != undefined && user && (
+              <QueryEditor userQuery={userQuery} user={user} editable={editable} />
+            )}
+          </Col>
+        </Spin>
       </Row>
-    </>
+    </GridContent>
   );
 };
 

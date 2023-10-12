@@ -9,13 +9,25 @@ import {
   FullscreenOutlined,
   SaveOutlined,
 } from '@ant-design/icons';
-import { Tabs, Row, Col, Button, Modal, Input, Switch, message, Spin, Select } from 'antd';
+import {
+  Tabs,
+  Row,
+  Col,
+  Button,
+  Modal,
+  Input,
+  Switch,
+  message,
+  Spin,
+  Select,
+  Breadcrumb,
+  Space,
+  Card,
+} from 'antd';
 import React, { useEffect } from 'react';
-// import { ChartNodeProps, charts } from './charts';
 import styles from './index.less';
-import { getInitialState } from '@/app';
-import { useHistory } from 'umi';
-import { createQuery, queryRun, updateQuery, userCreateQuery } from '@/services/hyperdot/api';
+import { Link, useHistory } from 'umi';
+import { createQuery, queryRun, updateQuery } from '@/services/hyperdot/api';
 import {
   ChartManager,
   type ChartArray,
@@ -25,6 +37,7 @@ import {
 } from '@/components/Charts/types';
 // import { HYPERDOT_CHART } from '@/components/Charts/typings';
 import { ChartNodeMap } from '@/components/Charts';
+import UserAvatar from '@/components/UserAvatar';
 
 interface NewVisualizationTabProps {
   // tabProps: any;
@@ -82,16 +95,7 @@ export const NewVisualizationTab = (props: NewVisualizationTabProps) => {
       type: chart,
       closeable: true,
     });
-    // props.setTabProps((prev: QE.TabArray) => {
-    //   return TabManager.insertLastBefore(prev, {
-    //     name: chartProps.name,
-    //     // icon: chartProps.icon,
-    //     // children: chartProps.children,
-    //     children: chart,
-    //     closeable: true,
-    //   });
-    // });
-    // const active: string = TabManager.getId(props.tabProps).toString();
+
     props.setTabActiveKey(props.chartMgr.getId().toString());
   };
 
@@ -166,6 +170,7 @@ const QueryVisualization = (props: QueryVisualizationProps) => {
       icon = chartNode.icon;
       children = chartNode.children;
     }
+    console.log(params.type, params.closeable);
     return params.id == undefined
       ? null
       : {
@@ -278,11 +283,12 @@ interface QueryNormalState {
 }
 
 interface Props {
+  editable: boolean;
+  user: HYPERDOT_API.CurrentUser;
   userQuery?: HYPERDOT_API.UserQuery;
 }
 
 const QueryEditor = (props: Props) => {
-  console.log(props);
   // state for save modal control
   const [saveModalOpen, setSaveModalOpen] = React.useState<boolean>(false);
 
@@ -323,24 +329,31 @@ const QueryEditor = (props: Props) => {
           type: 'data_table',
           closeable: true,
         },
-        {
+      ];
+
+      // if the query is owned by current user, we add new visualization tab
+      if (props.editable) {
+        charts.push({
           id: 0,
           name: 'New Visualization',
           type: 'new',
           closeable: false,
-        },
-      ];
+        });
+      }
+
       chartMgr.reset(charts);
     } else {
-      const charts: ChartParams[] = [
-        ...(userQuery.charts ? userQuery.charts : []),
-        {
+      const charts: ChartParams[] = [...(userQuery.charts ? userQuery.charts : [])];
+
+      // if the query is owned by current user, we add new visualization tab
+      if (props.editable) {
+        charts.push({
           id: 0,
           name: 'New Visualization',
           type: 'new',
           closeable: false,
-        },
-      ];
+        });
+      }
 
       chartMgr.reset(charts);
     }
@@ -402,15 +415,6 @@ const QueryEditor = (props: Props) => {
 
   const handleQuerySave = async () => {
     setSaveModalOpen(true);
-    const { currentUser } = (await getInitialState()) ?? {};
-    if (!currentUser) {
-      // TODO: this code block as method
-      localStorage.removeItem('token');
-      history.replace({
-        pathname: '/user/login',
-      });
-      return;
-    }
 
     if (!queryNormal.engine) {
       messageApi.error('query engine empty');
@@ -433,7 +437,7 @@ const QueryEditor = (props: Props) => {
 
       const body = {
         id: props.userQuery ? props.userQuery.id : 0,
-        user_id: Number(currentUser.id),
+        user_id: Number(props.user.id),
         name: queryNormal.name,
         query: queryNormal.query,
         query_engine: queryNormal.engine,
@@ -445,14 +449,16 @@ const QueryEditor = (props: Props) => {
           return v;
         }),
       };
-      console.log(body);
+
       const res = await updateQuery(body, {});
       if (res.success) {
-        messageApi.info('save success');
-        console.log(res.data);
+        messageApi.info('Save success');
+
         if (!res.data) {
           messageApi.error('Unkown error');
+          return;
         }
+        chartMgr.clear();
         if (res.data) {
           updateStateByUserQuery(res.data);
         }
@@ -540,63 +546,89 @@ const QueryEditor = (props: Props) => {
 
   return (
     <>
+      <Row gutter={24} style={{ marginBottom: '12px' }}>
+        {props.userQuery && (
+          <Col>
+            <Breadcrumb>
+              <Breadcrumb.Item href="#">
+                <Space>
+                  <UserAvatar
+                    size={24}
+                    username={props.user.username}
+                    icon_url={props.user.icon_url}
+                  />
+                  <span>
+                    <Link
+                      to={'/account/center/' + props.user.id}
+                      style={{ textDecoration: 'none', color: 'inherit' }}
+                    >
+                      @{props.user.username}
+                    </Link>
+                  </span>
+                </Space>
+              </Breadcrumb.Item>
+              <Breadcrumb.Item href="#">{props.userQuery.name}</Breadcrumb.Item>
+            </Breadcrumb>
+          </Col>
+        )}
+      </Row>
+
       {contextHolder}
+
       <Row gutter={24}>
         <Col span={24}>
-          <div style={{ width: '100%' }}>
-            <MonacoEditor
-              width="100%"
-              height={'400'}
-              language="sql"
-              theme="vs-dark"
-              value={queryNormal.query}
-              // options={options}
-              onChange={handleEditorChange}
-              // editorDidMount={::this.editorDidMount}
-            />
-            <Row gutter={8} className={styles.editorButton}>
-              {/* Expand Button */}
-              <Col>
-                <Button type="primary" icon={<ExpandOutlined />}>
-                  Expand
-                </Button>
-              </Col>
+          <MonacoEditor
+            width={window.innerWidth - 48}
+            height={'400'}
+            language="sql"
+            theme="vs-dark"
+            value={queryNormal.query}
+            // options={options}
+            onChange={handleEditorChange}
+            // editorDidMount={::this.editorDidMount}
+          />
+          <Row gutter={8} className={styles.editorButton}>
+            {/* Expand Button */}
+            <Col>
+              <Button type="primary" icon={<ExpandOutlined />}>
+                Expand
+              </Button>
+            </Col>
 
-              {/* Run Button */}
-              <Col>
+            {/* Run Button */}
+            <Col>
+              <Button
+                type="primary"
+                icon={<CodeOutlined />}
+                loading={runLoading}
+                onClick={handleRunClick}
+              >
+                Run
+              </Button>
+            </Col>
+
+            {/* Full Scree Button */}
+            <Col>
+              <Button type="primary" icon={<FullscreenOutlined />}>
+                Full Screen
+              </Button>
+            </Col>
+
+            {/* Save Button */}
+            <Col>
+              {queryData && props.editable && (
                 <Button
                   type="primary"
-                  icon={<CodeOutlined />}
-                  loading={runLoading}
-                  onClick={handleRunClick}
+                  icon={<SaveOutlined />}
+                  onClick={() => {
+                    setSaveModalOpen(true);
+                  }}
                 >
-                  Run
+                  Save
                 </Button>
-              </Col>
-
-              {/* Full Scree Button */}
-              <Col>
-                <Button type="primary" icon={<FullscreenOutlined />}>
-                  Full Screen
-                </Button>
-              </Col>
-
-              {/* Save Button */}
-              <Col>
-                {queryData ? (
-                  <Button
-                    type="primary"
-                    icon={<SaveOutlined />}
-                    onClick={() => {
-                      setSaveModalOpen(true);
-                    }}
-                  >
-                    Save
-                  </Button>
-                ) : null}
-              </Col>
-            </Row>
-          </div>
+              )}
+            </Col>
+          </Row>
         </Col>
       </Row>
       <Row gutter={24}>

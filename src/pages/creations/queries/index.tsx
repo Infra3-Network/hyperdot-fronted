@@ -1,26 +1,29 @@
-import { Card, Col, Row } from 'antd';
+import { Card, Col, message, Row } from 'antd';
 import { GridContent } from '@ant-design/pro-layout';
 import QueryEngine from './components/QueryEngine';
 import QueryEditor from './components/QueryEditor';
 import React from 'react';
-import { TabManager } from './components/QueryEditor/tabmanager';
+import { getInitialState } from '@/app';
+import { history } from 'umi';
 
 export const CreationQuery = () => {
-  const [tabProps, setTabProps] = React.useState<QE.TabArray>({ id: 0, tabs: [] });
+  const [user, setUser] = React.useState<HYPERDOT_API.CurrentUser>();
 
   React.useEffect(() => {
-    setTabProps((prev: QE.TabArray) => {
-      if (TabManager.findByName(prev, 'New Visualization')) {
-        return prev;
-      }
-
-      return TabManager.add(prev, {
-        name: 'New Visualization',
-        children: 'new',
-        closeable: false,
+    getInitialState()
+      .then(({ currentUser }) => {
+        if (!currentUser || !currentUser.id) {
+          // redirect login
+          history.push('/user/login');
+          return;
+        }
+        setUser(currentUser);
+      })
+      .catch((err) => {
+        message.error(err, 3);
       });
-    });
   }, []);
+
   return (
     <GridContent>
       <>
@@ -32,7 +35,7 @@ export const CreationQuery = () => {
           </Col>
 
           <Col xl={18} lg={24} md={24} sm={24} xs={24} style={{ marginBottom: 24 }}>
-            <QueryEditor />
+            {user && <QueryEditor user={user} editable={true} />}
           </Col>
         </Row>
       </>

@@ -1,5 +1,5 @@
 import { ChartIconMap } from '@/components/Charts';
-import { listCurrentUserChart } from '@/services/hyperdot/api';
+import { listUserQueryChart } from '@/services/hyperdot/api';
 import { Button, Col, Input, List, message, Modal, Row, Space } from 'antd';
 import { useEffect, useState } from 'react';
 import { Link } from 'umi';
@@ -7,7 +7,7 @@ import { Link } from 'umi';
 type Props = {
   ctl: ControlState;
   action: StateAction;
-  currentUser: HYPERDOT_API.CurrentUser;
+  user: HYPERDOT_API.CurrentUser;
 };
 
 type InnerState = {
@@ -28,7 +28,7 @@ const VisualizationModal = (props: Props) => {
   });
 
   useEffect(() => {
-    listCurrentUserChart(state.page, pageSize)
+    listUserQueryChart(state.page, pageSize, props.user.id)
       .then((res) => {
         if (!res.success) {
           message.error(res.errorMessage);
@@ -108,7 +108,7 @@ const VisualizationModal = (props: Props) => {
       };
     });
 
-    listCurrentUserChart(state.page, pageSize)
+    listUserQueryChart(state.page, pageSize)
       .then((res) => {
         if (!res.success) {
           message.error(res.errorMessage);
@@ -212,7 +212,7 @@ const VisualizationModal = (props: Props) => {
                         {item.type && ChartIconMap.get(item.type)}
                         <span>
                           <Link to={''} style={{ textDecoration: 'none', color: 'inherit' }}>
-                            @{props.currentUser.username}
+                            @{props.user.username}
                           </Link>
                           /{item.query_name}
                         </span>

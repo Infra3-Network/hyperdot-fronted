@@ -1,10 +1,11 @@
-import { getCurrentUserChart } from '@/services/hyperdot/api';
+import { getUserQueryChart } from '@/services/hyperdot/api';
 import { Card, message, Spin } from 'antd';
 import React, { useEffect } from 'react';
 import { queryRun } from '@/services/hyperdot/api';
 import { Area, Line, Bar, Scatter } from '@ant-design/charts';
 
 type Props = {
+  user: HYPERDOT_API.CurrentUser;
   panel: HYPERDOT_API.DashboardPanel;
 };
 
@@ -83,46 +84,51 @@ const VisualizationPanel = (props: Props) => {
   const [data, setData] = React.useState<any>(undefined);
   useEffect(() => {
     setLoading(true);
-    getCurrentUserChart(props.panel.chart_id, props.panel.query_id)
-      .then((res) => {
-        if (!res.success) {
-          message.error(res.errorMessage);
-          return;
-        }
-        setChart(res.data);
+    if (props.panel.chart_id) {
+      getUserQueryChart({
+        chart_id: props.panel.chart_id,
+        user_id: props.user.id,
+        query_id: props.panel.query_id,
+      })
+        .then((res) => {
+          if (!res.success) {
+            message.error(res.errorMessage);
+            return;
+          }
+          setChart(res.data);
 
-        if (res.data.query && res.data.query_engine) {
-          queryRun(res.data.query, res.data.query_engine)
-            .then((queryRes) => {
-              if (!queryRes.success) {
-                message.error(queryRes.errorMessage);
-                return;
-              }
-              setData(queryRes.data);
-            })
-            .catch((err) => {
-              message.error(err.message);
-            })
-            .finally(() => {
-              setLoading(false);
-            });
-        } else {
-          message.error('Query or Query Engine not found');
-          return;
-        }
-      })
-      .catch((err) => {
-        message.error(err.message);
-      })
-      .finally(() => {});
+          if (res.data.query && res.data.query_engine) {
+            queryRun(res.data.query, res.data.query_engine)
+              .then((queryRes) => {
+                if (!queryRes.success) {
+                  message.error(queryRes.errorMessage);
+                  return;
+                }
+                setData(queryRes.data);
+              })
+              .catch((err) => {
+                message.error(err.message);
+              })
+              .finally(() => {
+                setLoading(false);
+              });
+          } else {
+            message.error('Query or Query Engine not found');
+            return;
+          }
+        })
+        .catch((err) => {
+          message.error(err.message);
+        });
+    }
   }, []);
 
   return (
-    <Card bordered style={{ width: props.panel.width, height: props.panel.height }}>
-      <Spin tip="Loading" spinning={loading}>
+    <Spin tip="Loading" spinning={loading}>
+      <Card bordered style={{ width: props.panel.width, height: props.panel.height }} type="inner">
         {chart && data && generateChart(chart, data)}
-      </Spin>
-    </Card>
+      </Card>
+    </Spin>
   );
 };
 

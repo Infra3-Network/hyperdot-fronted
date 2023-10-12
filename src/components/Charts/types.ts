@@ -54,6 +54,12 @@ export class ChartManager {
       charts: charts,
     });
   }
+  clear() {
+    this.setCharts({
+      id: 1,
+      charts: [],
+    });
+  }
 
   get(id: number) {
     return this.charts.charts.find((v: ChartParams) => v.id === id);
