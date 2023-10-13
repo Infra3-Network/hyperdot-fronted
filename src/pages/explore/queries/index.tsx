@@ -49,14 +49,16 @@ const Queries = (props: Props) => {
       </Col>
       <Col span={18}>
         <Card bordered={false}>
-          <QueryList
-            {...{
-              data,
-              total,
-              pageSize,
-              onChange,
-            }}
-          />
+          {data && data.length > 0 && (
+            <QueryList
+              {...{
+                data,
+                total,
+                pageSize,
+                onChange,
+              }}
+            />
+          )}
         </Card>
       </Col>
 

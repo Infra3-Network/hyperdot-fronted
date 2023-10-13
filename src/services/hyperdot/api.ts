@@ -297,3 +297,22 @@ export async function updateFavoriteDashboard(
     ...(options || {}),
   });
 }
+
+export async function updateFavoriteQuery(
+  star: boolean,
+  body: HYPERDOT_API.UserQueryFavorites,
+  options?: { [key: string]: any },
+) {
+  let url = '/apis/v1/query/favorite';
+  if (!star) {
+    url = '/apis/v1/query/unfavorite';
+  }
+  return request<HYPERDOT_API.UpdateUserQueryFavoritesResponse>(url, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
+    ...(options || {}),
+  });
+}

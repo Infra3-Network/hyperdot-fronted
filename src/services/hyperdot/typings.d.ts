@@ -105,6 +105,7 @@ declare namespace HYPERDOT_API {
     query: string;
     query_engine: string;
     stars: number;
+    stared: boolean;
     charts: any;
     created_at: string;
     updated_at: string;
@@ -248,5 +249,21 @@ declare namespace HYPERDOT_API {
     errorMessage?: string;
     errorCode?: int;
     data: UserDashboardFavorites;
+  };
+
+  type UserQueryFavorites = {
+    user_id?: number;
+    query_id?: number;
+    query_user_id?: number;
+    stared?: boolean;
+    created_at?: string;
+    updated_at?: string;
+  };
+
+  type UpdateUserQueryFavoritesResponse = {
+    success: boolean;
+    errorMessage?: string;
+    errorCode?: int;
+    data: UserQueryFavorites;
   };
 }

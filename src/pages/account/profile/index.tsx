@@ -54,7 +54,7 @@ const Queries = (user: HYPERDOT_API.CurrentUser) => {
 
   return (
     <>
-      {data && (
+      {data && data.length > 0 && (
         <QueryList
           {...{
             data,

@@ -1,6 +1,8 @@
-import { StarOutlined } from '@ant-design/icons';
+import { updateFavoriteQuery } from '@/services/hyperdot/api';
+import { formatTimeAgo } from '@/utils';
+import { StarFilled, StarOutlined } from '@ant-design/icons';
 
-import { List, Space } from 'antd';
+import { List, message, Space } from 'antd';
 import React from 'react';
 import { Link } from 'umi';
 import UserAvatar from '../UserAvatar';
@@ -24,42 +26,6 @@ const IconText = ({ icon, text }: { icon: React.FC; text: string }) => (
     {text}
   </Space>
 );
-
-const formatTimeAgo = (timestamp: string): string => {
-  if (!timestamp) {
-    return 'unkown';
-  }
-
-  const now = new Date();
-  const date = new Date(timestamp);
-  const timeDifference = now.getTime() - date.getTime();
-
-  // 辅助函数，将时间差转换为不同单位
-  function getTimeAgo(timeDiff: number, unit: string): string {
-    const rounded = Math.round(timeDiff);
-    return `${rounded} ${unit}${rounded !== 1 ? 's' : ''} ago`;
-  }
-
-  if (timeDifference < 60000) {
-    // 不到一分钟
-    return getTimeAgo(timeDifference / 1000, 'second');
-  } else if (timeDifference < 3600000) {
-    // 不到一小时
-    return getTimeAgo(timeDifference / 60000, 'minute');
-  } else if (timeDifference < 86400000) {
-    // 不到一天
-    return getTimeAgo(timeDifference / 3600000, 'hour');
-  } else if (timeDifference < 2592000000) {
-    // 不到一个月 (30 天)
-    return getTimeAgo(timeDifference / 86400000, 'day');
-  } else if (timeDifference < 31536000000) {
-    // 不到一年 (365 天)
-    return getTimeAgo(timeDifference / 2592000000, 'month');
-  } else {
-    // 大于一年
-    return getTimeAgo(timeDifference / 31536000000, 'year');
-  }
-};
 
 const ListContent = (data: HYPERDOT_API.ListQueryData) => {
   return (
@@ -85,56 +51,135 @@ type Props = {
   onChange: (page: number, pageSize: number) => void;
 };
 
-const QueryList = (props: Props) => (
-  <List
-    itemLayout="vertical"
-    size="large"
-    pagination={{
-      onChange: props.onChange,
-      pageSize: props.pageSize,
-      total: props.total,
-      size: 'small',
-      style: { textAlign: 'center' },
-    }}
-    dataSource={props.data}
-    // footer={
-    //     <div>
-    //         <b>ant design</b> footer part
-    //     </div>
-    // }
-    renderItem={(item) => (
-      <List.Item
-        key={item.id}
-        actions={
-          [
-            // <IconText icon={StarOutlined} text="156" key="list-vertical-star-o" />,
-            // <IconText icon={LikeOutlined} text="156" key="list-vertical-like-o" />,
-            // <IconText icon={MessageOutlined} text="2" key="list-vertical-message" />,
-          ]
-        }
-        extra={
-          <IconText
-            icon={StarOutlined}
-            text={item.stars ? item.stars.toString() : '0'}
-            key="list-vertical-star-o"
-          />
+type StarState = {
+  stared: boolean;
+  id: number;
+  stars: number;
+};
 
-          // <img
-          //     width={272}
-          //     alt="logo"
-          //     src="https://gw.alipayobjects.com/zos/rmsportal/mqaQswcyDLcXyDKnZfES.png"
-          // />
+const QueryList = (props: Props) => {
+  const [starArray, setStarArray] = React.useState<StarState[]>(
+    props.data.map((v) => {
+      if (v.id) {
+        return {
+          id: v.id,
+          stared: v.stared ? v.stared : false,
+          stars: v.stars ? v.stars : 0,
+        };
+      } else {
+        return {
+          id: -1,
+          stared: false,
+          stars: 0,
+        };
+      }
+    }),
+  );
+
+  const handleStarClick = (index: number) => {
+    if (!starArray[index]) {
+      message.error('Unkown error: star not found', 3);
+    }
+    const userId = props.data[index].user_id;
+    const queryId = props.data[index].id;
+    if (!userId || !queryId) {
+      message.error('Unkown error: query has no user_id or id', 3);
+      return;
+    }
+
+    updateFavoriteQuery(true, {
+      query_user_id: userId,
+      query_id: queryId,
+    }).then((res) => {
+      const nextStarArray = starArray.map((v, i) => {
+        if (i == index) {
+          return {
+            id: v.id,
+            stared: true,
+            stars: v.stars + 1,
+          };
+        } else {
+          return v;
         }
-      >
-        <List.Item.Meta
-          avatar={<UserAvatar size={26} username={item.username} icon_url={item.icon_url} />}
-          title={<Link to={'/creations/queries/' + item.id}>{item.name}</Link>}
-          // description={item.description}
-        />
-        <ListContent {...item} />
-      </List.Item>
-    )}
-  />
-);
+      });
+      setStarArray(nextStarArray);
+      return;
+    });
+  };
+
+  const handleUnstarClick = (index: number) => {
+    if (!starArray[index]) {
+      message.error('Unkown error: star not found', 3);
+    }
+    const userId = props.data[index].user_id;
+    const queryId = props.data[index].id;
+    if (!userId || !queryId) {
+      message.error('Unkown error: query has no user_id or id', 3);
+      return;
+    }
+
+    updateFavoriteQuery(false, {
+      query_user_id: userId,
+      query_id: queryId,
+    }).then((res) => {
+      const nextStarArray = starArray.map((v, i) => {
+        if (i == index) {
+          return {
+            id: v.id,
+            stared: false,
+            stars: v.stars - 1,
+          };
+        } else {
+          return v;
+        }
+      });
+      setStarArray(nextStarArray);
+      return;
+    });
+  };
+
+  return (
+    <List
+      itemLayout="vertical"
+      size="large"
+      pagination={{
+        onChange: props.onChange,
+        pageSize: props.pageSize,
+        total: props.total,
+        size: 'small',
+        style: { textAlign: 'center' },
+      }}
+      dataSource={props.data}
+      // footer={
+      //     <div>
+      //         <b>ant design</b> footer part
+      //     </div>
+      // }
+      renderItem={(item, index) => (
+        <List.Item
+          key={item.id}
+          actions={[]}
+          extra={
+            <Space>
+              {item.id && starArray[index].stared ? (
+                <StarFilled onClick={() => handleUnstarClick(index)} />
+              ) : (
+                <StarOutlined onClick={() => handleStarClick(index)} />
+              )}
+              {starArray[index].stars}
+            </Space>
+          }
+        >
+          <List.Item.Meta
+            avatar={<UserAvatar size={26} username={item.username} icon_url={item.icon_url} />}
+            title={<Link to={'/creations/queries/' + item.id}>{item.name}</Link>}
+            // description={item.description}
+          />
+          <ListContent {...item} />
+        </List.Item>
+      )}
+    />
+  );
+};
 
 export default QueryList;
