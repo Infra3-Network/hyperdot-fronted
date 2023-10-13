@@ -85,7 +85,7 @@ declare namespace HYPERDOT_API {
     query_engine: string;
     is_privacy?: boolean;
     unsaved?: boolean;
-    charts?: HYPERDOT_CHART.ChartParams[];
+    charts?: Chart[];
   };
 
   type UserQueryResponse = {
@@ -149,6 +149,7 @@ declare namespace HYPERDOT_API {
     name?: string;
     type?: string;
     config?: any;
+    closeable?: boolean;
   };
 
   type ListCurrentUserChartResponse = {

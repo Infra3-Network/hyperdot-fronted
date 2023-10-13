@@ -96,7 +96,7 @@ export const NewVisualizationTab = (props: NewVisualizationTabProps) => {
       closeable: true,
     });
 
-    props.setTabActiveKey(props.chartMgr.getId().toString());
+    props.setTabActiveKey(props.chartMgr.getNextIndex().toString());
   };
 
   return (
@@ -140,8 +140,8 @@ interface QueryVisualizationProps {
 const QueryVisualization = (props: QueryVisualizationProps) => {
   const [tabActiveKey, setTabActiveKey] = React.useState<string>('1');
 
-  const handleCloseClick = (id: number) => {
-    props.chartMgr.remove(id);
+  const handleCloseClick = (index: number) => {
+    props.chartMgr.remove(index);
     // props.setTabProps(TabManager.remove(props.tabProps, id));
     // setTabActiveKey(tabActiveKey);
   };
@@ -150,7 +150,7 @@ const QueryVisualization = (props: QueryVisualizationProps) => {
     return null;
   }
   const charts = props.chartMgr.getCharts();
-  const items = charts.map((params: ChartParams) => {
+  const items = charts.map((params: HYPERDOT_API.Chart) => {
     let children, icon;
     if (params.type === 'new') {
       children = (v: ChartProps) => {
@@ -171,7 +171,7 @@ const QueryVisualization = (props: QueryVisualizationProps) => {
       children = chartNode.children;
     }
     console.log(params.type, params.closeable);
-    return params.id == undefined
+    return params.index == undefined
       ? null
       : {
           label: (
@@ -184,14 +184,14 @@ const QueryVisualization = (props: QueryVisualizationProps) => {
                 <span style={{ marginLeft: '12px' }}>
                   <CloseOutlined
                     onClick={() => {
-                      handleCloseClick(params.id || 0);
+                      handleCloseClick(params.index || 0);
                     }}
                   />
                 </span>
               ) : null}
             </div>
           ),
-          key: params.id?.toString(),
+          key: params.index?.toString(),
           children: children({
             manager: props.chartMgr,
             params: params,
@@ -301,7 +301,7 @@ const QueryEditor = (props: Props) => {
   });
 
   const [editorCharts, setEditorCharts] = React.useState<ChartArray>({
-    id: 0,
+    nextIndex: 0,
     charts: [],
   });
   const chartMgr = new ChartManager(editorCharts, setEditorCharts);
@@ -322,9 +322,9 @@ const QueryEditor = (props: Props) => {
 
     if (userQuery.unsaved ? userQuery.unsaved : false) {
       // if unsaved query, we create these tabs
-      const charts: ChartParams[] = [
+      const charts: HYPERDOT_API.Chart[] = [
         {
-          id: 1,
+          index: 1,
           name: 'Query Result',
           type: 'data_table',
           closeable: true,
@@ -334,7 +334,7 @@ const QueryEditor = (props: Props) => {
       // if the query is owned by current user, we add new visualization tab
       if (props.editable) {
         charts.push({
-          id: 0,
+          index: 0,
           name: 'New Visualization',
           type: 'new',
           closeable: false,
@@ -343,12 +343,12 @@ const QueryEditor = (props: Props) => {
 
       chartMgr.reset(charts);
     } else {
-      const charts: ChartParams[] = [...(userQuery.charts ? userQuery.charts : [])];
+      const charts: HYPERDOT_API.Chart[] = [...(userQuery.charts ? userQuery.charts : [])];
 
       // if the query is owned by current user, we add new visualization tab
       if (props.editable) {
         charts.push({
-          id: 0,
+          index: 0,
           name: 'New Visualization',
           type: 'new',
           closeable: false,
@@ -434,6 +434,7 @@ const QueryEditor = (props: Props) => {
           }
           return v;
         });
+      console.log(charts);
 
       const body = {
         id: props.userQuery ? props.userQuery.id : 0,
@@ -449,6 +450,8 @@ const QueryEditor = (props: Props) => {
           return v;
         }),
       };
+      console.log(body.charts);
+      // return
 
       const res = await updateQuery(body, {});
       if (res.success) {

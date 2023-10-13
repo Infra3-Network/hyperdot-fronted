@@ -16,27 +16,15 @@ import {
 import React, { useEffect, useState } from 'react';
 
 import { Line, Area, Scatter, Column, Pie } from '@ant-design/charts';
-import {
-  AreaChartOutlined,
-  BarChartOutlined,
-  LineChartOutlined,
-  PieChartOutlined,
-  DotChartOutlined,
-  TableOutlined,
-  FieldNumberOutlined,
-  QuestionCircleOutlined,
-} from '@ant-design/icons';
+import { QuestionCircleOutlined } from '@ant-design/icons';
 import { TabManager } from './tabmanager';
 import styles from './charts.less';
 import { WaterMark } from '@ant-design/pro-layout';
-import { AreaChart } from '@/components/Charts/Template';
-import { ChartManager } from '@/components/Charts/manager';
-import { HYPERDOT_CHART } from '@/components/Charts/typings';
-import { ChartParams } from '@/components/Charts/types';
+import { type ChartProps } from '@/components/Charts/types';
 export interface ChartNodeProps {
   name: string;
   icon: React.ReactNode;
-  children: (props: HYPERDOT_CHART.ChartProps) => React.ReactNode;
+  children: (props: ChartProps) => React.ReactNode;
 }
 
 const getColumns = (queryData: any) => {
