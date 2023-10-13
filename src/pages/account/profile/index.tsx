@@ -103,7 +103,7 @@ const Dashboards = (user: HYPERDOT_API.CurrentUser) => {
   };
   return (
     <>
-      {data && (
+      {data && data.length > 0 && (
         <DashboardList
           {...{
             data,

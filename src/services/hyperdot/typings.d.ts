@@ -196,6 +196,7 @@ declare namespace HYPERDOT_API {
     description?: string;
     is_privacy?: boolean;
     stars?: number;
+    stared?: boolean;
     panels?: HYPERDOT_API.DashboardPanel[];
     created_at?: string;
     updated_at?: string;
@@ -231,5 +232,21 @@ declare namespace HYPERDOT_API {
     errorMessage?: string;
     errorCode?: int;
     data: Dashboard;
+  };
+
+  type UserDashboardFavorites = {
+    user_id?: number;
+    dashboard_id?: number;
+    dashboard_user_id?: number;
+    stared?: boolean;
+    created_at?: string;
+    updated_at?: string;
+  };
+
+  type UpdateUserDashboadFavoritesResponse = {
+    success: boolean;
+    errorMessage?: string;
+    errorCode?: int;
+    data: UserDashboardFavorites;
   };
 }

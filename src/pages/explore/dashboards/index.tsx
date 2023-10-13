@@ -53,7 +53,7 @@ const Dashboards = (props: Props) => {
       </Col>
       <Col span={18}>
         <Card bordered={false}>
-          {data && (
+          {data && data.length > 0 && (
             <DashboardList
               {...{
                 data: data,

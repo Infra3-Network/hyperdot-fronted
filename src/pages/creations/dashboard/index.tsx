@@ -1,5 +1,5 @@
 import { getInitialState } from '@/app';
-import { getDashboard, getQuery, getUser } from '@/services/hyperdot/api';
+import { getDashboard, getUser } from '@/services/hyperdot/api';
 import { Row, Col, message } from 'antd';
 import React, { useState } from 'react';
 import { history, useParams } from 'umi';
