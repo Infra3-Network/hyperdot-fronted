@@ -1,5 +1,5 @@
 import DashboardList from '@/components/DashboardList';
-import { listDashboard } from '@/services/hyperdot/api';
+import { listDashboard, listFavoriteDashboard } from '@/services/hyperdot/api';
 import { Card, Col, message, Row } from 'antd';
 import React from 'react';
 import ExploreMenu from '../components/Menu';
@@ -14,7 +14,7 @@ const Dashboards = (props: Props) => {
   const [total, setTotal] = React.useState(0);
   const [data, setData] = React.useState<HYPERDOT_API.Dashboard[]>([]);
   React.useEffect(() => {
-    listDashboard(page, pageSize)
+    listFavoriteDashboard(page, pageSize)
       .then((res) => {
         if (!res.success) {
           message.error(res.errorMessage);
@@ -31,7 +31,7 @@ const Dashboards = (props: Props) => {
 
   const onChange = (p: number, ps: number) => {
     setPage(p);
-    listDashboard(p, ps)
+    listFavoriteDashboard(p, ps)
       .then((res) => {
         if (!res.success) {
           message.error(res.errorMessage);

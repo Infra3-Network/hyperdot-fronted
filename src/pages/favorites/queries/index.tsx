@@ -1,5 +1,5 @@
 import QueryList from '@/components/QueryList';
-import { listQuery } from '@/services/hyperdot/api';
+import { listFavoriteQuery, listQuery } from '@/services/hyperdot/api';
 import { Card, Col, message, Row } from 'antd';
 import React from 'react';
 import ExploreMenu from '../components/Menu';
@@ -14,7 +14,7 @@ const Queries = (props: Props) => {
   const [total, setTotal] = React.useState(0);
   const [data, setData] = React.useState<HYPERDOT_API.ListQueryData[]>([]);
   React.useEffect(() => {
-    listQuery(page, pageSize)
+    listFavoriteQuery(page, pageSize)
       .then((res) => {
         if (res.data == undefined) {
           return;
@@ -29,7 +29,7 @@ const Queries = (props: Props) => {
 
   const onChange = (p: number, ps: number) => {
     setPage(p);
-    listQuery(p, ps)
+    listFavoriteQuery(p, ps)
       .then((res) => {
         if (res.data == undefined) {
           return;

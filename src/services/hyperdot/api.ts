@@ -124,6 +124,25 @@ export async function listQuery(
   });
 }
 
+export async function listFavoriteQuery(
+  page: number,
+  pageSize: number,
+  userId?: number,
+  options?: { [key: string]: any },
+) {
+  let url = '/apis/v1/query/favorite?page=' + page + '&&page_size=' + pageSize;
+  if (userId) {
+    url += '&user_id=' + userId;
+  }
+  return request<HYPERDOT_API.ListQueryResponse>(url, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    ...(options || {}),
+  });
+}
+
 export async function listUserQuery(
   page: number,
   pageSize: number,
@@ -223,6 +242,23 @@ export async function listDashboard(
 ) {
   return request<HYPERDOT_API.ListDashboardResponse>(
     `/apis/v1/dashboard?page=${page}&page_size=${pageSize}`,
+    {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      ...(options || {}),
+    },
+  );
+}
+
+export async function listFavoriteDashboard(
+  page: number,
+  pageSize: number,
+  options?: { [key: string]: any },
+) {
+  return request<HYPERDOT_API.ListDashboardResponse>(
+    `/apis/v1/dashboard/favorite?page=${page}&page_size=${pageSize}`,
     {
       method: 'GET',
       headers: {
