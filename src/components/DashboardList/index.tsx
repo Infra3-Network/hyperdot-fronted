@@ -9,13 +9,6 @@ import UserAvatar from '../UserAvatar';
 
 import styles from './index.less';
 
-const IconText = ({ icon, text }: { icon: React.FC; text: string }) => (
-  <Space>
-    {React.createElement(icon)}
-    {text}
-  </Space>
-);
-
 type ContentProps = {
   dashboard: HYPERDOT_API.Dashboard;
 };
@@ -83,7 +76,7 @@ const DashboardList = (props: Props) => {
 
     updateFavoriteDashboard(true, {
       dashboard_user_id: userId,
-      dashboard_id: props.data[index].id,
+      dashboard_id: dashboardId,
     }).then((res) => {
       const nextStarArray = starArray.map((v, i) => {
         if (i == index) {
@@ -114,7 +107,7 @@ const DashboardList = (props: Props) => {
 
     updateFavoriteDashboard(false, {
       dashboard_user_id: userId,
-      dashboard_id: props.data[index].id,
+      dashboard_id: dashboardId,
     }).then((res) => {
       const nextStarArray = starArray.map((v, i) => {
         if (i == index) {

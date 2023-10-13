@@ -157,24 +157,23 @@ export default defineConfig({
       hideInMenu: false,
       routes: [
         {
-          name: 'Query detail',
-          path: 'queries/:id',
-          component: './creations/queries/details',
+          path: '/favorites',
+          icon: 'smile',
+          redirect: '/favorites/dashboards',
+        },
+        {
+          name: 'Favorite Queries',
+          icon: 'smile',
+          path: '/favorites/queries',
+          component: './favorites/queries',
           hideInMenu: true,
         },
         {
-          name: 'New Query',
+          name: 'Favorite Dashboards',
           icon: 'smile',
-          path: 'queries',
-          component: './creations/queries',
-          hideInMenu: true,
-        },
+          path: '/favorites/dashboards',
+          component: './favorites/dashboards',
 
-        {
-          name: 'New Dashboard',
-          icon: 'smile',
-          path: 'new-dashboard',
-          component: './creations/dashboard',
           hideInMenu: true,
         },
       ],
