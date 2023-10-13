@@ -170,7 +170,6 @@ const QueryVisualization = (props: QueryVisualizationProps) => {
       icon = chartNode.icon;
       children = chartNode.children;
     }
-    console.log(params.type, params.closeable);
     return params.index == undefined
       ? null
       : {
@@ -434,7 +433,6 @@ const QueryEditor = (props: Props) => {
           }
           return v;
         });
-      console.log(charts);
 
       const body = {
         id: props.userQuery ? props.userQuery.id : 0,
@@ -447,10 +445,14 @@ const QueryEditor = (props: Props) => {
           if (v.config && v.config.data) {
             delete v.config.data;
           }
-          return v;
+          return {
+            ...v,
+            query_id: Number(props.userQuery.id),
+            user_id: Number(props.user.id),
+          };
         }),
       };
-      console.log(body.charts);
+      console.log('save ', body.charts);
       // return
 
       const res = await updateQuery(body, {});
