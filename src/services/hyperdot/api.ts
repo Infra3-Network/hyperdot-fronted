@@ -236,12 +236,42 @@ export async function getDashboard(id: number, options?: { [key: string]: any })
 }
 
 export async function listDashboard(
+  {
+    page,
+    pageSize,
+    userId,
+    order,
+    timeRange,
+  }: { page: number; pageSize: number; userId?: number; order?: string; timeRange?: string },
+  options?: { [key: string]: any },
+) {
+  let url = `/apis/v1/dashboard?page=${page}&page_size=${pageSize}`;
+  if (userId) {
+    url += `&user_id=${userId}`;
+  }
+  if (order) {
+    url += `&order=${order}`;
+  }
+  if (timeRange) {
+    url += `&time_range=${timeRange}`;
+  }
+  console.log('url = ', url);
+  return request<HYPERDOT_API.ListDashboardResponse>(url, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    ...(options || {}),
+  });
+}
+
+export async function listFavoriteDashboard(
   page: number,
   pageSize: number,
   options?: { [key: string]: any },
 ) {
   return request<HYPERDOT_API.ListDashboardResponse>(
-    `/apis/v1/dashboard?page=${page}&page_size=${pageSize}`,
+    `/apis/v1/dashboard/favorite?page=${page}&page_size=${pageSize}`,
     {
       method: 'GET',
       headers: {
@@ -252,13 +282,9 @@ export async function listDashboard(
   );
 }
 
-export async function listFavoriteDashboard(
-  page: number,
-  pageSize: number,
-  options?: { [key: string]: any },
-) {
-  return request<HYPERDOT_API.ListDashboardResponse>(
-    `/apis/v1/dashboard/favorite?page=${page}&page_size=${pageSize}`,
+export async function listDashboardPopularTags(limit?: number, options?: { [key: string]: any }) {
+  return request<HYPERDOT_API.ListDashboardPopularTagsResponse>(
+    `/apis/v1/dashboard/tag/populars?limit=${limit ? limit : 10}`,
     {
       method: 'GET',
       headers: {

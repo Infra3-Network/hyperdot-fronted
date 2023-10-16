@@ -37,9 +37,29 @@ const data = [
 
 type Props = {
   name: string;
+  tags: Map<string, number>;
 };
 
 const Tags = (props: Props) => {
+  console.log(props.tags);
+  // convert props.tags to sorted array: first sort by value and if value equal then sort by key
+  const tagsArray = Array.from(props.tags, ([name, count]) => ({ name, count }));
+  tagsArray.sort((a, b) => {
+    if (a.count > b.count) {
+      return -1;
+    } else if (a.count < b.count) {
+      return 1;
+    } else {
+      if (a.name > b.name) {
+        return 1;
+      } else {
+        return -1;
+      }
+    }
+  });
+
+  console.log(tagsArray);
+
   return (
     <>
       <Card>

@@ -370,7 +370,7 @@ export const CreationDashboard = (props: Props) => {
         </Col>
       </Row>
 
-      <SettingsModal ctl={controlState} action={stateAction} />
+      <SettingsModal ctl={controlState} action={stateAction} dashboard={dashboard} />
       <TextWidgetModal ctl={controlState} action={stateAction} />
       {props.user && (
         <VisualizationModal ctl={controlState} action={stateAction} user={props.user} />

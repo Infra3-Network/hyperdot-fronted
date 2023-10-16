@@ -32,6 +32,7 @@ const Content = (props: ContentProps) => {
 };
 
 type Props = {
+  currentUser: HYPERDOT_API.CurrentUser;
   data: HYPERDOT_API.Dashboard[];
   total: number;
   pageSize: number;
@@ -45,23 +46,27 @@ type StarState = {
 };
 
 const DashboardList = (props: Props) => {
-  const [starArray, setStarArray] = React.useState<StarState[]>(
-    props.data.map((v) => {
-      if (v.id) {
-        return {
-          id: v.id,
-          stared: v.stared ? v.stared : false,
-          stars: v.stars ? v.stars : 0,
-        };
-      } else {
-        return {
-          id: -1,
-          stared: false,
-          stars: 0,
-        };
-      }
-    }),
-  );
+  const initStarArray = props.data.map((v) => {
+    if (v.id) {
+      return {
+        id: v.id,
+        stared: v.stared_user_id ? v.stared_user_id == props.currentUser.id : false,
+        stars: v.favorites_count ? v.favorites_count : 0,
+      };
+    } else {
+      return {
+        id: -1,
+        stared: false,
+        stars: 0,
+      };
+    }
+  });
+  const [starArray, setStarArray] = React.useState<StarState[]>([]);
+  React.useEffect(() => {
+    setStarArray(initStarArray);
+  }, [props.data]);
+
+  console.log('starArray = ', starArray, 'dashbordData = ', props.data);
 
   const handleStarClick = (index: number) => {
     if (!starArray[index]) {
@@ -143,12 +148,12 @@ const DashboardList = (props: Props) => {
           actions={[]}
           extra={
             <Space>
-              {item.id && starArray[index].stared ? (
+              {starArray[index] && starArray[index].stared ? (
                 <StarFilled onClick={() => handleUnstarClick(index)} />
               ) : (
                 <StarOutlined onClick={() => handleStarClick(index)} />
               )}
-              {starArray[index].stars}
+              {starArray[index] && starArray[index].stars}
             </Space>
           }
         >

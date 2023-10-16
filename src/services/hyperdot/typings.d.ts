@@ -198,7 +198,10 @@ declare namespace HYPERDOT_API {
     is_privacy?: boolean;
     stars?: number;
     stared?: boolean;
+    stared_user_id?: number;
+    favorites_count?: number;
     panels?: HYPERDOT_API.DashboardPanel[];
+    tags?: string;
     created_at?: string;
     updated_at?: string;
     deleted_at?: string;
@@ -219,6 +222,13 @@ declare namespace HYPERDOT_API {
       dashboards: Dashboard[];
       total: number;
     };
+  };
+
+  type ListDashboardPopularTagsResponse = {
+    success: boolean;
+    errorMessage?: string;
+    errorCode?: int;
+    data: Map<string, number>;
   };
 
   type CreateDashboardResponse = {
