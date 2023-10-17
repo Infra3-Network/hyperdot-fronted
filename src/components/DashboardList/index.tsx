@@ -50,7 +50,7 @@ const DashboardList = (props: Props) => {
     if (v.id) {
       return {
         id: v.id,
-        stared: v.stared_user_id ? v.stared_user_id == props.currentUser.id : false,
+        stared: v.stared ? v.stared : false,
         stars: v.favorites_count ? v.favorites_count : 0,
       };
     } else {

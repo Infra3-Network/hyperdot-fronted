@@ -96,7 +96,7 @@ const Settings: React.FC = () => {
   };
 
   return (
-    <GridContent>
+    <GridContent contentWidth={'Fixed'}>
       {user && (
         <div
           className={styles.main}

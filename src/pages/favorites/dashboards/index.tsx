@@ -1,37 +1,57 @@
+import { getInitialState } from '@/app';
 import DashboardList from '@/components/DashboardList';
-import { listDashboard, listFavoriteDashboard } from '@/services/hyperdot/api';
+import Rank from '@/components/ListRank';
+import Tags from '@/components/ListTag';
+import { listDashboardPopularTags, listFavoriteDashboard } from '@/services/hyperdot/api';
+import { GridContent } from '@ant-design/pro-layout';
 import { Card, Col, message, Row } from 'antd';
 import React from 'react';
 import ExploreMenu from '../components/Menu';
-import Rank from '../components/Rank';
-import Tags from '../components/Tags';
 
 type Props = {};
 
 const Dashboards = (props: Props) => {
   const pageSize = 10;
+  const [currentUser, setCurrentUser] = React.useState<HYPERDOT_API.CurrentUser | undefined>(
+    undefined,
+  );
   const [page, setPage] = React.useState(1);
   const [total, setTotal] = React.useState(0);
+  const [order, setOrder] = React.useState('favorites');
+  const [favoritesTimeRange, setFavoritesTimeRange] = React.useState('7d');
+  const [trendingTimeRange, setTrendingTimeRange] = React.useState('4h');
   const [data, setData] = React.useState<HYPERDOT_API.Dashboard[]>([]);
-  React.useEffect(() => {
-    listFavoriteDashboard(page, pageSize)
-      .then((res) => {
-        if (!res.success) {
-          message.error(res.errorMessage);
-          return;
-        }
+  const [popularTags, setPopularTags] = React.useState<Map<string, number> | undefined>(undefined);
 
-        setData(res.data.dashboards);
-        setTotal(res.data.total);
-      })
-      .catch((err) => {
-        message.error(err);
-      });
-  }, []);
+  const handleParamChange = (type: string, newValue: any) => {
+    const queries = {
+      page: page,
+      pageSize: pageSize,
+      order: order,
+      timeRange: order == 'favorites' ? favoritesTimeRange : trendingTimeRange,
+      userId: undefined,
+    };
 
-  const onChange = (p: number, ps: number) => {
-    setPage(p);
-    listFavoriteDashboard(p, ps)
+    if (type == 'page') {
+      queries.page = newValue;
+    }
+
+    if (type == 'order') {
+      queries.order = newValue;
+      queries.timeRange = newValue == 'favorites' ? favoritesTimeRange : trendingTimeRange;
+    }
+
+    if (type == 'favoritesTimeRange') {
+      queries.order = 'favorites';
+      queries.timeRange = newValue;
+    }
+
+    if (type == 'trendingTimeRange') {
+      queries.order = 'trending';
+      queries.timeRange = newValue;
+    }
+
+    listFavoriteDashboard(queries)
       .then((res) => {
         if (!res.success) {
           message.error(res.errorMessage);
@@ -46,37 +66,79 @@ const Dashboards = (props: Props) => {
       });
   };
 
-  return (
-    <Row gutter={[24, 24]}>
-      <Col span={24}>
-        <ExploreMenu />
-      </Col>
-      <Col span={18}>
-        <Card bordered={false}>
-          {data && data.length > 0 && (
-            <DashboardList
-              {...{
-                data: data,
-                total: total,
-                pageSize: pageSize,
-                onChange: onChange,
-              }}
-            />
-          )}
-        </Card>
-      </Col>
+  React.useEffect(() => {
+    getInitialState().then((res) => {
+      if (!res.currentUser) {
+        history.push('/user/login');
+        return;
+      }
 
-      <Col span={6}>
-        <Row gutter={[0, 32]}>
-          <Col span={24}>
-            <Rank name="dashboards" />
-          </Col>
-          <Col span={24}>
-            <Tags name="dashboard" />
-          </Col>
-        </Row>
-      </Col>
-    </Row>
+      setCurrentUser(res.currentUser);
+    });
+    handleParamChange('page', page);
+
+    listDashboardPopularTags()
+      .then((res) => {
+        if (!res.success) {
+          message.error(res.errorMessage);
+          return;
+        }
+
+        setPopularTags(res.data);
+      })
+      .catch((err) => {
+        message.error(err);
+      });
+  }, []);
+
+  const onChange = (p: number, ps: number) => {
+    handleParamChange('page', p);
+    setPage(p);
+  };
+
+  return (
+    <GridContent contentWidth={'Fixed'}>
+      <Row gutter={[24, 24]}>
+        <Col span={24}>
+          <ExploreMenu />
+        </Col>
+        <Col span={15}>
+          <Card bordered={false}>
+            {currentUser && data && data.length > 0 && (
+              <DashboardList
+                {...{
+                  currentUser: currentUser,
+                  data: data,
+                  total: total,
+                  pageSize: pageSize,
+                  onChange: onChange,
+                }}
+              />
+            )}
+          </Card>
+        </Col>
+
+        <Col span={8}>
+          <Row gutter={[0, 32]}>
+            <Col span={24}>
+              <Rank
+                name="dashboards"
+                {...{
+                  order,
+                  setOrder,
+                  favoritesTimeRange,
+                  setFavoritesTimeRange,
+                  trendingTimeRange,
+                  setTrendingTimeRange,
+                  onParamChange: handleParamChange,
+                }}
+              />
+            </Col>
+            <Col span={24}>{popularTags && <Tags name="dashboard" tags={popularTags} />}</Col>
+          </Row>
+        </Col>
+      </Row>
+    </GridContent>
   );
 };
 

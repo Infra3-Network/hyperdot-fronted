@@ -1,39 +1,5 @@
 import { NumberOutlined, TagOutlined } from '@ant-design/icons';
-import { Card, Col, Row, Avatar, List } from 'antd';
-import React from 'react';
-
-const data = [
-  {
-    title: 'Ant Design Title 1',
-  },
-  {
-    title: 'Ant Design Title 2',
-  },
-  {
-    title: 'Ant Design Title 3',
-  },
-  {
-    title: 'Ant Design Title 4',
-  },
-  {
-    title: 'Ant Design Title 5',
-  },
-  {
-    title: 'Ant Design Title 6',
-  },
-  {
-    title: 'Ant Design Title 7',
-  },
-  {
-    title: 'Ant Design Title 8',
-  },
-  {
-    title: 'Ant Design Title 9',
-  },
-  {
-    title: 'Ant Design Title 10',
-  },
-];
+import { Card, Col, Row, List } from 'antd';
 
 type Props = {
   name: string;
@@ -41,24 +7,19 @@ type Props = {
 };
 
 const Tags = (props: Props) => {
-  console.log(props.tags);
+  console.log('tagProps ', props.tags);
   // convert props.tags to sorted array: first sort by value and if value equal then sort by key
-  const tagsArray = Array.from(props.tags, ([name, count]) => ({ name, count }));
-  tagsArray.sort((a, b) => {
-    if (a.count > b.count) {
-      return -1;
-    } else if (a.count < b.count) {
-      return 1;
-    } else {
-      if (a.name > b.name) {
-        return 1;
-      } else {
-        return -1;
-      }
-    }
+  const tagsArray: { tag: string; count: number }[] = Object.keys(props.tags).map((k) => {
+    return { tag: k, count: props.tags[k] };
   });
 
-  console.log(tagsArray);
+  tagsArray.sort((a, b) => {
+    if (a.count > b.count) return -1;
+    if (a.count < b.count) return 1;
+    if (a.tag > b.tag) return 1;
+    if (a.tag < b.tag) return -1;
+    return 0;
+  });
 
   return (
     <>
@@ -70,19 +31,19 @@ const Tags = (props: Props) => {
           <Col span={24}>
             <List
               itemLayout="horizontal"
-              dataSource={data}
+              dataSource={tagsArray}
               renderItem={(item, index) => (
                 <List.Item>
                   <List.Item.Meta
                     avatar={<TagOutlined />}
-                    title={<a href="https://ant.design">{item.title}</a>}
+                    title={<a href="#">{item.tag}</a>}
                     // description="Ant Design, a design language for background applications, is refined by Ant UED Team"
                   />
                   <div>
                     <span>
                       <NumberOutlined />
                     </span>
-                    <span>56789</span>
+                    <span>{item.count}</span>
                   </div>
                 </List.Item>
               )}

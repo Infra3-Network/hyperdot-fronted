@@ -1,6 +1,7 @@
 import { getInitialState } from '@/app';
 import DashboardList from '@/components/DashboardList';
 import { listDashboard, listDashboardPopularTags } from '@/services/hyperdot/api';
+import { GridContent } from '@ant-design/pro-layout';
 import { Card, Col, message, Row } from 'antd';
 import React from 'react';
 import { history } from 'umi';
@@ -21,7 +22,7 @@ const Dashboards = (props: Props) => {
   const [favoritesTimeRange, setFavoritesTimeRange] = React.useState('7d');
   const [trendingTimeRange, setTrendingTimeRange] = React.useState('4h');
   const [data, setData] = React.useState<HYPERDOT_API.Dashboard[]>([]);
-  const [popularTags, setPopularTags] = React.useState<Map<string, number>>(new Map());
+  const [popularTags, setPopularTags] = React.useState<Map<string, number> | undefined>(undefined);
 
   const handleParamChange = (type: string, newValue: any) => {
     const queries = {
@@ -38,6 +39,7 @@ const Dashboards = (props: Props) => {
 
     if (type == 'order') {
       queries.order = newValue;
+      queries.timeRange = newValue == 'favorites' ? favoritesTimeRange : trendingTimeRange;
     }
 
     if (type == 'favoritesTimeRange') {
@@ -92,49 +94,53 @@ const Dashboards = (props: Props) => {
 
   const onChange = (p: number, ps: number) => {
     handleParamChange('page', p);
+    setPage(p);
   };
 
   return (
-    <Row gutter={[24, 24]}>
-      <Col span={24}>
-        <ExploreMenu />
-      </Col>
-      <Col span={18}>
-        <Card bordered={false}>
-          {currentUser && data && (
-            <DashboardList
-              {...{
-                currentUser: currentUser,
-                data: data,
-                total: total,
-                pageSize: pageSize,
-                onChange: onChange,
-              }}
-            />
-          )}
-        </Card>
-      </Col>
+    <GridContent contentWidth={'Fixed'}>
+      <Row gutter={[24, 24]}>
+        <Col span={24}>
+          <ExploreMenu />
+        </Col>
 
-      <Col span={6}>
-        <Row gutter={[0, 32]}>
-          <Col span={24}>
-            <Rank
-              name="dashboards"
-              {...{
-                order,
-                setOrder,
-                favoritesTimeRange,
-                setFavoritesTimeRange,
-                trendingTimeRange,
-                setTrendingTimeRange,
-                onParamChange: handleParamChange,
-              }}
-            />
-          </Col>
-          <Col span={24}>{popularTags && <Tags name="dashboard" tags={popularTags} />}</Col>
-        </Row>
-      </Col>
-    </Row>
+        <Col span={15}>
+          <Card>
+            {currentUser && data && (
+              <DashboardList
+                {...{
+                  currentUser: currentUser,
+                  data: data,
+                  total: total,
+                  pageSize: pageSize,
+                  onChange: onChange,
+                }}
+              />
+            )}
+          </Card>
+        </Col>
+
+        <Col span={8}>
+          <Row gutter={[0, 32]}>
+            <Col span={24}>
+              <Rank
+                name="dashboards"
+                {...{
+                  order,
+                  setOrder,
+                  favoritesTimeRange,
+                  setFavoritesTimeRange,
+                  trendingTimeRange,
+                  setTrendingTimeRange,
+                  onParamChange: handleParamChange,
+                }}
+              />
+            </Col>
+            <Col span={24}>{popularTags && <Tags name="dashboard" tags={popularTags} />}</Col>
+          </Row>
+        </Col>
+      </Row>
+    </GridContent>
   );
 };
 

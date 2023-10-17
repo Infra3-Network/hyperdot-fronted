@@ -266,20 +266,33 @@ export async function listDashboard(
 }
 
 export async function listFavoriteDashboard(
-  page: number,
-  pageSize: number,
+  {
+    page,
+    pageSize,
+    userId,
+    order,
+    timeRange,
+  }: { page: number; pageSize: number; userId?: number; order?: string; timeRange?: string },
   options?: { [key: string]: any },
 ) {
-  return request<HYPERDOT_API.ListDashboardResponse>(
-    `/apis/v1/dashboard/favorite?page=${page}&page_size=${pageSize}`,
-    {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      ...(options || {}),
+  let url = `/apis/v1/dashboard/favorite?page=${page}&page_size=${pageSize}`;
+  if (userId) {
+    url += `&user_id=${userId}`;
+  }
+  if (order) {
+    url += `&order=${order}`;
+  }
+  if (timeRange) {
+    url += `&time_range=${timeRange}`;
+  }
+  console.log('url = ', url);
+  return request<HYPERDOT_API.ListDashboardResponse>(url, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
     },
-  );
+    ...(options || {}),
+  });
 }
 
 export async function listDashboardPopularTags(limit?: number, options?: { [key: string]: any }) {

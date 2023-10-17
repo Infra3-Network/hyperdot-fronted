@@ -2,12 +2,12 @@ import { CodeOutlined, DashboardOutlined } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
 import { Menu } from 'antd';
 import { useState } from 'react';
-import { history, Link } from 'umi';
+import { history, Link, useParams } from 'umi';
 
 const items: MenuProps['items'] = [
   {
     label: (
-      <Link to="/favorites/dashboards" key={'dashboards'}>
+      <Link to="/explore/dashboards" key={'dashboards'}>
         Dashboards
       </Link>
     ),
@@ -17,7 +17,7 @@ const items: MenuProps['items'] = [
   },
   {
     label: (
-      <Link to="/favorites/queries" key={'queries'}>
+      <Link to="/explore/queries" key={'queries'}>
         Queries
       </Link>
     ),

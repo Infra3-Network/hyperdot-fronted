@@ -1,10 +1,10 @@
 import QueryList from '@/components/QueryList';
+import Rank from '@/components/ListRank';
+import Tags from '@/components/ListTag';
 import { listFavoriteQuery, listQuery } from '@/services/hyperdot/api';
 import { Card, Col, message, Row } from 'antd';
 import React from 'react';
 import ExploreMenu from '../components/Menu';
-import Rank from '../components/Rank';
-import Tags from '../components/Tags';
 
 type Props = {};
 

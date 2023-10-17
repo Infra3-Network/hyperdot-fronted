@@ -12,9 +12,16 @@ import { Avatar, Card, Col, message, Row } from 'antd';
 import React from 'react';
 import styles from './index.less';
 import { formatNumberWithCommas } from '@/utils';
-import { getUser, listQuery, listUserDashboard, listUserQuery } from '@/services/hyperdot/api';
+import {
+  getUser,
+  listDashboard,
+  listQuery,
+  listUserDashboard,
+  listUserQuery,
+} from '@/services/hyperdot/api';
 import QueryList from '@/components/QueryList';
 import DashboardList from '@/components/DashboardList';
+import { GridContent } from '@ant-design/pro-layout';
 
 type Props = {};
 
@@ -73,39 +80,40 @@ const Dashboards = (user: HYPERDOT_API.CurrentUser) => {
   const [page, setPage] = React.useState(1);
   const [data, setData] = React.useState<HYPERDOT_API.Dashboard[]>([]);
   const [total, setTotal] = React.useState(0);
-  React.useEffect(() => {
-    listUserDashboard(1, 10, user.id)
+
+  const handleChange = (p: number, ps: number) => {
+    listDashboard({
+      page: p,
+      pageSize: ps,
+      userId: user.id,
+    })
       .then((res) => {
-        if (res.data == undefined) {
+        if (!res.success) {
+          message.error(res.errorMessage);
           return;
         }
+
         setData(res.data.dashboards);
         setTotal(res.data.total);
       })
       .catch((err) => {
-        console.log(err);
+        message.error(err);
       });
+  };
+
+  React.useEffect(() => {
+    handleChange(1, pageSize);
   }, []);
 
   const onChange = (p: number, ps: number) => {
-    setPage(p);
-    listUserDashboard(p, ps, user.id)
-      .then((res) => {
-        if (res.data == undefined) {
-          return;
-        }
-        setData(res.data.dashboards);
-        setTotal(res.data.total);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    handleChange(p, ps);
   };
   return (
     <>
       {data && data.length > 0 && (
         <DashboardList
           {...{
+            currentUser: user,
             data,
             total,
             pageSize,
@@ -299,37 +307,28 @@ const Profile = (props: Props) => {
   return (
     <>
       {user ? (
-        <Row gutter={[0, 0]} justify="center" align="top">
-          <Col span={3}>
-            <UserIcon {...user} />
-          </Col>
-          <Col span={16}>
-            <Introduce {...user} />
-          </Col>
-          {/* <Col span={3}>
-            <Horner />
-          </Col> */}
+        <GridContent contentWidth={'Fixed'}>
+          <Row gutter={[0, 0]} justify="center" align="top">
+            <Col span={4}>
+              <UserIcon {...user} />
+            </Col>
+            <Col span={16}>
+              <Introduce {...user} />
+            </Col>
 
-          {/* <Col span={18} style={{ marginTop: '48px' }}>
-            <div className={styles.separator}>
-              <span className={styles.textLeft}>左侧文本</span>
-              <hr className={styles.line} />
-              <span className={styles.textRight}>右侧文本</span>
-            </div>
-          </Col> */}
+            <Col span={24} style={{ marginTop: '48px' }}>
+              <Card title={user.username + ' dashboards'}>
+                <Dashboards {...user} />
+              </Card>
+            </Col>
 
-          <Col span={18} style={{ marginTop: '48px' }}>
-            <Card title={user.username + ' dashboards'}>
-              <Dashboards {...user} />
-            </Card>
-          </Col>
-
-          <Col span={18} style={{ marginTop: '48px' }}>
-            <Card title={user.username + ' queries'}>
-              <Queries {...user} />
-            </Card>
-          </Col>
-        </Row>
+            <Col span={24} style={{ marginTop: '48px' }}>
+              <Card title={user.username + ' queries'}>
+                <Queries {...user} />
+              </Card>
+            </Col>
+          </Row>
+        </GridContent>
       ) : null}
     </>
   );
