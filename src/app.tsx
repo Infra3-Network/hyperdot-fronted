@@ -11,6 +11,7 @@ import CreationDropdownMenu from './pages/creations/components/Menu';
 
 const isDev = process.env.NODE_ENV === 'development';
 const loginPath = '/user/login';
+const registerPath = '/user/register';
 
 /** 获取用户信息比较慢的时候会展示一个 loading */
 export const initialStateConfig = {
@@ -37,7 +38,7 @@ export async function getInitialState(): Promise<{
     return undefined;
   };
   // 如果不是登录页面，执行
-  if (history.location.pathname !== loginPath) {
+  if (history.location.pathname !== loginPath && history.location.pathname !== registerPath) {
     const currentUser = await fetchUserInfo();
     return {
       fetchUserInfo,
@@ -45,6 +46,7 @@ export async function getInitialState(): Promise<{
       settings: defaultSettings,
     };
   }
+
   return {
     fetchUserInfo,
     settings: defaultSettings,
@@ -64,7 +66,11 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
     onPageChange: () => {
       const { location } = history;
       // 如果没有登录，重定向到 login
-      if (!initialState?.currentUser && location.pathname !== loginPath) {
+      if (
+        !initialState?.currentUser &&
+        location.pathname !== loginPath &&
+        location.pathname !== registerPath
+      ) {
         history.push(loginPath);
       }
     },
@@ -150,8 +156,15 @@ export const request: RequestConfig = {
   // },
   requestInterceptors: [
     (url, options) => {
+      const location = history.location.pathname;
+      if (url == '/user/register') {
+        return {
+          url: url,
+          options: { ...options, interceptors: false },
+        };
+      }
       const token = localStorage.getItem('token');
-      if (token === null) {
+      if (token === null && location !== registerPath && location !== loginPath) {
         history.replace({
           pathname: '/user/login',
         });

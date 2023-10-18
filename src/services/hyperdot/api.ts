@@ -2,6 +2,20 @@
 /* eslint-disable */
 import { request } from 'umi';
 
+export async function createAccount(
+  body: HYPERDOT_API.CreateAccountRequest,
+  options?: { [key: string]: any },
+) {
+  return request<HYPERDOT_API.CreateAccountResponse>('/apis/v1/user/auth/createAccount', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
+    ...(options || {}),
+  });
+}
+
 /** Login api POST /apis/user/login */
 export async function login(body: HYPERDOT_API.LoginParams, options?: { [key: string]: any }) {
   return request('/apis/v1/user/auth/login', {

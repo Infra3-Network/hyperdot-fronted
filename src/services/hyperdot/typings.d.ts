@@ -63,6 +63,19 @@ declare namespace HYPERDOT_API {
     data?: any;
   };
 
+  type CreateAccountRequest = {
+    provider: string;
+    username: string;
+    email: string;
+    password: string;
+  };
+
+  type CreateAccountResponse = {
+    success: boolean;
+    errorMessage?: string;
+    errorCode?: int;
+  };
+
   type UpdateUserResponse = {
     success: boolean;
     errorMessage?: string;

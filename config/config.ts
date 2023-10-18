@@ -88,6 +88,7 @@ export default defineConfig({
           icon: 'smile',
           path: '/user/register',
           component: './user/register',
+          access: 'canRegister',
         },
         {
           component: '404',
