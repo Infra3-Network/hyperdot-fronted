@@ -113,6 +113,7 @@ declare namespace HYPERDOT_API {
     uid: string;
     username: string;
     email: any;
+    favorites_count: number;
   };
 
   type ListQueryResponse = {

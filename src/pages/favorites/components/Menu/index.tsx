@@ -7,7 +7,7 @@ import { history, Link, useParams } from 'umi';
 const items: MenuProps['items'] = [
   {
     label: (
-      <Link to="/explore/dashboards" key={'dashboards'}>
+      <Link to="/favorites/dashboards" key={'dashboards'}>
         Dashboards
       </Link>
     ),
@@ -17,7 +17,7 @@ const items: MenuProps['items'] = [
   },
   {
     label: (
-      <Link to="/explore/queries" key={'queries'}>
+      <Link to="/favorites/queries" key={'queries'}>
         Queries
       </Link>
     ),

@@ -6,6 +6,7 @@ import { listDashboardPopularTags, listFavoriteDashboard } from '@/services/hype
 import { GridContent } from '@ant-design/pro-layout';
 import { Card, Col, message, Row } from 'antd';
 import React from 'react';
+import { history } from 'umi';
 import ExploreMenu from '../components/Menu';
 
 type Props = {};

@@ -12,13 +12,7 @@ import { Avatar, Card, Col, message, Row } from 'antd';
 import React from 'react';
 import styles from './index.less';
 import { formatNumberWithCommas } from '@/utils';
-import {
-  getUser,
-  listDashboard,
-  listQuery,
-  listUserDashboard,
-  listUserQuery,
-} from '@/services/hyperdot/api';
+import { getUser, listDashboard, listQuery } from '@/services/hyperdot/api';
 import QueryList from '@/components/QueryList';
 import DashboardList from '@/components/DashboardList';
 import { GridContent } from '@ant-design/pro-layout';
@@ -28,29 +22,21 @@ type Props = {};
 const Queries = (user: HYPERDOT_API.CurrentUser) => {
   const pageSize = 3;
   const [page, setPage] = React.useState(1);
-  const [total, setTotal] = React.useState(0);
   const [data, setData] = React.useState<HYPERDOT_API.ListQueryData[]>([]);
-  React.useEffect(() => {
-    listQuery(page, pageSize, user.id)
-      .then((res) => {
-        if (res.data == undefined) {
-          return;
-        }
-        setData(res.data.queries);
-        setTotal(res.data.total);
-      })
-      .catch((err) => {
-        message.error(err);
-      });
-  }, []);
+  const [total, setTotal] = React.useState(0);
 
-  const onChange = (p: number, ps: number) => {
-    setPage(p);
-    listQuery(p, ps)
+  const handleChange = (p: number, ps: number) => {
+    listQuery({
+      page: p,
+      pageSize: ps,
+      userId: user.id,
+    })
       .then((res) => {
-        if (res.data == undefined) {
+        if (!res.success) {
+          message.error(res.errorMessage);
           return;
         }
+
         setData(res.data.queries);
         setTotal(res.data.total);
       })
@@ -59,11 +45,21 @@ const Queries = (user: HYPERDOT_API.CurrentUser) => {
       });
   };
 
+  React.useEffect(() => {
+    handleChange(page, pageSize);
+  }, []);
+
+  const onChange = (p: number, ps: number) => {
+    handleChange(p, ps);
+    setPage(p);
+  };
+
   return (
     <>
       {data && data.length > 0 && (
         <QueryList
           {...{
+            currentUser: user,
             data,
             total,
             pageSize,
@@ -102,11 +98,12 @@ const Dashboards = (user: HYPERDOT_API.CurrentUser) => {
   };
 
   React.useEffect(() => {
-    handleChange(1, pageSize);
+    handleChange(page, pageSize);
   }, []);
 
   const onChange = (p: number, ps: number) => {
     handleChange(p, ps);
+    setPage(p);
   };
   return (
     <>

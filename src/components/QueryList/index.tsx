@@ -9,17 +9,22 @@ import UserAvatar from '../UserAvatar';
 
 import styles from './index.less';
 
-const ListContent = (data: HYPERDOT_API.ListQueryData) => {
+type ContentProps = {
+  query: HYPERDOT_API.ListQueryData;
+};
+
+const Content = (props: ContentProps) => {
+  const query = props.query;
   return (
     <>
       <div className={styles.listContent}>
         <div className={styles.listContentItem}>
           <span>
-            <Link to={'/account/center/' + data.user_id}>@{data.username}</Link>
+            <Link to={'/account/center/' + query.user_id}>@{query.username}</Link>
           </span>
         </div>
         <div className={styles.listContentItem}>
-          <span>updated {formatTimeAgo(data.updated_at)}</span>
+          <span>updated {formatTimeAgo(query.updated_at)}</span>
         </div>
       </div>
     </>
@@ -27,6 +32,7 @@ const ListContent = (data: HYPERDOT_API.ListQueryData) => {
 };
 
 type Props = {
+  currentUser: HYPERDOT_API.CurrentUser;
   data: HYPERDOT_API.ListQueryData[];
   total: number;
   pageSize: number;
@@ -40,23 +46,25 @@ type StarState = {
 };
 
 const QueryList = (props: Props) => {
-  const [starArray, setStarArray] = React.useState<StarState[]>(
-    props.data.map((v) => {
-      if (v.id) {
-        return {
-          id: v.id,
-          stared: v.stared ? v.stared : false,
-          stars: v.stars ? v.stars : 0,
-        };
-      } else {
-        return {
-          id: -1,
-          stared: false,
-          stars: 0,
-        };
-      }
-    }),
-  );
+  const initStarArray = props.data.map((v) => {
+    if (v.id) {
+      return {
+        id: v.id,
+        stared: v.stared ? v.stared : false,
+        stars: v.favorites_count ? v.favorites_count : 0,
+      };
+    } else {
+      return {
+        id: -1,
+        stared: false,
+        stars: 0,
+      };
+    }
+  });
+  const [starArray, setStarArray] = React.useState<StarState[]>([]);
+  React.useEffect(() => {
+    setStarArray(initStarArray);
+  }, [props.data]);
 
   const handleStarClick = (index: number) => {
     if (!starArray[index]) {
@@ -126,38 +134,33 @@ const QueryList = (props: Props) => {
       size="large"
       pagination={{
         onChange: props.onChange,
+        size: 'small',
         pageSize: props.pageSize,
         total: props.total,
-        size: 'small',
+
         style: { textAlign: 'center' },
       }}
       dataSource={props.data}
-      // footer={
-      //     <div>
-      //         <b>ant design</b> footer part
-      //     </div>
-      // }
       renderItem={(item, index) => (
         <List.Item
           key={item.id}
           actions={[]}
           extra={
             <Space>
-              {item.id && starArray[index].stared ? (
+              {starArray[index] && starArray[index].stared ? (
                 <StarFilled onClick={() => handleUnstarClick(index)} />
               ) : (
                 <StarOutlined onClick={() => handleStarClick(index)} />
               )}
-              {starArray[index].stars}
+              {starArray[index] && starArray[index].stars}
             </Space>
           }
         >
           <List.Item.Meta
             avatar={<UserAvatar size={26} username={item.username} icon_url={item.icon_url} />}
             title={<Link to={'/creations/queries/' + item.id}>{item.name}</Link>}
-            // description={item.description}
           />
-          <ListContent {...item} />
+          <Content query={item} />
         </List.Item>
       )}
     />
