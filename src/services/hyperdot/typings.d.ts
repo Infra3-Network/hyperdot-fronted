@@ -6,6 +6,34 @@ declare namespace HYPERDOT_API {
     data?: any;
   };
 
+  type QueryEngineDatasetMetadata = {
+    id: string;
+    title: string;
+    description: string;
+  };
+  type QueryEngine = {
+    name: string;
+    datasets: Map<string, QueryEngineDatasetMetadata>;
+  };
+
+  type QueryEngineDataset = {
+    chains: Map<string, any>;
+  };
+
+  type GetSystemQueryEngineDatasetResponse = {
+    success: boolean;
+    errorMessage?: string;
+    errorCode?: int;
+    data: QueryEngineDataset;
+  };
+
+  type ListSystemQueryEnginesResponse = {
+    success: boolean;
+    errorMessage?: string;
+    errorCode?: int;
+    data: QueryEngine[];
+  };
+
   type CurrentUser = {
     id: number;
     provider: string;

@@ -34,7 +34,7 @@ export const CreationQuery = () => {
             </Card>
           </Col>
 
-          <Col xl={18} lg={24} md={24} sm={24} xs={24} style={{ marginBottom: 24 }}>
+          <Col span={17} style={{ marginBottom: 24 }}>
             {user && <QueryEditor user={user} editable={true} />}
           </Col>
         </Row>

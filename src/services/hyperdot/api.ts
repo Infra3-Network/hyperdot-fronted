@@ -2,6 +2,26 @@
 /* eslint-disable */
 import { request } from 'umi';
 
+export async function listSystemQueryEngines(options?: { [key: string]: any }) {
+  return request<HYPERDOT_API.ListSystemQueryEnginesResponse>('/apis/v1/system/engines', {
+    method: 'GET',
+    ...(options || {}),
+  });
+}
+
+export async function getSystemQueryEngineDataset(
+  queryEngine: string,
+  options?: { [key: string]: any },
+) {
+  return request<HYPERDOT_API.GetSystemQueryEngineDatasetResponse>(
+    '/apis/v1/system/engines/' + queryEngine,
+    {
+      method: 'GET',
+      ...(options || {}),
+    },
+  );
+}
+
 export async function createAccount(
   body: HYPERDOT_API.CreateAccountRequest,
   options?: { [key: string]: any },
