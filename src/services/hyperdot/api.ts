@@ -179,6 +179,36 @@ export async function listFavoriteQuery(
   });
 }
 
+export async function listBrowseQuery(
+  {
+    page,
+    pageSize,
+    userId,
+    order,
+    timeRange,
+  }: { page: number; pageSize: number; userId?: number; order?: string; timeRange?: string },
+  options?: { [key: string]: any },
+) {
+  let url = `/apis/v1/query/browse?page=${page}&page_size=${pageSize}`;
+  if (userId) {
+    url += `&user_id=${userId}`;
+  }
+  if (order) {
+    url += `&order=${order}`;
+  }
+  if (timeRange) {
+    url += `&time_range=${timeRange}`;
+  }
+  console.log('url = ', url);
+  return request<HYPERDOT_API.ListQueryResponse>(url, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    ...(options || {}),
+  });
+}
+
 export async function listUserQueryChart(
   page: number,
   pageSize: number,
@@ -324,6 +354,36 @@ export async function listDashboardPopularTags(limit?: number, options?: { [key:
       ...(options || {}),
     },
   );
+}
+
+export async function listBrowseDashboard(
+  {
+    page,
+    pageSize,
+    userId,
+    order,
+    timeRange,
+  }: { page: number; pageSize: number; userId?: number; order?: string; timeRange?: string },
+  options?: { [key: string]: any },
+) {
+  let url = `/apis/v1/dashboard/browse?page=${page}&page_size=${pageSize}`;
+  if (userId) {
+    url += `&user_id=${userId}`;
+  }
+  if (order) {
+    url += `&order=${order}`;
+  }
+  if (timeRange) {
+    url += `&time_range=${timeRange}`;
+  }
+  console.log('url = ', url);
+  return request<HYPERDOT_API.ListDashboardResponse>(url, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    ...(options || {}),
+  });
 }
 
 export async function createDashboard(

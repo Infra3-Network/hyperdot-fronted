@@ -12,24 +12,34 @@ import { Avatar, Card, Col, message, Row } from 'antd';
 import React from 'react';
 import styles from './index.less';
 import { formatNumberWithCommas } from '@/utils';
-import { getUser, listDashboard, listQuery } from '@/services/hyperdot/api';
+import {
+  getUser,
+  listBrowseDashboard,
+  listBrowseQuery,
+  listDashboard,
+  listQuery,
+} from '@/services/hyperdot/api';
 import QueryList from '@/components/QueryList';
 import DashboardList from '@/components/DashboardList';
 import { GridContent } from '@ant-design/pro-layout';
 
-type Props = {};
+type ListProps = {
+  currentUser: HYPERDOT_API.CurrentUser;
+  guestUser: HYPERDOT_API.CurrentUser | undefined;
+};
 
-const Queries = (user: HYPERDOT_API.CurrentUser) => {
+const Queries = (props: ListProps) => {
   const pageSize = 3;
   const [page, setPage] = React.useState(1);
   const [data, setData] = React.useState<HYPERDOT_API.ListQueryData[]>([]);
   const [total, setTotal] = React.useState(0);
 
+  const fetchMethod = props.guestUser ? listBrowseQuery : listQuery;
   const handleChange = (p: number, ps: number) => {
-    listQuery({
+    fetchMethod({
       page: p,
       pageSize: ps,
-      userId: user.id,
+      userId: props.currentUser.id,
     })
       .then((res) => {
         if (!res.success) {
@@ -59,7 +69,7 @@ const Queries = (user: HYPERDOT_API.CurrentUser) => {
       {data && data.length > 0 && (
         <QueryList
           {...{
-            currentUser: user,
+            currentUser: props.currentUser,
             data,
             total,
             pageSize,
@@ -71,17 +81,18 @@ const Queries = (user: HYPERDOT_API.CurrentUser) => {
   );
 };
 
-const Dashboards = (user: HYPERDOT_API.CurrentUser) => {
+const Dashboards = (props: ListProps) => {
   const pageSize = 3;
   const [page, setPage] = React.useState(1);
   const [data, setData] = React.useState<HYPERDOT_API.Dashboard[]>([]);
   const [total, setTotal] = React.useState(0);
 
+  const fetchMethod = props.guestUser ? listBrowseDashboard : listDashboard;
   const handleChange = (p: number, ps: number) => {
-    listDashboard({
+    fetchMethod({
       page: p,
       pageSize: ps,
-      userId: user.id,
+      userId: props.currentUser.id,
     })
       .then((res) => {
         if (!res.success) {
@@ -110,7 +121,7 @@ const Dashboards = (user: HYPERDOT_API.CurrentUser) => {
       {data && data.length > 0 && (
         <DashboardList
           {...{
-            currentUser: user,
+            currentUser: props.currentUser,
             data,
             total,
             pageSize,
@@ -271,57 +282,75 @@ const UserIcon = (user: HYPERDOT_API.CurrentUser) => {
   return <Avatar size={128}>{user.username}</Avatar>;
 };
 
-const Profile = (props: Props) => {
+const Profile = () => {
   let { userId } = useParams<any>();
   userId = Number(userId);
-  const [user, setUser] = React.useState<HYPERDOT_API.CurrentUser>();
+  const [guestUser, setGuestUser] = React.useState<HYPERDOT_API.CurrentUser | undefined>();
+  const [currentUser, setCurrentUser] = React.useState<HYPERDOT_API.CurrentUser | undefined>();
+  const [loadingGuest, setLoadingGuest] = React.useState<boolean>(false);
   React.useEffect(() => {
     if (userId) {
+      setLoadingGuest(true);
+      // accessed user
       getUser(userId)
         .then((res) => {
           if (!res.success) {
             message.error(res.errorMessage);
             return;
           }
-          setUser(res.data);
+          setCurrentUser(res.data);
+
+          // guest user
+          getInitialState()
+            .then((initRes) => {
+              setGuestUser(initRes.currentUser);
+            })
+            .catch((err) => {
+              history.push('/user/login');
+              return;
+            })
+            .finally(() => {
+              setLoadingGuest(false);
+            });
         })
         .catch((err) => {
           message.error(err);
         });
       return;
+    } else {
+      // current user
+      getInitialState()
+        .then((initRes) => {
+          setCurrentUser(initRes.currentUser);
+        })
+        .catch((err) => {
+          history.push('/user/login');
+          return;
+        });
     }
-
-    getInitialState()
-      .then((res) => {
-        setUser(res.currentUser);
-      })
-      .catch((err) => {
-        history.push('/user/login');
-        return;
-      });
   }, []);
 
   return (
     <>
-      {user ? (
+      {currentUser && !loadingGuest ? (
         <GridContent contentWidth={'Fixed'}>
           <Row gutter={[0, 0]} justify="center" align="top">
             <Col span={4}>
-              <UserIcon {...user} />
+              <UserIcon {...currentUser} />
             </Col>
             <Col span={16}>
-              <Introduce {...user} />
+              <Introduce {...currentUser} />
             </Col>
 
             <Col span={24} style={{ marginTop: '48px' }}>
-              <Card title={user.username + ' dashboards'}>
-                <Dashboards {...user} />
+              <Card title={currentUser.username + ' dashboards'}>
+                <Dashboards currentUser={currentUser} guestUser={guestUser} />
               </Card>
             </Col>
 
             <Col span={24} style={{ marginTop: '48px' }}>
-              <Card title={user.username + ' queries'}>
-                <Queries {...user} />
+              <Card title={currentUser.username + ' queries'}>
+                <Queries currentUser={currentUser} guestUser={guestUser} />
               </Card>
             </Col>
           </Row>

@@ -226,7 +226,7 @@ const BaseView = ({ user, setUser }: Props) => {
               rules={[
                 {
                   required: true,
-                  message: 'Please input your telegram',
+                  message: 'Please input your telgram',
                 },
               ]}
             />

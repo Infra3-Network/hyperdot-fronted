@@ -46,6 +46,7 @@ type StarState = {
 };
 
 const DashboardList = (props: Props) => {
+  console.log('DashboardList ', props.data);
   const initStarArray = props.data.map((v) => {
     if (v.id) {
       return {
