@@ -18,6 +18,8 @@ declare namespace HYPERDOT_API {
 
   type QueryEngineDataset = {
     chains: Map<string, any>;
+    chainTables: Map<string, any[]>;
+    relayChains: Map<string, any>;
   };
 
   type GetSystemQueryEngineDatasetResponse = {

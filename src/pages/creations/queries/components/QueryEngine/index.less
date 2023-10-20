@@ -46,7 +46,34 @@
 }
 
 .chainName {
-  display: grid;
-  grid-template-columns: 1fr 1fr; /* 创建三个列，两边的列会自动扩展以将内容推到两端 */
-  align-items: center; /* 在纵向上垂直居中对齐 */
+  display: inline-grid;
+  grid-template-columns: 1fr 8fr 8fr; /* 创建三个列，两边的列会自动扩展以将内容推到两端 */
+
+  span {
+    text-align: left;
+  }
+}
+
+.modalChainContainer {
+  display: flex;
+  padding-top: 12px;
+  padding-right: 32px;
+  padding-bottom: 12px;
+  padding-left: 32px;
+  border: 1px solid;
+  cursor: pointer;
+}
+
+.selectChainButton {
+  float: right;
+  margin-left: auto;
+}
+
+.rawChainContainer {
+  background-color: inherit;
+  cursor: pointer;
+}
+
+.rawChainContainer:hover {
+  background-color: #f0f0f0;
 }

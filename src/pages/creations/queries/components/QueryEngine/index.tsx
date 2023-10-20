@@ -1,71 +1,183 @@
-import { Select, Alert, List, message, Row, Col, Space } from 'antd';
+import { Select, Alert, message, Row, Col, Space, Tooltip, Modal, Button } from 'antd';
 
-import {
-  AppstoreOutlined,
-  ArrowRightOutlined,
-  EyeOutlined,
-  SearchOutlined,
-  TableOutlined,
-} from '@ant-design/icons';
+import { ArrowRightOutlined, EyeOutlined, SearchOutlined, TableOutlined } from '@ant-design/icons';
 
 import styles from './index.less';
 import React from 'react';
 import { getSystemQueryEngineDataset, listSystemQueryEngines } from '@/services/hyperdot/api';
+import { type TooltipPlacement } from 'antd/es/tooltip';
 
-const data = [
-  {
-    title: 'Ant Design Title 1',
-  },
-  {
-    title: 'Ant Design Title 2',
-  },
-  {
-    title: 'Ant Design Title 3',
-  },
-  {
-    title: 'Ant Design Title 4',
-  },
-];
+const TooltipText = ({
+  title,
+  len,
+  placement,
+}: {
+  title: string;
+  len: number;
+  placement: TooltipPlacement | undefined;
+}) => {
+  if (title.length < len) {
+    return <span>{title}</span>;
+  }
 
-const ChainItem = (chain: any) => {
+  return (
+    <Tooltip placement={placement} title={title}>
+      <span>{title.substring(0, len)}...</span>
+    </Tooltip>
+  );
+};
+
+const RelayChains = ({
+  relayChain,
+  chains,
+  setChain,
+}: {
+  relayChain: any;
+  chains: Map<string, any>;
+  setChain: React.Dispatch<React.SetStateAction<any | undefined>>;
+}) => (
+  <>
+    <Col span={24}>
+      <h3>{relayChain.name} & Parachains</h3>
+    </Col>
+    {relayChain.paraChainIDs.map((chainID: string) => (
+      <>
+        {chains[chainID] && (
+          <Col span={6}>
+            <Space
+              onClick={() => {
+                setChain(chains[chainID]);
+              }}
+              direction={'vertical'}
+              size={'small'}
+              align={'center'}
+              className={styles.modalChainContainer}
+            >
+              <img width={24} src={chains[chainID].iconUrl} />
+              <TooltipText title={chains[chainID].chainName} len={15} placement={'bottomRight'} />
+            </Space>
+          </Col>
+        )}
+      </>
+    ))}
+  </>
+);
+
+const ChainModal = ({
+  dataset,
+  isModalOpen,
+  setIsModalOpen,
+  setChain,
+}: {
+  dataset: HYPERDOT_API.QueryEngineDataset;
+  isModalOpen: boolean;
+  setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  setChain: React.Dispatch<React.SetStateAction<any | undefined>>;
+}) => {
+  const relayChains = dataset.relayChains;
+  const chains = dataset.chains;
+
+  const handleOk = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
   return (
     <>
-      <Row justify={'space-between'}>
-        <Col span={16}>
-          <Row justify={'space-between'}>
-            <Col>
-              <TableOutlined />
-              <div className={styles.chainName}>
-                <span>{chain.chainName}</span>
-                <span>blocks</span>
-              </div>
-            </Col>
-
-            <Col>
-              <TableOutlined />
-            </Col>
-          </Row>
-        </Col>
-
-        <Col>
-          <Space>
-            <EyeOutlined />
-            <SearchOutlined />
-            <ArrowRightOutlined />
-          </Space>
-        </Col>
-      </Row>
+      <Modal
+        title={'Select Chain'}
+        width={800}
+        open={isModalOpen}
+        onOk={handleOk}
+        onCancel={handleCancel}
+      >
+        <Button
+          size={'large'}
+          type="primary"
+          style={{ width: '100%' }}
+          onClick={() => {
+            setChain(undefined);
+          }}
+        >
+          Select all chains
+        </Button>
+        <Row gutter={[14, 16]}>
+          {Object.keys(relayChains).map((k) => (
+            <RelayChains key={k} relayChain={relayChains[k]} chains={chains} setChain={setChain} />
+          ))}
+        </Row>
+      </Modal>
     </>
   );
 };
 
-const ChanItems = (dataset: HYPERDOT_API.QueryEngineDataset) => {
-  console.log(dataset.chains);
+type ChainItemProps = {
+  chainID: string;
+  dataset: HYPERDOT_API.QueryEngineDataset;
+};
+
+const ChainItem = (props: ChainItemProps) => {
+  const chianID = props.chainID;
+  const chain = props.dataset.chains[chianID];
+  const chainTables = props.dataset.chainTables[chianID];
+
+  return (
+    <>
+      {chain &&
+        chainTables &&
+        chainTables.map((chainTable: any, index: number) => (
+          <Row key={index} justify={'space-between'}>
+            <Col span={18}>
+              <Row justify={'space-between'} className={styles.rawChainContainer}>
+                <Col span={16}>
+                  <Space size={'small'} className={styles.chainName}>
+                    <TableOutlined />
+                    <TooltipText title={chain.chainName} len={10} placement={'topRight'} />
+                    <TooltipText
+                      title={(chainTable.table_id as string).replace(chianID, '')}
+                      len={10}
+                      placement={'topRight'}
+                    />
+                  </Space>
+                </Col>
+
+                <Col span={3}>
+                  <img width={16} src={chain.iconUrl} />
+                </Col>
+              </Row>
+            </Col>
+
+            <Col>
+              <Space>
+                <EyeOutlined />
+                <SearchOutlined />
+                <ArrowRightOutlined />
+              </Space>
+            </Col>
+          </Row>
+        ))}
+    </>
+  );
+};
+
+const ChainItems = ({
+  dataset,
+  chain,
+}: {
+  dataset: HYPERDOT_API.QueryEngineDataset;
+  chain: any | undefined;
+}) => {
   return (
     <div style={{ overflow: 'auto', maxHeight: '600px' }}>
-      {Object.keys(dataset.chains).map((k) => {
-        return ChainItem(dataset.chains[k]);
-      })}
+      {chain ? (
+        <ChainItem key={chain.chainID} chainID={chain.chainID} dataset={dataset} />
+      ) : (
+        Object.keys(dataset.chains).map((k) => {
+          return <ChainItem key={k} chainID={k} dataset={dataset} />;
+        })
+      )}
     </div>
   );
 };
@@ -76,6 +188,8 @@ const QueryEngine = () => {
   const [dataset, setDataset] = React.useState<HYPERDOT_API.QueryEngineDataset | undefined>(
     undefined,
   );
+  const [chain, setChain] = React.useState<any | undefined>(undefined);
+  const [isModalOpen, setIsModalOpen] = React.useState<boolean>(false);
   React.useEffect(() => {
     listSystemQueryEngines()
       .then((res) => {
@@ -134,8 +248,25 @@ const QueryEngine = () => {
           showIcon
         />
 
-        {dataset && ChanItems(dataset)}
+        <Button
+          className={styles.selectChainButton}
+          onClick={() => {
+            setIsModalOpen(true);
+          }}
+        >
+          Select chains
+        </Button>
+
+        {dataset && <ChainItems dataset={dataset} chain={chain} />}
       </Space>
+      {dataset && (
+        <ChainModal
+          dataset={dataset}
+          isModalOpen={isModalOpen}
+          setIsModalOpen={setIsModalOpen}
+          setChain={setChain}
+        />
+      )}
     </div>
   );
 };
