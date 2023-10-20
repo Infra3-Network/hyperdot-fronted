@@ -1,6 +1,12 @@
-import { Select, Alert, message, Row, Col, Space, Tooltip, Modal, Button } from 'antd';
+import { Select, Alert, message, Row, Col, Space, Tooltip, Modal, Button, Divider } from 'antd';
 
-import { ArrowRightOutlined, EyeOutlined, SearchOutlined, TableOutlined } from '@ant-design/icons';
+import {
+  ArrowRightOutlined,
+  EyeOutlined,
+  SearchOutlined,
+  TableOutlined,
+  TabletFilled,
+} from '@ant-design/icons';
 
 import styles from './index.less';
 import React from 'react';
@@ -24,6 +30,64 @@ const TooltipText = ({
     <Tooltip placement={placement} title={title}>
       <span>{title.substring(0, len)}...</span>
     </Tooltip>
+  );
+};
+
+const ChainTableScheme = ({}: {}) => {
+  return (
+    <>
+      <Row justify={'space-between'}>
+        <Col span={18}>
+          <Row justify={'space-between'} className={styles.rawChainContainer}>
+            <Col span={16}>
+              <Space size={'small'} className={styles.chainName}>
+                <TabletFilled />
+                <TooltipText title={'Test'} len={10} placement={'topRight'} />
+                <TooltipText title={'Test'} len={10} placement={'topRight'} />
+              </Space>
+            </Col>
+
+            <Col span={3}>
+              <img width={16} src={''} />
+            </Col>
+          </Row>
+        </Col>
+
+        <Col>
+          <Space>
+            <EyeOutlined />
+            <SearchOutlined />
+            <ArrowRightOutlined />
+          </Space>
+        </Col>
+      </Row>
+
+      <ul className={styles.tableDetailColumns}>
+        <li>
+          <Row justify={'space-between'} gutter={[0, 12]}>
+            <Col>
+              <span>amount_usd</span>
+            </Col>
+
+            <Col>
+              <span>double</span>
+            </Col>
+          </Row>
+        </li>
+
+        <li>
+          <Row justify={'space-between'} gutter={[0, 12]}>
+            <Col>
+              <span>amount_usd</span>
+            </Col>
+
+            <Col>
+              <span>double</span>
+            </Col>
+          </Row>
+        </li>
+      </ul>
+    </>
   );
 };
 
@@ -257,6 +321,7 @@ const QueryEngine = () => {
           Select chains
         </Button>
 
+        <ChainTableScheme />
         {dataset && <ChainItems dataset={dataset} chain={chain} />}
       </Space>
       {dataset && (
