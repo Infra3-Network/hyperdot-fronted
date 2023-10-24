@@ -1,4 +1,5 @@
-import { Table } from 'antd';
+import { GridContent } from '@ant-design/pro-layout';
+import { Card, Table } from 'antd';
 import { type ChartProps } from '../types';
 
 export const TableChart = (props: ChartProps) => {
@@ -18,5 +19,15 @@ export const TableChart = (props: ChartProps) => {
       ...data.rows[i],
     };
   });
-  return <Table columns={columns} dataSource={dataSource} />;
+
+  return (
+    <>
+      <Table
+        columns={columns}
+        dataSource={dataSource}
+        size={'small'}
+        scroll={{ x: 1500, y: 300 }}
+      />
+    </>
+  );
 };

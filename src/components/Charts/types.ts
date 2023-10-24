@@ -66,8 +66,8 @@ export class ChartManager {
     });
   }
 
-  get(id: number) {
-    return this.charts.charts.find((v: HYPERDOT_API.Chart) => v.id === id);
+  get(index: number) {
+    return this.charts.charts.find((v: HYPERDOT_API.Chart) => v.index === index);
   }
 
   add(chart: HYPERDOT_API.Chart) {

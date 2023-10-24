@@ -38,6 +38,7 @@ import {
 // import { HYPERDOT_CHART } from '@/components/Charts/typings';
 import { ChartNodeMap } from '@/components/Charts';
 import UserAvatar from '@/components/UserAvatar';
+import { GridContent } from '@ant-design/pro-layout';
 
 interface NewVisualizationTabProps {
   // tabProps: any;
@@ -486,14 +487,14 @@ const QueryEditor = (props: Props) => {
     }
 
     if (props.userQuery != undefined) {
-      if (
-        queryNormal.query == props.userQuery.query &&
-        queryNormal.engine == props.userQuery.query_engine
-      ) {
-        // not change
-        messageApi.info('Query not change');
-        return;
-      }
+      // if (
+      //   queryNormal.query == props.userQuery.query &&
+      //   queryNormal.engine == props.userQuery.query_engine
+      // ) {
+      //   // not change
+      //   messageApi.info('Query not change');
+      //   return;
+      // }
       // if exists userQuery, we only run new input query
       setRunLoading(true);
       queryRun(queryNormal.query, queryNormal.engine, {

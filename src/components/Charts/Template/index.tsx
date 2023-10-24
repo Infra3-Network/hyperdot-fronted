@@ -93,7 +93,7 @@ const generateState = (type: string, props: ChartProps): any => {
     };
 
     return {
-      id: params.id,
+      ...params,
       name: params.name ? params.name : 'Area Chart',
       config: config
         ? {
@@ -137,7 +137,7 @@ const generateState = (type: string, props: ChartProps): any => {
       },
     };
     return {
-      id: params.id,
+      ...params,
       name: params.name ? params.name : 'Area Chart',
       config: config
         ? {
@@ -192,8 +192,8 @@ const generateState = (type: string, props: ChartProps): any => {
       },
     };
     return {
-      id: params.id,
-      name: params.name ? params.name : 'Area Chart',
+      ...params,
+      name: params.name ? params.name : 'Scatter Chart',
       config: config
         ? {
             ...config,
@@ -340,11 +340,11 @@ export const TemplateChart = (props: TemplateChartProps) => {
   columns.splice(0, 0, { value: '', label: '' });
 
   const handleNameChange = (event: any) => {
-    if (params.id == undefined) {
+    if (params.index == undefined) {
       return;
     }
 
-    const oldChart = manager.get(params.id);
+    const oldChart = manager.get(params.index);
     if (!oldChart) {
       return;
     }
@@ -364,11 +364,11 @@ export const TemplateChart = (props: TemplateChartProps) => {
   };
 
   const handleCloumnSelect = (value: any, colField: string) => {
-    if (params.id == undefined) {
+    if (params.index == undefined) {
       return;
     }
 
-    const oldChart = manager.get(params.id);
+    const oldChart = manager.get(params.index);
     if (!oldChart) {
       return;
     }
@@ -450,11 +450,11 @@ export const TemplateChart = (props: TemplateChartProps) => {
   };
 
   const handleRegressionLine = (value: any) => {
-    if (params.id == undefined) {
+    if (params.index == undefined) {
       return;
     }
 
-    const oldChart = manager.get(params.id);
+    const oldChart = manager.get(params.index);
     if (!oldChart) {
       return;
     }
@@ -485,11 +485,11 @@ export const TemplateChart = (props: TemplateChartProps) => {
   };
 
   const handleAxisChange = (col: string, field: string, value: any) => {
-    if (params.id == undefined) {
+    if (params.index == undefined) {
       return;
     }
 
-    const oldChart = manager.get(params.id);
+    const oldChart = manager.get(params.index);
     if (!oldChart) {
       return;
     }

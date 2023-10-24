@@ -1,11 +1,24 @@
-import { Select, Alert, message, Row, Col, Space, Tooltip, Modal, Button, Divider } from 'antd';
+import {
+  Select,
+  Alert,
+  message,
+  Row,
+  Col,
+  Space,
+  Tooltip,
+  Modal,
+  Button,
+  Divider,
+  Tag,
+  Skeleton,
+} from 'antd';
 
 import {
+  ArrowLeftOutlined,
   ArrowRightOutlined,
   EyeOutlined,
   SearchOutlined,
   TableOutlined,
-  TabletFilled,
 } from '@ant-design/icons';
 
 import styles from './index.less';
@@ -33,7 +46,17 @@ const TooltipText = ({
   );
 };
 
-const ChainTableScheme = ({}: {}) => {
+const ChainTableScheme = ({
+  chainID,
+  chainTable,
+  dataset,
+}: {
+  chainID: number;
+  chainTable: string;
+  dataset: HYPERDOT_API.QueryEngineDataset;
+}) => {
+  const table = dataset.chainTables[chainID].find((v: any) => v.table_id === chainTable);
+  console.log(table);
   return (
     <>
       <Row justify={'space-between'}>
@@ -41,9 +64,12 @@ const ChainTableScheme = ({}: {}) => {
           <Row justify={'space-between'} className={styles.rawChainContainer}>
             <Col span={16}>
               <Space size={'small'} className={styles.chainName}>
-                <TabletFilled />
-                <TooltipText title={'Test'} len={10} placement={'topRight'} />
-                <TooltipText title={'Test'} len={10} placement={'topRight'} />
+                <TableOutlined />
+                <TooltipText
+                  title={chainTable.replace(String(chainID), '')}
+                  len={40}
+                  placement={'topRight'}
+                />
               </Space>
             </Col>
 
@@ -63,29 +89,21 @@ const ChainTableScheme = ({}: {}) => {
       </Row>
 
       <ul className={styles.tableDetailColumns}>
-        <li>
-          <Row justify={'space-between'} gutter={[0, 12]}>
-            <Col>
-              <span>amount_usd</span>
-            </Col>
+        {table &&
+          table.schemas &&
+          table.schemas.map((schema: any) => (
+            <li key={schema.name}>
+              <Row justify={'space-between'} gutter={[12, 12]}>
+                <Col>
+                  <span>{schema.name}</span>
+                </Col>
 
-            <Col>
-              <span>double</span>
-            </Col>
-          </Row>
-        </li>
-
-        <li>
-          <Row justify={'space-between'} gutter={[0, 12]}>
-            <Col>
-              <span>amount_usd</span>
-            </Col>
-
-            <Col>
-              <span>double</span>
-            </Col>
-          </Row>
-        </li>
+                <Col>
+                  <Tag>{schema.type}</Tag>
+                </Col>
+              </Row>
+            </li>
+          ))}
       </ul>
     </>
   );
@@ -180,6 +198,7 @@ const ChainModal = ({
 type ChainItemProps = {
   chainID: string;
   dataset: HYPERDOT_API.QueryEngineDataset;
+  handleChainTableClick: (chainID: number, chainName: string, chainTable: string) => void;
 };
 
 const ChainItem = (props: ChainItemProps) => {
@@ -196,7 +215,17 @@ const ChainItem = (props: ChainItemProps) => {
             <Col span={18}>
               <Row justify={'space-between'} className={styles.rawChainContainer}>
                 <Col span={16}>
-                  <Space size={'small'} className={styles.chainName}>
+                  <Space
+                    size={'small'}
+                    className={styles.chainName}
+                    onClick={() =>
+                      props.handleChainTableClick(
+                        chain.chainID,
+                        chain.chainName,
+                        chainTable.table_id,
+                      )
+                    }
+                  >
                     <TableOutlined />
                     <TooltipText title={chain.chainName} len={10} placement={'topRight'} />
                     <TooltipText
@@ -229,17 +258,31 @@ const ChainItem = (props: ChainItemProps) => {
 const ChainItems = ({
   dataset,
   chain,
+  handleChainTableClick,
 }: {
   dataset: HYPERDOT_API.QueryEngineDataset;
   chain: any | undefined;
+  handleChainTableClick: (chainID: number, chainName: string, chainTable: string) => void;
 }) => {
   return (
     <div style={{ overflow: 'auto', maxHeight: '600px' }}>
       {chain ? (
-        <ChainItem key={chain.chainID} chainID={chain.chainID} dataset={dataset} />
+        <ChainItem
+          key={chain.chainID}
+          chainID={chain.chainID}
+          dataset={dataset}
+          handleChainTableClick={handleChainTableClick}
+        />
       ) : (
         Object.keys(dataset.chains).map((k) => {
-          return <ChainItem key={k} chainID={k} dataset={dataset} />;
+          return (
+            <ChainItem
+              key={k}
+              chainID={k}
+              dataset={dataset}
+              handleChainTableClick={handleChainTableClick}
+            />
+          );
         })
       )}
     </div>
@@ -254,7 +297,19 @@ const QueryEngine = () => {
   );
   const [chain, setChain] = React.useState<any | undefined>(undefined);
   const [isModalOpen, setIsModalOpen] = React.useState<boolean>(false);
+  const [chainTable, setChainTable] = React.useState<
+    | {
+        chainID: number;
+        chainName: string;
+        table: string;
+      }
+    | undefined
+  >(undefined);
+
+  const [loading, setLoading] = React.useState<boolean>(false);
+
   React.useEffect(() => {
+    setLoading(true);
     listSystemQueryEngines()
       .then((res) => {
         if (!res.success) {
@@ -265,6 +320,9 @@ const QueryEngine = () => {
       })
       .catch((err) => {
         message.error(err);
+      })
+      .finally(() => {
+        setLoading(false);
       });
   }, []);
 
@@ -284,6 +342,10 @@ const QueryEngine = () => {
       .catch((err) => {
         message.error(err);
       });
+  };
+
+  const handleChainTableClick = (chainID: number, chainName: string, table: string) => {
+    setChainTable({ chainID: chainID, chainName: chainName, table: table });
   };
 
   return (
@@ -312,17 +374,53 @@ const QueryEngine = () => {
           showIcon
         />
 
-        <Button
-          className={styles.selectChainButton}
-          onClick={() => {
-            setIsModalOpen(true);
-          }}
-        >
-          Select chains
-        </Button>
+        {dataset && !chainTable && (
+          <>
+            <Button
+              className={styles.selectChainButton}
+              onClick={() => {
+                setIsModalOpen(true);
+              }}
+            >
+              Select chains
+            </Button>
+          </>
+        )}
+        <Skeleton loading={loading} active>
+          {dataset && !chainTable && (
+            <ChainItems
+              dataset={dataset}
+              chain={chain}
+              handleChainTableClick={handleChainTableClick}
+            />
+          )}
+        </Skeleton>
 
-        <ChainTableScheme />
-        {dataset && <ChainItems dataset={dataset} chain={chain} />}
+        {dataset && chainTable && (
+          <>
+            <div
+              className={styles.backChainContainer}
+              onClick={() => {
+                setChainTable(undefined);
+              }}
+            >
+              <ArrowLeftOutlined />
+              <span>
+                <TooltipText
+                  title={`${chainTable.chainName} ${chainTable.table}`}
+                  len={30}
+                  placement={'topRight'}
+                />
+              </span>
+            </div>
+
+            <ChainTableScheme
+              chainID={chainTable.chainID}
+              chainTable={chainTable.table}
+              dataset={dataset}
+            />
+          </>
+        )}
       </Space>
       {dataset && (
         <ChainModal
