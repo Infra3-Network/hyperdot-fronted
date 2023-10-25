@@ -23,6 +23,8 @@ import {
   Breadcrumb,
   Space,
   Card,
+  Segmented,
+  SegmentedProps,
 } from 'antd';
 import React, { useEffect } from 'react';
 import styles from './index.less';
@@ -44,6 +46,7 @@ interface NewVisualizationTabProps {
   // tabProps: any;
   // setTabProps: any;
   setTabActiveKey: any;
+  setSegOptions: any;
   chartMgr: ChartManager;
   chartNodeMap: Map<string, ChartNodeProps>;
 }
@@ -91,13 +94,24 @@ export const NewVisualizationTab = (props: NewVisualizationTabProps) => {
       return;
     }
 
+    const prevCharts = props.chartMgr.getCharts();
     props.chartMgr.insertLastBefore({
       name: chartNode.name,
       type: chart,
       closeable: true,
     });
 
-    props.setTabActiveKey(props.chartMgr.getNextIndex().toString());
+    const nextIndex = props.chartMgr.getNextIndex();
+    props.setTabActiveKey(prevCharts[prevCharts.length - 2].index?.toString());
+    // props.setSegOptions((prev: any[]) => {
+    //   const newOptions = [...prev];
+    //   newOptions.splice(prev.length - 1, 0, {
+    //     label: chartNode.name,
+    //     value: nextIndex,
+    //     icon: chartNode.icon,
+    //   })
+    //   return newOptions
+    // })
   };
 
   return (
@@ -140,7 +154,25 @@ interface QueryVisualizationProps {
 
 const QueryVisualization = (props: QueryVisualizationProps) => {
   const [tabActiveKey, setTabActiveKey] = React.useState<string>('1');
-
+  const firstChart = props.chartMgr.getCharts()[1];
+  const [activeOption, setActionOption] = React.useState<any>(
+    props.chartMgr.getCharts()[1] ? firstChart.index : undefined,
+  );
+  const [options, setOptions] = React.useState<any[]>(
+    props.chartMgr.getCharts().map((chart) => {
+      let icon = undefined;
+      if (chart.type === 'new') {
+        icon = <BarChartOutlined />;
+      } else {
+        icon = ChartNodeMap.get(chart.type)?.icon;
+      }
+      return {
+        label: chart.name,
+        value: chart.index,
+        icon: icon,
+      };
+    }),
+  );
   const handleCloseClick = (index: number) => {
     props.chartMgr.remove(index);
     // props.setTabProps(TabManager.remove(props.tabProps, id));
@@ -159,6 +191,7 @@ const QueryVisualization = (props: QueryVisualizationProps) => {
           chartMgr: v.manager,
           chartNodeMap: ChartNodeMap,
           setTabActiveKey: setTabActiveKey,
+          setSegOptions: setOptions,
         };
         return <NewVisualizationTab {...newProps} />;
       };
@@ -205,6 +238,36 @@ const QueryVisualization = (props: QueryVisualizationProps) => {
 
   return (
     <div>
+      {/* <Segmented
+        options={options}
+        defaultValue={activeOption ? activeOption : ""}
+        onChange={(value) => {
+          setActionOption(value)
+          console.log(activeOption)
+        }}
+      />
+      {charts.map((params: HYPERDOT_API.Chart) => {
+        if (activeOption == params.index) {
+          if (params.type === 'new') {
+
+            const newProps: NewVisualizationTabProps = {
+              chartMgr: props.chartMgr,
+              chartNodeMap: ChartNodeMap,
+              setTabActiveKey: setActionOption,
+              setSegOptions: setOptions
+            };
+            return <NewVisualizationTab {...newProps} />;
+
+          } else {
+            const chartNode = ChartNodeMap.get(params.type);
+            return chartNode?.children({
+              manager: props.chartMgr,
+              params: params,
+              data: props.queryData,
+            })
+          }
+        }
+      })} */}
       {items != null ? (
         <Tabs
           activeKey={tabActiveKey}

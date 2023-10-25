@@ -589,7 +589,7 @@ export const TemplateChart = (props: TemplateChartProps) => {
                               <Input
                                 defaultValue={params.name}
                                 bordered={true}
-                                onPressEnter={(e) => {
+                                onChange={(e) => {
                                   handleNameChange(e);
                                 }}
                               />
