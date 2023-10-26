@@ -3,12 +3,14 @@ import {
   AreaChartOutlined,
   BarChartOutlined,
   DotChartOutlined,
+  FieldNumberOutlined,
   LineChartOutlined,
   TableOutlined,
 } from '@ant-design/icons';
 import { TableChart } from './Table';
 import { type ChartNodeProps, type ChartProps } from './types';
 import React from 'react';
+import { CounterChartTemplate } from './Counter';
 
 export const ChartNodeMap: Map<string, ChartNodeProps> = new Map([
   // [
@@ -82,16 +84,16 @@ export const ChartNodeMap: Map<string, ChartNodeProps> = new Map([
       },
     },
   ],
-  //   [
-  //     'data_counter',
-  //     {
-  //       name: 'Counter',
-  //       icon: <FieldNumberOutlined />,
-  //       children: (props: QE.ChartTabProps) => {
-  //         return <QueryResultTableTab {...props} />;
-  //       },
-  //     },
-  //   ],
+  [
+    'data_counter',
+    {
+      name: 'Counter',
+      icon: <FieldNumberOutlined />,
+      children: (props: ChartProps, index: number) => {
+        return <CounterChartTemplate {...{ type: 'counter', props: props, index }} />;
+      },
+    },
+  ],
 ]);
 
 export const ChartIconMap: Map<string, React.ReactNode> = new Map([
