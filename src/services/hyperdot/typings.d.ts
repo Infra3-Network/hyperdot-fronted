@@ -187,7 +187,6 @@ declare namespace HYPERDOT_API {
     query_updated_at?: string;
     // chart table
     id?: number;
-    index?: number;
     query_id?: number;
     chart_id?: number;
     user_id?: number;

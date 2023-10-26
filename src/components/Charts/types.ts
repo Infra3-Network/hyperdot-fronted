@@ -1,17 +1,7 @@
-export type AreaChartConfig = {
-  data: any[];
-  xField: string;
-  yField: string;
-  seriesField?: string;
-  areaStyle?: any;
-  xAxis?: any;
-  yAxis?: any;
-};
-
 export type ChartNodeProps = {
   name: string;
   icon: React.ReactNode;
-  children: (props: ChartProps) => React.ReactNode;
+  children: (props: ChartProps, index: number) => React.ReactNode;
 };
 
 export type ChartData = {
@@ -35,7 +25,7 @@ export type ChartProps = {
 };
 
 export type ChartArray = {
-  nextIndex: number;
+  // nextIndex: number;
   // charts: ChartParams[];
   charts: HYPERDOT_API.Chart[];
 };
@@ -50,58 +40,55 @@ export class ChartManager {
   }
 
   reset(charts: HYPERDOT_API.Chart[]) {
-    const maxIndex = charts.reduce(
-      (max, obj) => (obj.index ? (obj.index > max ? obj.index : max) : max),
-      1,
-    );
+    // const maxIndex = charts.reduce(
+    //   (max, obj) => (obj.index ? (obj.index > max ? obj.index : max) : max),
+    //   1,
+    // );
     this.setCharts({
-      nextIndex: maxIndex + 1,
+      // nextIndex: maxIndex + 1,
       charts: charts,
     });
   }
   clear() {
     this.setCharts({
-      nextIndex: 1,
+      // nextIndex: 1,
       charts: [],
     });
   }
 
   get(index: number) {
-    return this.charts.charts.find((v: HYPERDOT_API.Chart) => v.index === index);
+    return this.charts.charts[index];
   }
 
   add(chart: HYPERDOT_API.Chart) {
     this.setCharts((prev) => {
-      prev.nextIndex += 1;
-      chart.index = prev.nextIndex;
-      prev.charts.push(chart);
-      return prev;
+      return {
+        charts: [...prev.charts, chart],
+      };
     });
   }
 
-  update(newChart: HYPERDOT_API.Chart) {
-    const index = this.charts.charts.findIndex(
-      (v: HYPERDOT_API.Chart) => v.index === newChart.index,
-    );
-    if (!index) {
-      return;
-    }
+  update(newChart: HYPERDOT_API.Chart, index: number) {
     this.charts.charts[index] = newChart;
     this.setCharts({ ...this.charts });
   }
 
   remove(index: number) {
     this.setCharts((prev) => {
-      const newCharts = prev.charts.filter((v: HYPERDOT_API.Chart) => v.index !== index);
-      return {
-        nextIndex: prev.nextIndex,
-        charts: newCharts,
-      };
+      // remove charts at index
+      prev.charts.splice(index, 1);
+      return prev;
+
+      // const newCharts = prev.charts.filter((v: HYPERDOT_API.Chart) => v.index !== index);
+      // return {
+      //   nextIndex: prev.nextIndex,
+      //   charts: newCharts,
+      // };
     });
   }
 
   getNextIndex(): number {
-    return this.charts.nextIndex;
+    return this.charts.charts.length;
   }
 
   getCharts(): HYPERDOT_API.Chart[] {
@@ -113,19 +100,20 @@ export class ChartManager {
   }
 
   insertLastBefore(chart: HYPERDOT_API.Chart) {
+    console.log('insertLastBefore = ', chart);
     this.setCharts((prev) => {
       if (prev.charts.length === 0) {
         this.add(chart);
         return prev;
       }
 
-      prev.nextIndex += 1;
-      chart.index = prev.nextIndex;
       const index = prev.charts.length - 1;
       const newArray = [...prev.charts];
       newArray.splice(index, 0, chart);
-      prev.charts = newArray;
-      return prev;
+      console.log('insertLastBefore charts = ', newArray);
+      return {
+        charts: newArray,
+      };
     });
   }
 }

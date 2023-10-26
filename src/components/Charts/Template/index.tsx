@@ -11,6 +11,7 @@ import { getColumns } from '../utils';
 type TemplateChartProps = {
   props: ChartProps;
   type: string;
+  index: number; // which index of charts array.
 };
 
 const hasChartOptions = (t: string): boolean => {
@@ -303,48 +304,22 @@ export const TemplateChart = (props: TemplateChartProps) => {
 
   // initial default config
   if (!params.config) {
-    manager.update({
-      ...params,
-      config: {
-        ...state.config,
+    manager.update(
+      {
+        ...params,
+        config: {
+          ...state.config,
+        },
       },
-    });
+      props.index,
+    );
   }
-
-  // const [title, setTitle] = React.useState<string>(name ? name : 'Area Chart');
-  // const [areaConfig, setConfig] = React.useState<HYPERDOT_CHART.AreaChartConfig>(
-  //   config
-  //     ? {
-  //         ...config,
-  //         data: data.rows,
-  //       }
-  //     : defaultConfig,
-  // );
-
-  // useEffect(() => {
-  //   if (params.config) {
-  //     // initial tabs by using defaultConfig
-  //     //   props.setTabProps({ ...TabManager.updateConfig(props.tabProps, props.id, defaultConfig) });
-  //     // } else {
-  //     // config changes, reset data
-  //     manager.update({
-  //       ...params,
-  //       config: {
-  //         ...params.config,
-  //       }
-  //     });
-  //   }
-  // }, [params.config]);
 
   const columns = getColumns(props.props.data);
   columns.splice(0, 0, { value: '', label: '' });
 
   const handleNameChange = (event: any) => {
-    if (params.index == undefined) {
-      return;
-    }
-
-    const oldChart = manager.get(params.index);
+    const oldChart = manager.get(props.index);
     if (!oldChart) {
       return;
     }
@@ -357,18 +332,17 @@ export const TemplateChart = (props: TemplateChartProps) => {
       };
     });
 
-    manager.update({
-      ...oldChart,
-      name: v,
-    });
+    manager.update(
+      {
+        ...oldChart,
+        name: v,
+      },
+      props.index,
+    );
   };
 
   const handleCloumnSelect = (value: any, colField: string) => {
-    if (params.index == undefined) {
-      return;
-    }
-
-    const oldChart = manager.get(params.index);
+    const oldChart = manager.get(props.index);
     if (!oldChart) {
       return;
     }
@@ -383,13 +357,16 @@ export const TemplateChart = (props: TemplateChartProps) => {
         };
       });
 
-      manager.update({
-        ...oldChart,
-        config: {
-          ...oldChart.config,
-          xField: value,
+      manager.update(
+        {
+          ...oldChart,
+          config: {
+            ...oldChart.config,
+            xField: value,
+          },
         },
-      });
+        props.index,
+      );
     }
     if (colField == 'yField') {
       setState((prev: any) => {
@@ -401,13 +378,16 @@ export const TemplateChart = (props: TemplateChartProps) => {
         };
       });
 
-      manager.update({
-        ...oldChart,
-        config: {
-          ...oldChart.config,
-          yField: value,
+      manager.update(
+        {
+          ...oldChart,
+          config: {
+            ...oldChart.config,
+            yField: value,
+          },
         },
-      });
+        props.index,
+      );
     }
 
     if (colField == 'seriesField') {
@@ -420,13 +400,16 @@ export const TemplateChart = (props: TemplateChartProps) => {
         };
       });
 
-      manager.update({
-        ...oldChart,
-        config: {
-          ...oldChart.config,
-          seriesField: value,
+      manager.update(
+        {
+          ...oldChart,
+          config: {
+            ...oldChart.config,
+            seriesField: value,
+          },
         },
-      });
+        props.index,
+      );
     }
 
     if (colField == 'colorField') {
@@ -439,22 +422,21 @@ export const TemplateChart = (props: TemplateChartProps) => {
         };
       });
 
-      manager.update({
-        ...oldChart,
-        config: {
-          ...oldChart.config,
-          colorField: value,
+      manager.update(
+        {
+          ...oldChart,
+          config: {
+            ...oldChart.config,
+            colorField: value,
+          },
         },
-      });
+        props.index,
+      );
     }
   };
 
   const handleRegressionLine = (value: any) => {
-    if (params.index == undefined) {
-      return;
-    }
-
-    const oldChart = manager.get(params.index);
+    const oldChart = manager.get(props.index);
     if (!oldChart) {
       return;
     }
@@ -473,23 +455,22 @@ export const TemplateChart = (props: TemplateChartProps) => {
       };
     });
 
-    manager.update({
-      ...oldChart,
-      config: {
-        ...oldChart.config,
-        regressionLine: {
-          type: value,
+    manager.update(
+      {
+        ...oldChart,
+        config: {
+          ...oldChart.config,
+          regressionLine: {
+            type: value,
+          },
         },
       },
-    });
+      props.index,
+    );
   };
 
   const handleAxisChange = (col: string, field: string, value: any) => {
-    if (params.index == undefined) {
-      return;
-    }
-
-    const oldChart = manager.get(params.index);
+    const oldChart = manager.get(props.index);
     if (!oldChart) {
       return;
     }
@@ -513,10 +494,13 @@ export const TemplateChart = (props: TemplateChartProps) => {
           xAxis: newXAxis,
         };
 
-        manager.update({
-          ...oldChart,
-          config: newConfig,
-        });
+        manager.update(
+          {
+            ...oldChart,
+            config: newConfig,
+          },
+          props.index,
+        );
 
         return {
           ...prev,
@@ -544,10 +528,13 @@ export const TemplateChart = (props: TemplateChartProps) => {
           yAxis: newYAxis,
         };
 
-        manager.update({
-          ...oldChart,
-          config: newConfig,
-        });
+        manager.update(
+          {
+            ...oldChart,
+            config: newConfig,
+          },
+          props.index,
+        );
 
         return {
           ...prev,

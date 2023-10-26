@@ -7,14 +7,8 @@ import {
   TableOutlined,
 } from '@ant-design/icons';
 import { TableChart } from './Table';
-import { type ChartProps } from './types';
+import { type ChartNodeProps, type ChartProps } from './types';
 import React from 'react';
-
-interface ChartNodeProps {
-  name: string;
-  icon: React.ReactNode;
-  children: (props: ChartProps) => React.ReactNode;
-}
 
 export const ChartNodeMap: Map<string, ChartNodeProps> = new Map([
   // [
@@ -32,8 +26,8 @@ export const ChartNodeMap: Map<string, ChartNodeProps> = new Map([
     {
       name: 'Bar Chart',
       icon: <BarChartOutlined />,
-      children: (props: ChartProps) => {
-        return <TemplateChart {...{ type: 'bar', props: props }} />;
+      children: (props: ChartProps, index: number) => {
+        return <TemplateChart {...{ type: 'bar', props: props, index }} />;
       },
     },
   ],
@@ -42,8 +36,8 @@ export const ChartNodeMap: Map<string, ChartNodeProps> = new Map([
     {
       name: 'Area Chart',
       icon: <AreaChartOutlined />,
-      children: (props: ChartProps) => {
-        return <TemplateChart {...{ type: 'area', props: props }} />;
+      children: (props: ChartProps, index: number) => {
+        return <TemplateChart {...{ type: 'area', props: props, index }} />;
       },
     },
   ],
@@ -53,8 +47,8 @@ export const ChartNodeMap: Map<string, ChartNodeProps> = new Map([
     {
       name: 'Scatter Chart',
       icon: <DotChartOutlined />,
-      children: (props: ChartProps) => {
-        return <TemplateChart {...{ type: 'scatter', props: props }} />;
+      children: (props: ChartProps, index: number) => {
+        return <TemplateChart {...{ type: 'scatter', props: props, index }} />;
       },
     },
   ],
@@ -63,8 +57,8 @@ export const ChartNodeMap: Map<string, ChartNodeProps> = new Map([
     {
       name: 'Line Chart',
       icon: <LineChartOutlined />,
-      children: (props: ChartProps) => {
-        return <TemplateChart {...{ type: 'line', props: props }} />;
+      children: (props: ChartProps, index: number) => {
+        return <TemplateChart {...{ type: 'line', props: props, index }} />;
       },
     },
   ],
@@ -83,7 +77,7 @@ export const ChartNodeMap: Map<string, ChartNodeProps> = new Map([
     {
       name: 'Table',
       icon: <TableOutlined />,
-      children: (props: ChartProps) => {
+      children: (props: ChartProps, index: number) => {
         return <TableChart {...props} />;
       },
     },
