@@ -19,6 +19,7 @@ type InnerState = {
 
 const VisualizationModal = (props: Props) => {
   const pageSize = 5;
+  const [dataCopy, setDataCopy] = useState<HYPERDOT_API.Chart[]>([]); // for search
   const [data, setData] = useState<HYPERDOT_API.Chart[]>([]);
   const [state, setState] = useState<InnerState>({
     initLoading: true,
@@ -36,6 +37,8 @@ const VisualizationModal = (props: Props) => {
         }
 
         setData(res.data.charts);
+
+        setDataCopy(res.data.charts);
 
         setState((prev) => {
           return {
@@ -100,6 +103,28 @@ const VisualizationModal = (props: Props) => {
     });
   };
 
+  const handleSearch = (e: any) => {
+    const target = e.target.value;
+    if (!data || data.length == 0) {
+      setDataCopy([]);
+      return;
+    }
+
+    if (!target) {
+      setDataCopy(data);
+      return;
+    }
+
+    const filteredCharts = data.filter((chart) => {
+      const chartName = chart.name ? chart.name : '';
+      const queryName = chart.query_name ? chart.query_name : '';
+
+      return chartName.includes(target) || queryName.includes(target);
+    });
+
+    setDataCopy(filteredCharts);
+  };
+
   const onLoadMore = () => {
     setState((prev) => {
       return {
@@ -129,6 +154,10 @@ const VisualizationModal = (props: Props) => {
           return [...prev, ...res.data.charts];
         });
 
+        setDataCopy((prev) => {
+          return [...prev, ...res.data.charts];
+        });
+
         setState((prev) => {
           return {
             ...prev,
@@ -154,7 +183,8 @@ const VisualizationModal = (props: Props) => {
       <div
         style={{
           textAlign: 'center',
-          marginTop: 12,
+          marginTop: '12px',
+          marginBottom: '12px',
           height: 32,
           lineHeight: '32px',
         }}
@@ -180,7 +210,7 @@ const VisualizationModal = (props: Props) => {
       >
         <Row gutter={[0, 16]}>
           <Col span={24}>
-            <Input placeholder="Search your queries..." />
+            <Input placeholder="Search your queries..." onChange={handleSearch} />
           </Col>
 
           <Col span={24}>
@@ -191,7 +221,7 @@ const VisualizationModal = (props: Props) => {
             >
               <List
                 bordered
-                dataSource={data}
+                dataSource={dataCopy}
                 loading={state.initLoading}
                 loadMore={loadMore}
                 renderItem={(item) => (

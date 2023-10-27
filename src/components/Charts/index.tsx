@@ -8,7 +8,7 @@ import {
   PieChartOutlined,
   TableOutlined,
 } from '@ant-design/icons';
-import { TableChart } from './Table';
+import { TableChartTemplate } from './Table';
 import { type ChartNodeProps, type ChartProps } from './types';
 import React from 'react';
 import { CounterChartTemplate } from './Counter';
@@ -81,7 +81,7 @@ export const ChartNodeMap: Map<string, ChartNodeProps> = new Map([
       name: 'Table',
       icon: <TableOutlined />,
       children: (props: ChartProps, index: number) => {
-        return <TableChart {...props} />;
+        return <TableChartTemplate {...{ type: 'pie', props: props, index }} />;
       },
     },
   ],

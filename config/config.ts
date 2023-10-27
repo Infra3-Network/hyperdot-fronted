@@ -7,11 +7,11 @@ import MonacoWebpackPlugin from 'monaco-editor-webpack-plugin';
 const { REACT_APP_ENV } = process.env;
 
 const chainWebpack = (config: any) => {
-  // config.plugin('monaco-editor').use(MonacoWebpackPlugin, [
-  //   {
-  //     languages: ["mysql"]
-  //   }
-  // ]);
+  config.plugin('monaco-editor').use(MonacoWebpackPlugin, [
+    {
+      languages: ['sql'],
+    },
+  ]);
   config.module
     .rule('svg')
     .test(/\.svg(\?v=\d+\.\d+\.\d+)?$/)

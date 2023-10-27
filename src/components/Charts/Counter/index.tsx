@@ -26,7 +26,7 @@ type Props = {
   index: number; // which index of charts array.
 };
 
-type CounterChartProps = {
+type CounterChartConfig = {
   data: any[];
   column?: string;
   rowNumber?: number;
@@ -37,7 +37,7 @@ type CounterChartProps = {
   increment?: boolean;
 };
 
-export const CounterChart = (props: CounterChartProps) => {
+export const CounterChart = (props: CounterChartConfig) => {
   // if column is empty, we use fisrt column
   let col = props.column ? props.column : '';
   // if rowNumber is empty, we use first row
@@ -82,7 +82,7 @@ export const CounterChart = (props: CounterChartProps) => {
         height: '200px',
       }}
     >
-      <img
+      {/* <img
         style={{
           position: 'absolute',
           top: '10%',
@@ -95,7 +95,7 @@ export const CounterChart = (props: CounterChartProps) => {
         }}
         src={hyperdotlogo}
         alt=""
-      />
+      /> */}
 
       <Statistic
         prefix={
@@ -117,10 +117,10 @@ export const CounterChart = (props: CounterChartProps) => {
 export const CounterChartTemplate = (props: Props) => {
   const columns = getColumns(props.props.data);
   columns.splice(0, 0, { value: '', label: '' });
-  const config = props.props.params.config as CounterChartProps;
+  const config = props.props.params.config as CounterChartConfig;
   const params = props.props.params;
   const manager = props.props.manager;
-  const [counterProps, setCounterProps] = React.useState<CounterChartProps>(
+  const [counterProps, setCounterProps] = React.useState<CounterChartConfig>(
     config
       ? {
           data: props.props.data.rows,

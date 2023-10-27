@@ -2,7 +2,7 @@ import { Settings as LayoutSettings } from '@ant-design/pro-layout';
 
 const Settings: LayoutSettings & {
   pwa?: boolean;
-  logo?: string;
+  // logo?: string;
 } = {
   navTheme: 'light',
   primaryColor: '#2F54EB',
@@ -13,10 +13,11 @@ const Settings: LayoutSettings & {
   footerRender: false,
   menuRender: false,
   pwa: false,
-  logo: 'https://gw.alipayobjects.com/zos/rmsportal/KDpgvguMpGfqaHPjicRK.svg',
+  // logo: 'https://gw.alipayobjects.com/zos/rmsportal/KDpgvguMpGfqaHPjicRK.svg',
   headerHeight: 48,
   title: 'Hyperdot',
   splitMenus: true,
+  // logo: '/Untitled.svg',
 };
 
 //   {

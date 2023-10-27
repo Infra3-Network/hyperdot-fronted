@@ -105,7 +105,7 @@ const Login: React.FC = () => {
       </div>
       <div className={styles.content}>
         <LoginForm
-          logo={<img alt="logo" src="/logo.svg" />}
+          // logo={<img alt="logo" src="/logo-no-background.svg" />}
           title="Hyperdot"
           subTitle={intl.formatMessage({ id: 'pages.layouts.userLayout.title' })}
           initialValues={{

@@ -2,7 +2,9 @@ import { getUserQueryChart } from '@/services/hyperdot/api';
 import { Card, message, Spin } from 'antd';
 import React, { useEffect } from 'react';
 import { queryRun } from '@/services/hyperdot/api';
-import { Area, Line, Bar, Scatter } from '@ant-design/charts';
+import { Area, Line, Bar, Scatter, Pie } from '@ant-design/charts';
+import { CounterChart } from '@/components/Charts/Counter';
+import { TableChart } from '@/components/Charts/Table';
 
 type Props = {
   user: HYPERDOT_API.CurrentUser;
@@ -14,6 +16,12 @@ const makeChartConfig = (chart: HYPERDOT_API.Chart, data: any) => {
     const config = JSON.parse(chart.config);
     if (!config) {
       return undefined;
+    }
+
+    if (chart.type == 'data_table') {
+      return {
+        data: data,
+      };
     }
 
     return {
@@ -48,6 +56,12 @@ const makeChartConfig = (chart: HYPERDOT_API.Chart, data: any) => {
       },
     };
   }
+
+  if (chart.type == 'data_table') {
+    return {
+      data: data,
+    };
+  }
 };
 
 const generateChart = (chart: HYPERDOT_API.Chart, data: any) => {
@@ -58,7 +72,11 @@ const generateChart = (chart: HYPERDOT_API.Chart, data: any) => {
   console.log(c, chart.type);
   switch (chart.type) {
     case 'bar_chart':
-      return <div>Bar Chart</div>;
+      return (
+        <>
+          <Bar {...c} />
+        </>
+      );
     case 'area_chart':
       return (
         <>
@@ -66,13 +84,29 @@ const generateChart = (chart: HYPERDOT_API.Chart, data: any) => {
         </>
       );
     case 'scatter_chart':
-      return <div>Scatter Chart</div>;
+      return (
+        <>
+          <Scatter {...c} />
+        </>
+      );
     case 'line_chart':
       return (
         <>
           <Line {...c} />
         </>
       );
+    case 'pie_chart':
+      return (
+        <>
+          <Pie {...c} />
+        </>
+      );
+    case 'data_counter':
+      return <CounterChart {...c} />;
+
+    case 'data_table':
+      return <TableChart {...c} />;
+
     default:
       return <div>Loading bad</div>;
   }

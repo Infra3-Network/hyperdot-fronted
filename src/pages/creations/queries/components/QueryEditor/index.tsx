@@ -181,9 +181,6 @@ export const NewVisualizationTab = (props: NewVisualizationTabProps) => {
 interface QueryVisualizationProps {
   queryData: any;
   runLoading: boolean;
-  // tabProps: QE.TabArray;
-  // setTabProps: any;
-  // setCharts: React.Dispatch<React.SetStateAction<ChartArray>>,
   chartMgr: ChartManager;
 }
 
@@ -264,125 +261,18 @@ const QueryVisualization = (props: QueryVisualizationProps) => {
           };
         });
 
-      // console.log('newItem.length ', newItems.length - 1)
-      // setTabActiveKey((newItems.length - 2).toString())
       return newItems;
     });
   }, [props.chartMgr]);
 
-  // const firstChart = props.chartMgr.getCharts()[1];
-  // const [activeOption, setActionOption] = React.useState<any>(
-  //   props.chartMgr.getCharts()[1] ? firstChart.index : undefined,
-  // );
-  // const [options, setOptions] = React.useState<any[]>(
-  //   props.chartMgr.getCharts().map((chart) => {
-  //     let icon = undefined;
-  //     if (chart.type === 'new') {
-  //       icon = <BarChartOutlined />;
-  //     } else {
-  //       icon = ChartNodeMap.get(chart.type)?.icon;
-  //     }
-  //     return {
-  //       label: chart.name,
-  //       value: chart.index,
-  //       icon: icon,
-  //     };
-  //   }),
-  // );
-
   if (!props.queryData) {
     return null;
   }
-  // const charts = props.chartMgr.getCharts();
-  // const items = charts.map((params: HYPERDOT_API.Chart) => {
-  //   let children, icon;
-  //   if (params.type === 'new') {
-  //     children = (v: ChartProps) => {
-  //       const newProps: NewVisualizationTabProps = {
-  //         chartMgr: v.manager,
-  //         chartNodeMap: ChartNodeMap,
-  //         setTabActiveKey: setTabActiveKey,
-  //         setSegOptions: setOptions,
-  //       };
-  //       return <NewVisualizationTab {...newProps} />;
-  //     };
-  //     icon = <BarChartOutlined />;
-  //   } else {
-  //     const chartNode = ChartNodeMap.get(params.type);
-  //     if (chartNode == undefined) {
-  //       return null;
-  //     }
-  //     icon = chartNode.icon;
-  //     children = chartNode.children;
-  //   }
-  //   return params.index == undefined
-  //     ? null
-  //     : {
-  //       label: (
-  //         <div>
-  //           <span>
-  //             {icon}
-  //             {params.name}
-  //           </span>
-  //           {params.closeable ? (
-  //             <span style={{ marginLeft: '12px' }}>
-  //               <CloseOutlined
-  //                 onClick={() => {
-  //                   handleCloseClick(params.index || 0);
-  //                 }}
-  //               />
-  //             </span>
-  //           ) : null}
-  //         </div>
-  //       ),
-  //       key: params.index?.toString(),
-  //       children: children({
-  //         manager: props.chartMgr,
-  //         params: params,
-  //         data: props.queryData,
-  //       }),
-  //       style: {},
-  //       closable: params.closeable,
-  //       forceRender: false,
-  //     };
-  // });
-
   return (
     <div>
-      {/* <Segmented
-        options={options}
-        defaultValue={activeOption ? activeOption : ""}
-        onChange={(value) => {
-          setActionOption(value)
-          console.log(activeOption)
-        }}
-      />
-      {charts.map((params: HYPERDOT_API.Chart) => {
-        if (activeOption == params.index) {
-          if (params.type === 'new') {
-
-            const newProps: NewVisualizationTabProps = {
-              chartMgr: props.chartMgr,
-              chartNodeMap: ChartNodeMap,
-              setTabActiveKey: setActionOption,
-              setSegOptions: setOptions
-            };
-            return <NewVisualizationTab {...newProps} />;
-
-          } else {
-            const chartNode = ChartNodeMap.get(params.type);
-            return chartNode?.children({
-              manager: props.chartMgr,
-              params: params,
-              data: props.queryData,
-            })
-          }
-        }
-      })} */}
-
       <Tabs
         tabPosition={'top'}
-        style={{ width: window.innerWidth - 48 }}
+        // style={{ width:  }}
         activeKey={tabActiveKey}
         onChange={(activeKey: string) => {
           setTabActiveKey(activeKey);
@@ -727,46 +617,16 @@ const QueryEditor = (props: Props) => {
 
   return (
     <>
-      <Row gutter={24} style={{ marginBottom: '12px' }}>
-        {props.userQuery && (
-          <Col>
-            <Breadcrumb>
-              <Breadcrumb.Item href="#">
-                <Space>
-                  <UserAvatar
-                    size={24}
-                    username={props.user.username}
-                    icon_url={props.user.icon_url}
-                  />
-                  <span>
-                    <Link
-                      to={'/account/center/' + props.user.id}
-                      style={{ textDecoration: 'none', color: 'inherit' }}
-                    >
-                      @{props.user.username}
-                    </Link>
-                  </span>
-                </Space>
-              </Breadcrumb.Item>
-              <Breadcrumb.Item href="#">{props.userQuery.name}</Breadcrumb.Item>
-            </Breadcrumb>
-          </Col>
-        )}
-      </Row>
-
       {contextHolder}
 
       <Row gutter={24}>
         <Col span={24}>
           <MonacoEditor
-            width={window.innerWidth - 48}
+            // width={window.innerWidth - 48}
             height={'400'}
             language="sql"
-            theme="vs-dark"
             value={queryNormal.query}
-            // options={options}
             onChange={handleEditorChange}
-            // editorDidMount={::this.editorDidMount}
           />
           <Row gutter={8} className={styles.editorButton}>
             {/* Expand Button */}
@@ -812,6 +672,7 @@ const QueryEditor = (props: Props) => {
           </Row>
         </Col>
       </Row>
+
       <Row gutter={24}>
         <Col span={24}>
           <Spin tip="Loading" spinning={runLoading}>
