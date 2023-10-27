@@ -1,8 +1,19 @@
-import { Row, Col, Select, Input, Card, Radio, Tooltip, Space, Slider as AntSlider } from 'antd';
+import {
+  Row,
+  Col,
+  Select,
+  Input,
+  Card,
+  Radio,
+  Tooltip,
+  Space,
+  Slider as AntSlider,
+  Empty,
+} from 'antd';
 
 import React, { useEffect } from 'react';
 
-import { Area, Line, Bar, Scatter } from '@ant-design/charts';
+import { Area, Line, Bar, Scatter, Pie } from '@ant-design/charts';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import { WaterMark } from '@ant-design/pro-layout';
 import { type ChartProps } from '../types';
@@ -15,11 +26,11 @@ type TemplateChartProps = {
 };
 
 const hasChartOptions = (t: string): boolean => {
-  return t == 'area' || t == 'line' || t == 'scatter' || t == 'bar';
+  return t == 'area' || t == 'line' || t == 'scatter' || t == 'bar' || t == 'pie';
 };
 
 const hasResultDataControl = (t: string): boolean => {
-  return t == 'area' || t == 'line' || t == 'scatter' || t == 'bar';
+  return t == 'area' || t == 'line' || t == 'scatter' || t == 'bar' || t == 'pie';
 };
 
 const hasXCloumnSelected = (t: string): boolean => {
@@ -35,7 +46,11 @@ const hasSColumnSelected = (t: string): boolean => {
 };
 
 const hasColorColumnSelected = (t: string): boolean => {
-  return t == 'scatter';
+  return t == 'scatter' || t == 'pie';
+};
+
+const hasAngleColumnSelected = (t: string): boolean => {
+  return t == 'pie';
 };
 
 const hasRegressionLine = (t: string): boolean => {
@@ -204,101 +219,69 @@ const generateState = (type: string, props: ChartProps): any => {
     };
   }
 
+  if (type == 'pie') {
+    const x = config ? config.xField : schemas.length < 1 ? '' : (schemas[0].name as string);
+    const y = config ? config.yField : schemas.length < 2 ? '' : (schemas[1].name as string);
+
+    // console.log('pie schemas ', schemas, config, x, y)
+    const defaultConfig = {
+      appendPadding: 5,
+      data: data.rows,
+      angleField: x,
+      colorField: y,
+      radius: 0.8,
+      label: {
+        type: 'inner',
+        style: {
+          fontSize: 14,
+          textAlign: 'center',
+        },
+      },
+      interactions: [
+        {
+          type: 'element-active',
+        },
+      ],
+    };
+    // convert data.rows by x and y
+
+    // console.log('pie defualtConfig', defaultConfig)
+    return {
+      ...params,
+      name: params.name ? params.name : 'Pie Chart',
+      config: config
+        ? {
+            ...config,
+            data: data.rows,
+          }
+        : defaultConfig,
+    };
+  }
+
   return undefined;
 };
 
 const generateChartNode = (t: string, config: any, data: any[]): React.ReactNode => {
   switch (t) {
     case 'area':
-      return (
-        <Area
-          {...{
-            data,
-            ...config,
-          }}
-        />
-      );
+      return <Area {...config} />;
     case 'line':
-      return (
-        <Line
-          {...{
-            data,
-            ...config,
-          }}
-        />
-      );
+      return <Line {...config} />;
 
     case 'bar':
-      return (
-        <Bar
-          {...{
-            data,
-            ...config,
-          }}
-        />
-      );
+      return <Bar {...config} />;
     case 'scatter':
-      return (
-        <Scatter
-          {...{
-            data,
-            ...config,
-          }}
-        />
-      );
+      return <Scatter {...config} />;
+    case 'pie':
+      return <Pie {...config} />;
     default:
-      return null;
+      return <Empty imageStyle={{ height: 60 }} description={<span>Unsupport</span>} />;
   }
 };
 
 export const TemplateChart = (props: TemplateChartProps) => {
   const manager = props.props.manager;
   const params = props.props.params;
-  // const data = props.data;
-  // const config = params.config as AreaChartConfig;
-  // const schemas: any[] = data.schemas;
-  // const x = config ? config.xField : schemas.length < 1 ? '' : (schemas[0].name as string);
-  // const y = config ? config.yField : schemas.length < 2 ? '' : (schemas[1].name as string);
-  // const seriesField = config
-  //   ? config.seriesField
-  //     ? config.seriesField
-  //     : ''
-  //   : schemas.length < 3
-  //     ? ''
-  //     : (schemas[2].name as string);
-  // const defaultConfig = {
-  //   data: data.rows,
-  //   xField: x,
-  //   yField: y,
-  //   seriesField: seriesField,
-  //   xAxis: {
-  //     top: false,
-  //     position: 'bottom',
-  //     range: [0, 1],
-  //   },
-  //   yAxis: {
-  //     top: false,
-  //     position: 'right',
-  //     range: [0, 1],
-  //   },
-  //   areaStyle: () => {
-  //     return {
-  //       fill: 'l(270) 0:#ffffff 0.5:#7ec2f3 1:#1890ff',
-  //     };
-  //   },
-  // };
-
-  // const defaultState = {
-  //   id: params.id,
-  //   name: params.name ? params.name : 'Area Chart',
-  //   config: config
-  //     ? {
-  //       ...config,
-  //       data: data.rows,
-  //     }
-  //     : defaultConfig,
-  // };
-
   const defaultState = generateState(props.type, props.props);
   const [state, setState] = React.useState<any>(defaultState);
 
@@ -433,6 +416,28 @@ export const TemplateChart = (props: TemplateChartProps) => {
         props.index,
       );
     }
+
+    if (colField == 'angleField') {
+      setState((prev: any) => {
+        const newConfig = { ...prev.config, angleField: value };
+
+        return {
+          ...prev,
+          config: newConfig,
+        };
+      });
+
+      manager.update(
+        {
+          ...oldChart,
+          config: {
+            ...oldChart.config,
+            angleField: value,
+          },
+        },
+        props.index,
+      );
+    }
   };
 
   const handleRegressionLine = (value: any) => {
@@ -544,13 +549,15 @@ export const TemplateChart = (props: TemplateChartProps) => {
     }
   };
 
+  console.log(state.config);
+
   return (
     <>
       <Row gutter={24}>
         <Col span={24}>
           <Card>
             <WaterMark content={'Hyperdot'}>
-              {generateChartNode(props.type, state.config, state.config.data)}
+              {state.config && generateChartNode(props.type, state.config, state.config.data)}
             </WaterMark>
           </Card>
         </Col>
@@ -665,6 +672,25 @@ export const TemplateChart = (props: TemplateChartProps) => {
                                     options={columns}
                                     onSelect={(value) => {
                                       handleCloumnSelect(value, 'colorField');
+                                    }}
+                                  />
+                                </Col>
+                              </Row>
+                            </Col>
+                          )}
+
+                          {hasAngleColumnSelected(props.type) && (
+                            <Col span={24}>
+                              <Row>
+                                <Col span={6}>Angle column</Col>
+                                <Col span={18}>
+                                  <Select
+                                    defaultValue={state.config.angleField}
+                                    bordered={true}
+                                    style={{ width: '100%' }}
+                                    options={columns}
+                                    onSelect={(value) => {
+                                      handleCloumnSelect(value, 'angleField');
                                     }}
                                   />
                                 </Col>

@@ -5,6 +5,7 @@ import {
   DotChartOutlined,
   FieldNumberOutlined,
   LineChartOutlined,
+  PieChartOutlined,
   TableOutlined,
 } from '@ant-design/icons';
 import { TableChart } from './Table';
@@ -64,16 +65,16 @@ export const ChartNodeMap: Map<string, ChartNodeProps> = new Map([
       },
     },
   ],
-  //   [
-  //     'pie_chart',
-  //     {
-  //       name: 'Pie Chart',
-  //       icon: <PieChartOutlined />,
-  //       children: (props: QE.ChartTabProps) => {
-  //         return <PieChartTab {...props} />;
-  //       },
-  //     },
-  //   ],
+  [
+    'pie_chart',
+    {
+      name: 'Pie Chart',
+      icon: <PieChartOutlined />,
+      children: (props: ChartProps, index: number) => {
+        return <TemplateChart {...{ type: 'pie', props: props, index }} />;
+      },
+    },
+  ],
   [
     'data_table',
     {
