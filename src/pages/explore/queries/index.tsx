@@ -39,7 +39,14 @@ const Queries = (props: Props) => {
 
     if (type == 'order') {
       queries.order = newValue;
-      queries.timeRange = newValue == 'favorites' ? favoritesTimeRange : trendingTimeRange;
+      switch (newValue) {
+        case 'favorites':
+          queries.timeRange = favoritesTimeRange;
+        case 'trending':
+          queries.timeRange = trendingTimeRange;
+        case 'new':
+          queries.timeRange = 'all';
+      }
     }
 
     if (type == 'favoritesTimeRange') {
