@@ -1,8 +1,6 @@
-import { getInitialState } from '@/app';
-import MyIcon from '@/components/Icons';
 import { updateDashboard } from '@/services/hyperdot/api';
 import { parseWindowString } from '@/utils';
-import { HomeOutlined, UserOutlined } from '@ant-design/icons';
+import { EditOutlined, HomeOutlined, UserOutlined } from '@ant-design/icons';
 import { Breadcrumb, Button, Card, Col, List, message, Row, Space } from 'antd';
 import React, { memo } from 'react';
 
@@ -13,6 +11,7 @@ import TextWidgetModal from './TextWidgetModal';
 import TextWidgetPanel from './TextWidgetPanel';
 import VisualizationModal from './VisualizationModal';
 import VisualizationPanel from './VisualizationPanel';
+import EditPanelModal from './EditPanelModal';
 
 import styles from './index.less';
 import UserAvatar from '@/components/UserAvatar';
@@ -59,20 +58,30 @@ const EditButtonGroup = (ctl: ControlState, action: StateAction, onSave: any) =>
   return (
     <Space>
       <Button type="primary" onClick={handleSettingsClick}>
-        {' '}
-        Settings{' '}
+        Settings
       </Button>
       <Button type="primary" onClick={handleTextWidgetClick}>
-        {' '}
-        Add text widget{' '}
+        Add text widget
       </Button>
       <Button type="primary" onClick={handleVisualizationClick}>
-        {' '}
-        Add Visualization{' '}
+        Add Visualization
       </Button>
-      <Button loading={ctl.saveLoading} type="default" onClick={onSave}>
-        {' '}
-        Save{' '}
+      <Button loading={ctl.saveLoading} type="primary" onClick={onSave}>
+        Save
+      </Button>
+
+      <Button
+        type="default"
+        onClick={() => {
+          action.setControlState((prev) => {
+            return {
+              ...prev,
+              edit: false,
+            };
+          });
+        }}
+      >
+        Cancel
       </Button>
     </Space>
   );
@@ -101,12 +110,42 @@ const ViewButtonGroup = (action: StateAction, editable: boolean) => {
 };
 
 const PanelComponent = memo(
-  (props: { panel: HYPERDOT_API.DashboardPanel; user: HYPERDOT_API.CurrentUser }) => {
+  (props: {
+    panel: HYPERDOT_API.DashboardPanel;
+    panelIndex: number;
+    user: HYPERDOT_API.CurrentUser;
+    ctl: ControlState;
+    action: StateAction;
+  }) => {
     const { panel, user } = props;
     return (
       <div>
-        {panel.type === 0 && <TextWidgetPanel panel={panel} />}
-        {panel.type === 1 && <VisualizationPanel panel={panel} user={user} />}
+        <Card bordered style={{ width: props.panel.width, height: props.panel.height }}>
+          {props.ctl.edit && (
+            <div
+              style={{
+                position: 'absolute',
+                top: '-2px',
+                right: '0',
+              }}
+            >
+              <EditOutlined
+                onClick={() => {
+                  props.action.setControlState((prev) => {
+                    return {
+                      ...prev,
+                      editPanelIndex: props.panelIndex,
+                      editPanel: props.panel,
+                      editPanelModalOpen: true,
+                    };
+                  });
+                }}
+              />
+            </div>
+          )}
+          {panel.type === 0 && <TextWidgetPanel panel={panel} />}
+          {panel.type === 1 && <VisualizationPanel panel={panel} user={user} />}
+        </Card>
       </div>
     );
   },
@@ -128,6 +167,8 @@ export const CreationDashboard = (props: Props) => {
     textWidgetModalOpen: false,
     visualizationModalOpen: false,
     saveLoading: false,
+    editPanelModalOpen: false,
+    editPanelIndex: -1,
   });
 
   const [dashboard, setDashboard] = React.useState<HYPERDOT_API.Dashboard>(props.dashboard);
@@ -241,6 +282,7 @@ export const CreationDashboard = (props: Props) => {
         }
 
         setDashboard(res.data);
+        message.info('Dashboard saved');
       })
       .catch((err) => {
         message.error(err);
@@ -357,7 +399,13 @@ export const CreationDashboard = (props: Props) => {
                             }`}
                           >
                             {/* {getPanel(panel)} */}
-                            <PanelComponent panel={panel} user={props.user} />
+                            <PanelComponent
+                              panel={panel}
+                              panelIndex={index}
+                              user={props.user}
+                              ctl={controlState}
+                              action={stateAction}
+                            />
                           </div>
                         </Rnd>
                       </div>
@@ -375,6 +423,7 @@ export const CreationDashboard = (props: Props) => {
       {props.user && (
         <VisualizationModal ctl={controlState} action={stateAction} user={props.user} />
       )}
+      <EditPanelModal ctl={controlState} action={stateAction} />
     </>
   );
 };

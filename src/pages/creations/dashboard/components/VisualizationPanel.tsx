@@ -64,12 +64,12 @@ const makeChartConfig = (chart: HYPERDOT_API.Chart, data: any) => {
   }
 };
 
-const generateChart = (chart: HYPERDOT_API.Chart, data: any) => {
+const ChartPanel = ({ chart, data }: { chart: HYPERDOT_API.Chart; data: any }) => {
   const c = makeChartConfig(chart, data);
   if (!c) {
     return null;
   }
-  console.log(c, chart.type);
+
   switch (chart.type) {
     case 'bar_chart':
       return (
@@ -159,9 +159,7 @@ const VisualizationPanel = (props: Props) => {
 
   return (
     <Spin tip="Loading" spinning={loading}>
-      <Card bordered style={{ width: props.panel.width, height: props.panel.height }} type="inner">
-        {chart && data && generateChart(chart, data)}
-      </Card>
+      {chart && data && <ChartPanel chart={chart} data={data} />}
     </Spin>
   );
 };

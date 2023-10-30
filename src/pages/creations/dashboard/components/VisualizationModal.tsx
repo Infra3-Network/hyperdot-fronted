@@ -36,6 +36,16 @@ const VisualizationModal = (props: Props) => {
           return;
         }
 
+        if (!res.data.charts) {
+          setState((prev) => {
+            return {
+              ...prev,
+              initLoading: false,
+            };
+          });
+          return;
+        }
+
         setData(res.data.charts);
 
         setDataCopy(res.data.charts);
@@ -203,10 +213,12 @@ const VisualizationModal = (props: Props) => {
     <>
       <Modal
         open={props.ctl.visualizationModalOpen}
-        okText={'Done'}
-        cancelText={'Cancel'}
-        onOk={handleOk}
-        onCancel={handleCancel}
+        footer={[
+          <Button key="cancel" type={'default'} onClick={handleCancel}>
+            Cancel
+          </Button>,
+        ]}
+        closable={false}
       >
         <Row gutter={[0, 16]}>
           <Col span={24}>

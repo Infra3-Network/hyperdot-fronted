@@ -122,12 +122,20 @@ export default defineConfig({
         },
 
         {
-          name: 'Dashboard',
+          name: 'Edit Dashboard',
           icon: 'smile',
-          path: '/explore/dashboards/:id',
+          path: 'dashboards/:id',
           component: './creations/dashboard',
           hideInMenu: true,
         },
+
+        // {
+        //   name: 'Dashboard',
+        //   icon: 'smile',
+        //   path: '/explore/dashboards/:id',
+        //   component: './creations/dashboard',
+        //   hideInMenu: true,
+        // },
       ],
     },
     {
@@ -147,6 +155,22 @@ export default defineConfig({
           icon: 'smile',
           path: 'queries',
           component: './creations/queries',
+          hideInMenu: true,
+        },
+
+        {
+          name: 'New Dashboard',
+          icon: 'smile',
+          path: 'dashboards',
+          component: './creations/dashboard',
+          hideInMenu: true,
+        },
+
+        {
+          name: 'Edit Dashboard',
+          icon: 'smile',
+          path: 'dashboards/:id',
+          component: './creations/dashboard',
           hideInMenu: true,
         },
       ],

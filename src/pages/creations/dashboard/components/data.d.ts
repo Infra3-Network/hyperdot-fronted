@@ -3,6 +3,9 @@ type ControlState = {
   settingsModalOpen: boolean;
   textWidgetModalOpen: boolean;
   visualizationModalOpen: boolean;
+  editPanelModalOpen: boolean;
+  editPanelIndex: number;
+  editPanel?: HYPERDOT_API.DashboardPanel;
   saveLoading: boolean;
 };
 

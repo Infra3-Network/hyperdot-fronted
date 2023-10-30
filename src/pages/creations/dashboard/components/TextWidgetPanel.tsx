@@ -7,11 +7,7 @@ type Props = {
 };
 
 const TextWidgetPanel = (props: Props) => {
-  return (
-    <Card bordered style={{ width: props.panel.width, height: props.panel.height }}>
-      <Markdown>{props.panel.text}</Markdown>
-    </Card>
-  );
+  return <Markdown>{props.panel.text}</Markdown>;
 };
 
 export default TextWidgetPanel;

@@ -1,5 +1,4 @@
 import { Modal, Row, Col, Input, Checkbox, Tag } from 'antd';
-import { useState } from 'react';
 
 type Props = {
   dashboard: HYPERDOT_API.Dashboard;
@@ -42,18 +41,28 @@ const SettingsModal = (props: Props) => {
               // placeholder={inStatus.name.msg}
               // status={inStatus.name.status}
               value={props.dashboard.name}
-              // onChange={handleDashboardNameChange}
-              // onPressEnter={handleDashboardNameChange}
+              onChange={(e) => {
+                props.action.setDashboard((prev: any) => {
+                  return {
+                    ...prev,
+                    name: e.target.value,
+                  };
+                });
+              }}
             />
           </Col>
           <Col span={24}>
             <p>Dashboard description</p>
             <Input.TextArea
-              // placeholder={inStatus.description.msg}
-              // status={inStatus.description.status}
               value={props.dashboard.description}
-              // onChange={handleDashboardDecsriptionChange}
-              // onPressEnter={handleDashboardDecsriptionChange}
+              onChange={(e) => {
+                props.action.setDashboard((prev: any) => {
+                  return {
+                    ...prev,
+                    description: e.target.value,
+                  };
+                });
+              }}
             />
           </Col>
 
