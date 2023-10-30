@@ -76,4 +76,12 @@ export const formatTimeAgo = (timestamp: string): string => {
   }
 };
 
+export const isEmail = (account: string): boolean => {
+  // 使用正则表达式匹配电子邮件地址的模式
+  const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+
+  // 使用正则表达式的 test 方法来检查字符串是否匹配模式
+  return emailRegex.test(account);
+};
+
 export const LoadingTip = 'Loading...';

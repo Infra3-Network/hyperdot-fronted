@@ -50,7 +50,7 @@ export default defineConfig({
   // https://umijs.org/zh-CN/plugins/plugin-locale
   locale: {
     // default zh-CN
-    default: 'zh-CN',
+    default: 'en-US',
     antd: true,
     // default true, when it is true, will use `navigator.language` overwrite default
     baseNavigator: true,
@@ -77,17 +77,17 @@ export default defineConfig({
           path: '/user',
           redirect: '/user/login',
         },
-        {
-          name: 'register-result',
-          icon: 'smile',
-          path: '/user/register-result',
-          component: './user/register-result',
-        },
+        // {
+        //   name: 'register-result',
+        //   icon: 'smile',
+        //   path: '/user/register-result',
+        //   component: './user/register-result',
+        // },
         {
           name: 'register',
           icon: 'smile',
           path: '/user/register',
-          component: './user/register',
+          component: './user/Register',
           access: 'canRegister',
         },
         {
@@ -120,6 +120,14 @@ export default defineConfig({
 
           hideInMenu: true,
         },
+
+        {
+          name: 'Dashboard',
+          icon: 'smile',
+          path: '/explore/dashboards/:id',
+          component: './creations/dashboard',
+          hideInMenu: true,
+        },
       ],
     },
     {
@@ -139,14 +147,6 @@ export default defineConfig({
           icon: 'smile',
           path: 'queries',
           component: './creations/queries',
-          hideInMenu: true,
-        },
-
-        {
-          name: 'Dashboard',
-          icon: 'smile',
-          path: 'dashboards/:id',
-          component: './creations/dashboard',
           hideInMenu: true,
         },
       ],

@@ -8,6 +8,7 @@ import Footer from '@/components/Footer';
 import { getCurrentUser } from './services/hyperdot/api';
 import defaultSettings from '../config/defaultSettings';
 import CreationDropdownMenu from './pages/creations/components/Menu';
+import { guestCanAccess } from './access';
 
 const isDev = process.env.NODE_ENV === 'development';
 const loginPath = '/user/login';
@@ -67,11 +68,7 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
     onPageChange: () => {
       const { location } = history;
       // 如果没有登录，重定向到 login
-      if (
-        !initialState?.currentUser &&
-        location.pathname !== loginPath &&
-        location.pathname !== registerPath
-      ) {
+      if (!initialState?.currentUser && !guestCanAccess(location.pathname)) {
         history.push(loginPath);
       }
     },
@@ -158,12 +155,13 @@ export const request: RequestConfig = {
   requestInterceptors: [
     (url, options) => {
       const location = history.location.pathname;
-      if (url == '/user/register') {
-        return {
-          url: url,
-          options: { ...options, interceptors: false },
-        };
-      }
+      // if (guestCanAccess(location)) {
+      //   console.log('canAccess', location)
+      //   return {
+      //     url: url,
+      //     options: { ...options, interceptors: false },
+      //   };
+      // }
       const token = localStorage.getItem('token');
       if (token === null && location !== registerPath && location !== loginPath) {
         history.replace({

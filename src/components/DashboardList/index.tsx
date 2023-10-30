@@ -160,7 +160,7 @@ const DashboardList = (props: Props) => {
         >
           <List.Item.Meta
             avatar={<UserAvatar size={26} username={item.username} icon_url={item.icon_url} />}
-            title={<Link to={'/creations/dashboards/' + item.id}>{item.name}</Link>}
+            title={<Link to={'/explore/dashboards/' + item.id}>{item.name}</Link>}
           />
           <Content dashboard={item} />
         </List.Item>

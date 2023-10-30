@@ -39,7 +39,7 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
     (event: MenuInfo) => {
       const { key } = event;
       if (key === 'logout') {
-        setInitialState((s) => ({ ...s, currentUser: undefined }));
+        setInitialState((s: any) => ({ ...s, currentUser: undefined }));
         localStorage.removeItem('token');
         loginOut();
         return;
@@ -97,7 +97,6 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
       </Menu.Item>
     </Menu>
   );
-  console.log(currentUser.icon_url);
   return (
     <HeaderDropdown overlay={menuHeaderDropdown}>
       <span className={`${styles.action} ${styles.account}`}>
