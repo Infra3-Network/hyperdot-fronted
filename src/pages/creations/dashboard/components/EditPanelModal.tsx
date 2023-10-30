@@ -1,3 +1,4 @@
+import { removeDashboardPanel } from '@/services/hyperdot/api';
 import { Button, Col, Input, message, Modal, Row, Space } from 'antd';
 import { useState } from 'react';
 
@@ -22,7 +23,16 @@ const EditPanelModal = (props: Props) => {
 
                 const removePanel = props.ctl.editPanel;
                 if (removePanel?.id) {
-                  alert('should call remove');
+                  removeDashboardPanel(removePanel.id)
+                    .then((res) => {
+                      if (!res.success) {
+                        message.error(res.errorMessage);
+                        return;
+                      }
+                    })
+                    .catch((err) => {
+                      message.error(err.message);
+                    });
                 }
 
                 // remove panel from dashboard
@@ -41,6 +51,8 @@ const EditPanelModal = (props: Props) => {
                     editPanelModalOpen: false,
                   };
                 });
+
+                message.success('Panel removed');
               }}
             >
               {' '}

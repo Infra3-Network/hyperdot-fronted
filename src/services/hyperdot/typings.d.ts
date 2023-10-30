@@ -318,4 +318,11 @@ declare namespace HYPERDOT_API {
     errorCode?: int;
     data: UserQueryFavorites;
   };
+
+  type RemoveDashboardPanelResponse = {
+    success: boolean;
+    errorMessage?: string;
+    errorCode?: int;
+    data: UserQueryFavorites;
+  };
 }

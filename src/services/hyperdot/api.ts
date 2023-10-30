@@ -471,3 +471,10 @@ export async function updateFavoriteQuery(
     ...(options || {}),
   });
 }
+
+export async function removeDashboardPanel(panelId: number, options?: { [key: string]: any }) {
+  return request<HYPERDOT_API.RemoveDashboardPanelResponse>('/apis/v1/dashboard/panel/' + panelId, {
+    method: 'DELETE',
+    ...(options || {}),
+  });
+}
