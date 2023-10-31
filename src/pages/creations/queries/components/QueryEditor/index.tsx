@@ -26,7 +26,7 @@ import {
   Segmented,
   SegmentedProps,
 } from 'antd';
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import styles from './index.less';
 import { Link, useHistory } from 'umi';
 import { createQuery, queryRun, removeChart, updateQuery } from '@/services/hyperdot/api';
@@ -393,6 +393,9 @@ const QueryEditor = (props: Props) => {
   const [runLoading, setRunLoading] = React.useState<boolean>(false);
   const [queryData, setQueryData] = React.useState<any>(null);
   const [messageApi, contextHolder] = message.useMessage();
+  const [fullScreen, setFullScreen] = React.useState<boolean>(false);
+  const [isExpand, setIsExpand] = React.useState<boolean>(false);
+  const editorRef = useRef<MonacoEditor>(null);
   const history = useHistory();
 
   const updateStateByUserQuery = (userQuery: HYPERDOT_API.UserQuery) => {
@@ -407,7 +410,6 @@ const QueryEditor = (props: Props) => {
       // if unsaved query, we create these tabs
       const charts: HYPERDOT_API.Chart[] = [
         {
-          index: 1,
           name: 'Query Result',
           type: 'data_table',
           closeable: true,
@@ -417,7 +419,6 @@ const QueryEditor = (props: Props) => {
       // if the query is owned by current user, we add new visualization tab
       if (props.editable) {
         charts.push({
-          index: 0,
           name: 'New Visualization',
           type: 'new',
           closeable: false,
@@ -431,7 +432,6 @@ const QueryEditor = (props: Props) => {
       // if the query is owned by current user, we add new visualization tab
       if (props.editable) {
         charts.push({
-          index: 0,
           name: 'New Visualization',
           type: 'new',
           closeable: false,
@@ -441,54 +441,6 @@ const QueryEditor = (props: Props) => {
       chartMgr.reset(charts);
     }
   };
-
-  // If props.id is defined, then
-  //  1. fetch saved query,
-  //  2. run query to fetch queryData if queryData is null
-  /// 3. set TabProps, queryNomal state
-  useEffect(() => {
-    if (props.userQuery != undefined) {
-      const userQuery = props.userQuery;
-      setRunLoading(true);
-      queryRun(userQuery.query, userQuery.query_engine, {
-        errorHandler: (error: any) => {
-          messageApi.error(error.message);
-        },
-      })
-        .then((queryRes) => {
-          if (!queryRes.success) {
-            messageApi.error(queryRes.errorMessage);
-            return;
-          }
-
-          setQueryData(queryRes.data);
-        })
-        .catch((err) => {
-          messageApi.error(err.message);
-        })
-        .finally(() => {
-          setRunLoading(false);
-        });
-      updateStateByUserQuery(userQuery);
-    } else {
-      if (chartMgr.getByName('New Visualization')) {
-        return;
-      }
-
-      chartMgr.add({
-        name: 'New Visualization',
-        type: 'new',
-        closeable: false,
-      });
-      // setTabProps((prev: QE.TabArray) => {
-      //   if (TabManager.findByName(prev, 'New Visualization')) {
-      //     return prev;
-      //   }
-
-      //   return TabManager.add(prev, );
-      // });
-    }
-  }, []);
 
   const handleEditorChange = (value: any) => {
     setQueryNormal((prev) => {
@@ -633,24 +585,117 @@ const QueryEditor = (props: Props) => {
       });
   };
 
+  const handleFullScreenToggle = () => {
+    const isFullScreen = !fullScreen;
+    setFullScreen(isFullScreen);
+    console.log('editor ', isFullScreen);
+    const editor = editorRef.current?.editor;
+    if (isFullScreen) {
+      editor?.layout({
+        height: document.body.clientHeight,
+        width: document.body.clientWidth,
+      });
+    } else {
+      if (document.fullscreenElement) {
+        document.exitFullscreen();
+      }
+
+      const dom = document.getElementById('monaco-editor-container');
+      editor?.layout({
+        height: dom?.clientHeight || 300,
+        width: dom?.clientWidth || 500,
+      });
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && fullScreen) {
+        handleFullScreenToggle();
+      }
+    });
+  }, [fullScreen]);
+
+  // If props.id is defined, then
+  //  1. fetch saved query,
+  //  2. run query to fetch queryData if queryData is null
+  /// 3. set TabProps, queryNomal state
+  useEffect(() => {
+    if (props.userQuery != undefined) {
+      const userQuery = props.userQuery;
+      setRunLoading(true);
+      queryRun(userQuery.query, userQuery.query_engine, {
+        errorHandler: (error: any) => {
+          messageApi.error(error.message);
+        },
+      })
+        .then((queryRes) => {
+          if (!queryRes.success) {
+            messageApi.error(queryRes.errorMessage);
+            return;
+          }
+
+          setQueryData(queryRes.data);
+        })
+        .catch((err) => {
+          messageApi.error(err.message);
+        })
+        .finally(() => {
+          setRunLoading(false);
+        });
+      updateStateByUserQuery(userQuery);
+    } else {
+      if (chartMgr.getByName('New Visualization')) {
+        return;
+      }
+
+      chartMgr.add({
+        name: 'New Visualization',
+        type: 'new',
+        closeable: false,
+      });
+      // setTabProps((prev: QE.TabArray) => {
+      //   if (TabManager.findByName(prev, 'New Visualization')) {
+      //     return prev;
+      //   }
+
+      //   return TabManager.add(prev, );
+      // });
+    }
+  }, []);
+
   return (
     <>
       {contextHolder}
 
       <Row gutter={24}>
-        <Col span={24}>
+        <Col
+          span={24}
+          style={{ height: isExpand ? '600px' : '300px' }}
+          id="monaco-editor-container"
+          className={fullScreen ? styles.editorFullScreen : styles.editorNormal}
+        >
           <MonacoEditor
-            // width={window.innerWidth - 48}
-            height={'400'}
+            width={'inherit'}
+            height={isExpand ? '600px' : '300px'}
             language="sql"
+            ref={editorRef}
             value={queryNormal.query}
             onChange={handleEditorChange}
           />
+        </Col>
+        <Col span={24}>
           <Row gutter={8} className={styles.editorButton}>
             {/* Expand Button */}
             <Col>
-              <Button type="primary" icon={<ExpandOutlined />}>
-                Expand
+              <Button
+                type="primary"
+                onClick={() => {
+                  setIsExpand(!isExpand);
+                }}
+                icon={<ExpandOutlined />}
+              >
+                {isExpand ? 'Collapse' : 'Expand'}
               </Button>
             </Col>
 
@@ -668,7 +713,7 @@ const QueryEditor = (props: Props) => {
 
             {/* Full Scree Button */}
             <Col>
-              <Button type="primary" icon={<FullscreenOutlined />}>
+              <Button type="primary" icon={<FullscreenOutlined />} onClick={handleFullScreenToggle}>
                 Full Screen
               </Button>
             </Col>
