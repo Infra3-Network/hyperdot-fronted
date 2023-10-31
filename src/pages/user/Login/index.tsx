@@ -5,7 +5,7 @@ import { login } from '@/services/hyperdot/api';
 
 import styles from './index.less';
 import { isEmail } from '@/utils';
-
+import BackgroundVideo from '../Background';
 const Login: React.FC = () => {
   const { initialState, setInitialState } = useModel('@@initialState');
 
@@ -52,10 +52,12 @@ const Login: React.FC = () => {
 
   return (
     <div className={styles.container}>
+      <BackgroundVideo src={'/5_15488489005769.mp4'} />
       {/* <div className={styles.lang} data-lang>
         {SelectLang && <SelectLang />}
       </div> */}
-      <div className={styles.content}>
+      <div className={styles.containerLeft} />
+      <div className={`${styles.content} `}>
         <Form
           name="basic"
           // labelCol={{ span: 8 }}

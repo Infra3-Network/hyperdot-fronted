@@ -6,6 +6,7 @@ import enUS from 'antd/lib/locale/en_US';
 
 import styles from './index.less';
 import { isEmail } from '@/utils';
+import BackgroundVideo from '../Background';
 
 const Login: React.FC = () => {
   const { initialState, setInitialState } = useModel('@@initialState');
@@ -53,12 +54,14 @@ const Login: React.FC = () => {
       {/* <div className={styles.lang} data-lang>
         {SelectLang && <SelectLang />}
       </div> */}
+      {/* <BackgroundVideo src={'/5_15488489005727.mp4'} /> */}
+      <BackgroundVideo src={'/5_15488489005769.mp4'} />
       <div className={styles.content}>
         <ConfigProvider locale={enUS}>
           <Form
             name="basic"
-            labelCol={{ span: 8 }}
-            wrapperCol={{ span: 16 }}
+            labelCol={{ span: 10 }}
+            wrapperCol={{ span: 14 }}
             style={{ maxWidth: 600 }}
             initialValues={{ remember: true }}
             onFinish={handleSubmit}
@@ -97,7 +100,7 @@ const Login: React.FC = () => {
               <Input.Password />
             </Form.Item>
 
-            <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
+            <Form.Item wrapperCol={{ offset: 10, span: 14 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <Button type="primary" htmlType="submit">
                   Create account

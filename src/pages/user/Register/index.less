@@ -2,13 +2,18 @@
 
 .container {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-end;
   width: auto;
   height: 100vh;
   overflow: auto;
-  background: @layout-body-background;
+  // background: @layout-body-background;
+}
+
+.containerLeft {
+  // flex: 0.62; /* 占据剩余空间 */
+  // padding: 20px;
 }
 
 .lang {
@@ -22,21 +27,63 @@
 }
 
 .content {
-  // flex: 1;
-  // padding: 4rem;
-  min-width: 700px;
-  background-color: white;
-  border-radius: 6px;
+  min-width: 550px;
+  margin: 0 auto;
+  padding: 20px;
+  // background: rgba(255, 255, 255, 0.1); /* 设置容器背景颜色，透明度可以根据需要调整 */
+  border-radius: 10px;
+  backdrop-filter: blur(1px); /* 使用backdrop-filter来实现毛玻璃效果 */
+}
+
+.cube {
+  position: relative;
   box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.1);
+  // width: 300px;
+  // height: 300px;
+  // min-width: 500px;
+  transform-style: preserve-3d;
+  perspective: 800px;
+}
+
+.cubeFace {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.3); /* 玻璃效果的背景颜色和透明度 */
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+  transform: translateZ(150px); /* 控制立方体的深度 */
+}
+
+.front {
+  transform: rotateY(0deg) translateZ(150px);
+}
+.right {
+  transform: rotateY(90deg) translateZ(150px);
+}
+.back {
+  transform: rotateY(180deg) translateZ(150px);
+}
+.left {
+  transform: rotateY(-90deg) translateZ(150px);
+}
+.top {
+  transform: rotateX(90deg) translateZ(150px);
+}
+.bottom {
+  transform: rotateX(-90deg) translateZ(150px);
 }
 
 @media (min-width: @screen-md-min) {
-  .container {
-    background-image: url('https://gw.alipayobjects.com/zos/rmsportal/TVYTbAXWheQpRcWDaDMu.svg');
-    background-repeat: no-repeat;
-    background-position: center 110px;
-    background-size: 100%;
-  }
+  // .container {
+  //   background-image: url('https://gw.alipayobjects.com/zos/rmsportal/TVYTbAXWheQpRcWDaDMu.svg');
+  //   background-repeat: no-repeat;
+  //   background-position: center 110px;
+  //   background-size: 100%;
+  // }
 
   .content {
     padding: 4rem;
