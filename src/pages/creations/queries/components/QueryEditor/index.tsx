@@ -29,7 +29,7 @@ import {
 import React, { useEffect } from 'react';
 import styles from './index.less';
 import { Link, useHistory } from 'umi';
-import { createQuery, queryRun, updateQuery } from '@/services/hyperdot/api';
+import { createQuery, queryRun, removeChart, updateQuery } from '@/services/hyperdot/api';
 import {
   ChartManager,
   type ChartArray,
@@ -186,13 +186,31 @@ interface QueryVisualizationProps {
 
 const QueryVisualization = (props: QueryVisualizationProps) => {
   const handleCloseClick = (index: number, setTabItems: any) => {
-    props.chartMgr.remove(index);
     // remove from items
-    setTabItems((prev: any[]) => {
-      const newItems = [...prev];
-      newItems.splice(index, 1);
-      return newItems;
-    });
+    const chart = props.chartMgr.get(index);
+    if (chart && chart.id) {
+      removeChart(chart.id, {})
+        .then((res) => {
+          if (!res.success) {
+            message.error(res.errorMessage);
+            return;
+          }
+
+          props.chartMgr.remove(index);
+          message.success('Remove success');
+        })
+        .catch((err) => {
+          message.error(err.message);
+        });
+    } else {
+      props.chartMgr.remove(index);
+    }
+
+    // setTabItems((prev: any[]) => {
+    //   const newItems = [...prev];
+    //   newItems.splice(index, 1);
+    //   return newItems;
+    // });
 
     // props.setTabProps(TabManager.remove(props.tabProps, id));
     // setTabActiveKey(tabActiveKey);

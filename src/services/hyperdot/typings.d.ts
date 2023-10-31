@@ -323,6 +323,11 @@ declare namespace HYPERDOT_API {
     success: boolean;
     errorMessage?: string;
     errorCode?: int;
-    data: UserQueryFavorites;
+  };
+
+  type RemoveChartResponse = {
+    success: boolean;
+    errorMessage?: string;
+    errorCode?: int;
   };
 }

@@ -478,3 +478,10 @@ export async function removeDashboardPanel(panelId: number, options?: { [key: st
     ...(options || {}),
   });
 }
+
+export async function removeChart(id: number, options?: { [key: string]: any }) {
+  return request<HYPERDOT_API.RemoveChartResponse>('/apis/v1/query/chart/' + id, {
+    method: 'DELETE',
+    ...(options || {}),
+  });
+}

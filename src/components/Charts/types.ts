@@ -76,14 +76,9 @@ export class ChartManager {
   remove(index: number) {
     this.setCharts((prev) => {
       // remove charts at index
-      prev.charts.splice(index, 1);
-      return prev;
-
-      // const newCharts = prev.charts.filter((v: HYPERDOT_API.Chart) => v.index !== index);
-      // return {
-      //   nextIndex: prev.nextIndex,
-      //   charts: newCharts,
-      // };
+      return {
+        charts: prev.charts.filter((v, i) => i !== index),
+      };
     });
   }
 
