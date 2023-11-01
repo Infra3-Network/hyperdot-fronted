@@ -138,6 +138,12 @@ declare namespace HYPERDOT_API {
     data: UserQuery;
   };
 
+  type DeleteQueryResponse = {
+    success: boolean;
+    errorMessage?: string;
+    errorCode?: int;
+  };
+
   type ListQueryData = {
     id: number;
     user_id: number;
@@ -285,6 +291,12 @@ declare namespace HYPERDOT_API {
     errorMessage?: string;
     errorCode?: int;
     data: Dashboard;
+  };
+
+  type DeleteDashboardResponse = {
+    success: boolean;
+    errorMessage?: string;
+    errorCode?: int;
   };
 
   type UserDashboardFavorites = {

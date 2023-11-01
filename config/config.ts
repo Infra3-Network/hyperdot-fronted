@@ -77,12 +77,6 @@ export default defineConfig({
           path: '/user',
           redirect: '/user/login',
         },
-        // {
-        //   name: 'register-result',
-        //   icon: 'smile',
-        //   path: '/user/register-result',
-        //   component: './user/register-result',
-        // },
         {
           name: 'register',
           icon: 'smile',
@@ -121,21 +115,21 @@ export default defineConfig({
           hideInMenu: true,
         },
 
-        {
-          name: 'Edit Dashboard',
-          icon: 'smile',
-          path: 'dashboards/:id',
-          component: './creations/dashboard',
-          hideInMenu: true,
-        },
-
         // {
-        //   name: 'Dashboard',
+        //   name: 'Edit Dashboard',
         //   icon: 'smile',
-        //   path: '/explore/dashboards/:id',
+        //   path: 'dashboards/:id',
         //   component: './creations/dashboard',
         //   hideInMenu: true,
         // },
+
+        {
+          name: 'Dashboard',
+          icon: 'smile',
+          path: '/explore/dashboards/:id',
+          component: './creations/dashboard',
+          hideInMenu: true,
+        },
       ],
     },
     {
@@ -207,12 +201,11 @@ export default defineConfig({
       path: 'library',
       name: 'Library',
       icon: 'dashboard',
+      component: './library',
       hideInMenu: false,
       routes: [
         {
-          name: 'Query detail',
-          path: 'queries/:id',
-          component: './creations/queries/details',
+          name: 'Library',
           hideInMenu: true,
         },
         {

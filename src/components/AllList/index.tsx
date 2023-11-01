@@ -1,50 +1,30 @@
-import { deleteDashboard, updateFavoriteDashboard } from '@/services/hyperdot/api';
+import hyperdot from '@/services/hyperdot';
+import { deleteQuery, updateFavoriteQuery } from '@/services/hyperdot/api';
 import { formatTimeAgo } from '@/utils';
 import { SmallDashOutlined, StarFilled, StarOutlined } from '@ant-design/icons';
 
-import { List, message, Space, Tag, type MenuProps, Dropdown } from 'antd';
+import { List, type MenuProps, message, Space, Dropdown, Tag, Button } from 'antd';
 import React from 'react';
 import { Link } from 'umi';
 import UserAvatar from '../UserAvatar';
 
 import styles from './index.less';
 
-type ContentProps = {
-  dashboard: HYPERDOT_API.Dashboard;
-};
-
-const Content = (props: ContentProps) => {
-  const dashboard = props.dashboard;
+const Content = ({ data }: { data: any }) => {
   return (
     <>
       <div className={styles.listContent}>
         <div className={styles.listContentItem}>
           <span>
-            <Link to={'/account/center/' + dashboard.user_id}>@{dashboard.username}</Link>
+            <Link to={'/account/center/' + data.user_id}>@{data.username}</Link>
           </span>
         </div>
         <div className={styles.listContentItem}>
-          <span>updated {dashboard.updated_at && formatTimeAgo(dashboard.updated_at)}</span>
+          <span>updated {formatTimeAgo(data.updated_at)}</span>
         </div>
       </div>
     </>
   );
-};
-
-type Props = {
-  currentUser: HYPERDOT_API.CurrentUser;
-  data: HYPERDOT_API.Dashboard[];
-  total: number;
-  pageSize: number;
-  onChange: (page: number, pageSize: number) => void;
-  editable?: boolean;
-  setData?: React.Dispatch<React.SetStateAction<HYPERDOT_API.Dashboard[]>>;
-};
-
-type StarState = {
-  stared: boolean;
-  id: number;
-  stars: number;
 };
 
 const ListMenuComponent = ({
@@ -53,16 +33,12 @@ const ListMenuComponent = ({
   setData,
 }: {
   index: number;
-  data: HYPERDOT_API.Dashboard;
-  setData: React.Dispatch<React.SetStateAction<HYPERDOT_API.Dashboard[]>>;
+  data: HYPERDOT_API.ListQueryData;
+  setData: React.Dispatch<React.SetStateAction<any[]>>;
 }) => {
   const onClick: MenuProps['onClick'] = ({ key }) => {
     if (key == 'remove') {
-      if (!data.id) {
-        message.error('Unkown error: dashboard has no id', 3);
-        return;
-      }
-      deleteDashboard(data.id, {})
+      deleteQuery(data.id, {})
         .then((res) => {
           if (!res.success) {
             message.error(res.errorMessage);
@@ -72,7 +48,7 @@ const ListMenuComponent = ({
           setData((prev) => {
             return prev.filter((v, i) => i != index);
           });
-          message.success('Dashboard deleted');
+          message.success('Query deleted');
         })
         .catch((err) => {
           message.error(err);
@@ -103,7 +79,7 @@ const StarComponent = ({
   starArray,
   setStarArray,
 }: {
-  data: HYPERDOT_API.Dashboard[];
+  data: any[];
   data_index: number;
   editable: boolean | undefined;
   starArray: StarState[];
@@ -114,15 +90,15 @@ const StarComponent = ({
       message.error('Unkown error: star not found', 3);
     }
     const userId = data[index].user_id;
-    const dashboardId = data[index].id;
-    if (!userId || !dashboardId) {
-      message.error('Unkown error: dashboard has no user_id or id', 3);
+    const queryId = data[index].id;
+    if (!userId || !queryId) {
+      message.error('Unkown error: query has no user_id or id', 3);
       return;
     }
 
-    updateFavoriteDashboard(true, {
-      dashboard_user_id: userId,
-      dashboard_id: dashboardId,
+    updateFavoriteQuery(true, {
+      query_user_id: userId,
+      query_id: queryId,
     }).then((res) => {
       const nextStarArray = starArray.map((v, i) => {
         if (i == index) {
@@ -145,15 +121,15 @@ const StarComponent = ({
       message.error('Unkown error: star not found', 3);
     }
     const userId = data[index].user_id;
-    const dashboardId = data[index].id;
-    if (!userId || !dashboardId) {
-      message.error('Unkown error: dashboard has no user_id or id', 3);
+    const queryId = data[index].id;
+    if (!userId || !queryId) {
+      message.error('Unkown error: query has no user_id or id', 3);
       return;
     }
 
-    updateFavoriteDashboard(false, {
-      dashboard_user_id: userId,
-      dashboard_id: dashboardId,
+    updateFavoriteQuery(false, {
+      query_user_id: userId,
+      query_id: queryId,
     }).then((res) => {
       const nextStarArray = starArray.map((v, i) => {
         if (i == index) {
@@ -198,7 +174,33 @@ const StarComponent = ({
   }
 };
 
-const DashboardList = (props: Props) => {
+const ItemLink = ({ data }: { data: any }) => {
+  console.log('library ', Object.keys(data));
+  const isDashboard = Object.keys(data).find((k) => k === 'panels');
+  return (
+    <Link to={isDashboard ? '/creations/dashboards/' + data.id : '/creations/queries/' + data.id}>
+      {data.name}
+    </Link>
+  );
+};
+
+type Props = {
+  currentUser: HYPERDOT_API.CurrentUser;
+  data: any[];
+  total: number;
+  pageSize: number;
+  onChange: (page: number, pageSize: number) => void;
+  editable?: boolean;
+  setData?: React.Dispatch<React.SetStateAction<any[]>>;
+};
+
+type StarState = {
+  stared: boolean;
+  id: number;
+  stars: number;
+};
+
+const QueryList = (props: Props) => {
   const initStarArray = props.data.map((v) => {
     if (v.id) {
       return {
@@ -253,13 +255,13 @@ const DashboardList = (props: Props) => {
         >
           <List.Item.Meta
             avatar={<UserAvatar size={26} username={item.username} icon_url={item.icon_url} />}
-            title={<Link to={'/explore/dashboards/' + item.id}>{item.name}</Link>}
+            title={<ItemLink data={item} />}
           />
-          <Content dashboard={item} />
+          <Content data={item} />
         </List.Item>
       )}
     />
   );
 };
 
-export default DashboardList;
+export default QueryList;

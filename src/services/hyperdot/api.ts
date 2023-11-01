@@ -293,6 +293,16 @@ export async function updateQuery(body: HYPERDOT_API.UserQuery, options?: { [key
   });
 }
 
+export async function deleteQuery(id: number, options?: { [key: string]: any }) {
+  return request<HYPERDOT_API.DeleteQueryResponse>('/apis/v1/query/' + id, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    ...(options || {}),
+  });
+}
+
 export async function getDashboard(id: number, options?: { [key: string]: any }) {
   return request<HYPERDOT_API.GetDashboardResponse>('/apis/v1/dashboard/' + id, {
     method: 'GET',
@@ -430,6 +440,16 @@ export async function updateDashboard(
       'Content-Type': 'application/json',
     },
     data: body,
+    ...(options || {}),
+  });
+}
+
+export async function deleteDashboard(id: number, options?: { [key: string]: any }) {
+  return request<HYPERDOT_API.DeleteDashboardResponse>('/apis/v1/dashboard/' + id, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+    },
     ...(options || {}),
   });
 }
