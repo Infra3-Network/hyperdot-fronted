@@ -359,7 +359,7 @@ const SaveModal = (props: SaveModalProps) => {
 };
 
 interface QueryNormalState {
-  query: string;
+  // query: string;
   name: string;
   privacy: boolean;
   engine: string;
@@ -367,6 +367,8 @@ interface QueryNormalState {
 
 interface Props {
   editable: boolean;
+  editorQuery: string;
+  setEditorQuery: React.Dispatch<React.SetStateAction<string>>;
   user: HYPERDOT_API.CurrentUser;
   userQuery?: HYPERDOT_API.UserQuery;
 }
@@ -377,7 +379,6 @@ const QueryEditor = (props: Props) => {
 
   // state for editor query save state
   const [queryNormal, setQueryNormal] = React.useState<QueryNormalState>({
-    query: '',
     name: 'Unsaved',
     privacy: false,
     engine: 'bigquery', // TODO: from props
@@ -400,11 +401,12 @@ const QueryEditor = (props: Props) => {
 
   const updateStateByUserQuery = (userQuery: HYPERDOT_API.UserQuery) => {
     setQueryNormal({
-      query: userQuery.query,
       engine: userQuery.query_engine,
       privacy: userQuery.is_privacy ? userQuery.is_privacy : false,
       name: userQuery.name ? userQuery.name : 'Unsaved',
     });
+
+    props.setEditorQuery(userQuery.query ? userQuery.query : '');
 
     if (userQuery.unsaved ? userQuery.unsaved : false) {
       // if unsaved query, we create these tabs
@@ -443,9 +445,7 @@ const QueryEditor = (props: Props) => {
   };
 
   const handleEditorChange = (value: any) => {
-    setQueryNormal((prev) => {
-      return { ...prev, query: value };
-    });
+    props.setEditorQuery(value);
   };
 
   const handleQuerySave = async () => {
@@ -454,7 +454,7 @@ const QueryEditor = (props: Props) => {
     if (!queryNormal.engine) {
       messageApi.error('query engine empty');
     }
-    if (!queryNormal.query) {
+    if (!props.editorQuery) {
       messageApi.error('query empty');
       return;
     }
@@ -474,7 +474,7 @@ const QueryEditor = (props: Props) => {
         id: props.userQuery ? props.userQuery.id : 0,
         user_id: Number(props.user.id),
         name: queryNormal.name,
-        query: queryNormal.query,
+        query: props.editorQuery,
         query_engine: queryNormal.engine,
         is_privacy: queryNormal.privacy,
         charts: charts.map((v) => {
@@ -511,7 +511,7 @@ const QueryEditor = (props: Props) => {
   };
 
   const handleRunClick = () => {
-    if (!queryNormal.query) {
+    if (!props.editorQuery) {
       messageApi.warning('Please input query');
       return;
     }
@@ -532,11 +532,17 @@ const QueryEditor = (props: Props) => {
       // }
       // if exists userQuery, we only run new input query
       setRunLoading(true);
-      queryRun(queryNormal.query, queryNormal.engine, {
-        errorHandler: (error: any) => {
-          messageApi.error(error.message);
+      queryRun(
+        {
+          query: props.editorQuery,
+          engine: queryNormal.engine,
         },
-      })
+        {
+          errorHandler: (error: any) => {
+            messageApi.error(error.message);
+          },
+        },
+      )
         .then((res) => {
           if (!res.success) {
             messageApi.error(res.errorMessage);
@@ -556,7 +562,7 @@ const QueryEditor = (props: Props) => {
     // first create unsaved query to get id
     createQuery(
       {
-        query: queryNormal.query,
+        query: props.editorQuery,
         query_engine: queryNormal.engine,
         is_privacy: false,
         unsaved: true,
@@ -588,7 +594,6 @@ const QueryEditor = (props: Props) => {
   const handleFullScreenToggle = () => {
     const isFullScreen = !fullScreen;
     setFullScreen(isFullScreen);
-    console.log('editor ', isFullScreen);
     const editor = editorRef.current?.editor;
     if (isFullScreen) {
       editor?.layout({
@@ -624,11 +629,17 @@ const QueryEditor = (props: Props) => {
     if (props.userQuery != undefined) {
       const userQuery = props.userQuery;
       setRunLoading(true);
-      queryRun(userQuery.query, userQuery.query_engine, {
-        errorHandler: (error: any) => {
-          messageApi.error(error.message);
+      queryRun(
+        {
+          query: userQuery.query,
+          engine: userQuery.query_engine,
         },
-      })
+        {
+          errorHandler: (error: any) => {
+            messageApi.error(error.message);
+          },
+        },
+      )
         .then((queryRes) => {
           if (!queryRes.success) {
             messageApi.error(queryRes.errorMessage);
@@ -680,7 +691,7 @@ const QueryEditor = (props: Props) => {
             height={isExpand ? '600px' : '300px'}
             language="sql"
             ref={editorRef}
-            value={queryNormal.query}
+            value={props.editorQuery}
             onChange={handleEditorChange}
           />
         </Col>

@@ -55,7 +55,7 @@ const Login: React.FC = () => {
         {SelectLang && <SelectLang />}
       </div> */}
       {/* <BackgroundVideo src={'/5_15488489005727.mp4'} /> */}
-      <BackgroundVideo src={'/5_15488489005769.mp4'} />
+      <BackgroundVideo src={'/5_15488489005727.mp4'} />
       <div className={styles.content}>
         <ConfigProvider locale={enUS}>
           <Form

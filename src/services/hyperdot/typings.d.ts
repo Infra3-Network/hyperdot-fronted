@@ -120,6 +120,16 @@ declare namespace HYPERDOT_API {
     data: any;
   };
 
+  type RequestRunQuery = {
+    query: string;
+    engine: string;
+  };
+
+  type RunQueryData = {
+    schemas: any[];
+    rows: any[];
+  };
+
   type UserQuery = {
     id?: number;
     user_id?: number;

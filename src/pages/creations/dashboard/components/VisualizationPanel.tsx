@@ -132,7 +132,10 @@ const VisualizationPanel = (props: Props) => {
           setChart(res.data);
 
           if (res.data.query && res.data.query_engine) {
-            queryRun(res.data.query, res.data.query_engine)
+            queryRun({
+              query: res.data.query,
+              engine: res.data.query_engine,
+            })
               .then((queryRes) => {
                 if (!queryRes.success) {
                   message.error(queryRes.errorMessage);

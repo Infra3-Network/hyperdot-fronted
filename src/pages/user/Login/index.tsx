@@ -1,4 +1,4 @@
-import { message, Form, Button, Input, Checkbox } from 'antd';
+import { message, Form, Button, Input, Checkbox, Spin } from 'antd';
 import React from 'react';
 import { history, useModel } from 'umi';
 import { login } from '@/services/hyperdot/api';
@@ -6,9 +6,10 @@ import { login } from '@/services/hyperdot/api';
 import styles from './index.less';
 import { isEmail } from '@/utils';
 import BackgroundVideo from '../Background';
+import { PageLoading } from '@ant-design/pro-layout';
 const Login: React.FC = () => {
   const { initialState, setInitialState } = useModel('@@initialState');
-
+  const [loading, setLoading] = React.useState(true);
   const fetchUserInfo = async () => {
     const userInfo = await initialState?.fetchUserInfo?.();
     if (userInfo) {
@@ -52,7 +53,7 @@ const Login: React.FC = () => {
 
   return (
     <div className={styles.container}>
-      <BackgroundVideo src={'/5_15488489005769.mp4'} />
+      <BackgroundVideo src={'/5_15488489005727.mp4'} />
       {/* <div className={styles.lang} data-lang>
         {SelectLang && <SelectLang />}
       </div> */}

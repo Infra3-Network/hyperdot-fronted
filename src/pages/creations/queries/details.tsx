@@ -16,6 +16,7 @@ export const CreationQueryDetail = () => {
   const [user, setUser] = React.useState<HYPERDOT_API.CurrentUser>();
   const [userQuery, setUserQuery] = React.useState<HYPERDOT_API.UserQuery>();
   const [loding, setLoading] = React.useState<boolean>(false);
+  const [editorQuery, setEditorQuery] = React.useState<string>('');
 
   React.useEffect(() => {
     if (!id) {
@@ -110,14 +111,20 @@ export const CreationQueryDetail = () => {
 
         <Col span={6} style={{ marginBottom: 24 }}>
           <Card>
-            <QueryEngine />
+            <QueryEngine editorQuery={editorQuery} setEditorQuery={setEditorQuery} />
           </Card>
         </Col>
 
         <Col span={17}>
           <Spin tip={LoadingTip} spinning={loding}>
             {userQuery && editable != undefined && user && (
-              <QueryEditor userQuery={userQuery} user={user} editable={editable} />
+              <QueryEditor
+                userQuery={userQuery}
+                user={user}
+                editable={editable}
+                editorQuery={editorQuery}
+                setEditorQuery={setEditorQuery}
+              />
             )}
           </Spin>
         </Col>

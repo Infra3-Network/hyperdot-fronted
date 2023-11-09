@@ -106,12 +106,16 @@ export async function updateUserPassword(
 }
 
 /** run user query GET /apis/v1/user/query/run */
-export async function queryRun(query: string, engine: string, options?: { [key: string]: any }) {
-  return request<any>('/apis/v1/query/run?q=' + query + '&engine=' + engine, {
-    method: 'GET',
+export async function queryRun(
+  body: HYPERDOT_API.RequestRunQuery,
+  options?: { [key: string]: any },
+) {
+  return request<any>('/apis/v1/query/run', {
+    method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
+    data: body,
     ...(options || {}),
   });
 }

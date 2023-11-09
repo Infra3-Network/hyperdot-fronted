@@ -11,6 +11,10 @@ import {
   Divider,
   Tag,
   Skeleton,
+  Empty,
+  Table,
+  Spin,
+  Card,
 } from 'antd';
 
 import {
@@ -23,8 +27,16 @@ import {
 
 import styles from './index.less';
 import React from 'react';
-import { getSystemQueryEngineDataset, listSystemQueryEngines } from '@/services/hyperdot/api';
+import {
+  getSystemQueryEngineDataset,
+  listSystemQueryEngines,
+  queryRun,
+} from '@/services/hyperdot/api';
 import { type TooltipPlacement } from 'antd/es/tooltip';
+
+const toTableName = (relay: string, table: string) => {
+  return 'bigquery-public-data.crypto_' + relay + '.' + table;
+};
 
 const TooltipText = ({
   title,
@@ -50,13 +62,14 @@ const ChainTableScheme = ({
   chainID,
   chainTable,
   dataset,
+  handleArrowClick,
 }: {
   chainID: number;
   chainTable: string;
   dataset: HYPERDOT_API.QueryEngineDataset;
+  handleArrowClick: (value: string) => void;
 }) => {
   const table = dataset.chainTables[chainID].find((v: any) => v.table_id === chainTable);
-  console.log(table);
   return (
     <>
       <Row justify={'space-between'}>
@@ -83,7 +96,11 @@ const ChainTableScheme = ({
           <Space>
             <EyeOutlined />
             <SearchOutlined />
-            <ArrowRightOutlined />
+            <ArrowRightOutlined
+              onClick={() => {
+                handleArrowClick(toTableName(table.relayChain, table.table_id));
+              }}
+            />
           </Space>
         </Col>
       </Row>
@@ -145,6 +162,44 @@ const RelayChains = ({
   </>
 );
 
+const PreviewDataTable = ({
+  previewData,
+}: {
+  previewData: {
+    relay: string;
+    table: string;
+    data: HYPERDOT_API.RunQueryData | undefined;
+  };
+}) => {
+  if (!previewData.data) {
+    return <Empty description={<span>No data</span>} />;
+  }
+  if (previewData.data.rows.length <= 0) {
+    return <Empty description={<span>No data</span>} />;
+  }
+
+  const columns = previewData.data.schemas.map((schema) => {
+    return {
+      title: schema.name,
+      dataIndex: schema.name,
+      key: schema.name,
+      filterSearch: true,
+    };
+  });
+
+  return (
+    <>
+      <Table
+        bordered={true}
+        columns={columns}
+        dataSource={previewData.data.rows}
+        size={'small'}
+        scroll={{ x: 1500, y: 500 }}
+      />
+    </>
+  );
+};
+
 const ChainModal = ({
   dataset,
   isModalOpen,
@@ -199,12 +254,14 @@ type ChainItemProps = {
   chainID: string;
   dataset: HYPERDOT_API.QueryEngineDataset;
   handleChainTableClick: (chainID: number, chainName: string, chainTable: string) => void;
+  handleArrowClick: (value: string) => void;
+  handleShowDataMouseEnter: (e: React.MouseEvent, relayChain: string, table: string) => void;
 };
 
 const ChainItem = (props: ChainItemProps) => {
-  const chianID = props.chainID;
-  const chain = props.dataset.chains[chianID];
-  const chainTables = props.dataset.chainTables[chianID];
+  const chainID = props.chainID;
+  const chain = props.dataset.chains[chainID];
+  const chainTables = props.dataset.chainTables[chainID];
 
   return (
     <>
@@ -212,25 +269,30 @@ const ChainItem = (props: ChainItemProps) => {
         chainTables &&
         chainTables.map((chainTable: any, index: number) => (
           <Row key={index} justify={'space-between'}>
-            <Col span={18}>
+            <Col span={20}>
               <Row justify={'space-between'} className={styles.rawChainContainer}>
-                <Col span={16}>
+                <Col span={21}>
                   <Space
                     size={'small'}
                     className={styles.chainName}
-                    onClick={() =>
+                    onClick={() => {
                       props.handleChainTableClick(
                         chain.chainID,
                         chain.chainName,
                         chainTable.table_id,
-                      )
-                    }
+                      );
+                    }}
                   >
                     <TableOutlined />
-                    <TooltipText title={chain.chainName} len={10} placement={'topRight'} />
+                    <TooltipText title={chain.chainName} len={15} placement={'topRight'} />
                     <TooltipText
-                      title={(chainTable.table_id as string).replace(chianID, '')}
-                      len={10}
+                      title={(chainTable.table_id as string)
+                        .replace(
+                          chain.relayChain === 'kusama' ? String(Number(chainID) - 20000) : chainID,
+                          '',
+                        )
+                        .trim()}
+                      len={15}
                       placement={'topRight'}
                     />
                   </Space>
@@ -244,9 +306,17 @@ const ChainItem = (props: ChainItemProps) => {
 
             <Col>
               <Space>
-                <EyeOutlined />
+                <EyeOutlined
+                  onMouseEnter={(event: React.MouseEvent) => {
+                    props.handleShowDataMouseEnter(event, chain.relayChain, chainTable.table_id);
+                  }}
+                />
                 <SearchOutlined />
-                <ArrowRightOutlined />
+                <ArrowRightOutlined
+                  onClick={() => {
+                    props.handleArrowClick(toTableName(chain.relayChain, chainTable.table_id));
+                  }}
+                />
               </Space>
             </Col>
           </Row>
@@ -259,10 +329,14 @@ const ChainItems = ({
   dataset,
   chain,
   handleChainTableClick,
+  handleArrowClick,
+  handleShowDataMouseEnter,
 }: {
   dataset: HYPERDOT_API.QueryEngineDataset;
   chain: any | undefined;
   handleChainTableClick: (chainID: number, chainName: string, chainTable: string) => void;
+  handleArrowClick: (value: string) => void;
+  handleShowDataMouseEnter: (e: React.MouseEvent, relayChain: string, table: string) => void;
 }) => {
   return (
     <div style={{ overflow: 'auto', maxHeight: '600px' }}>
@@ -272,6 +346,8 @@ const ChainItems = ({
           chainID={chain.chainID}
           dataset={dataset}
           handleChainTableClick={handleChainTableClick}
+          handleArrowClick={handleArrowClick}
+          handleShowDataMouseEnter={handleShowDataMouseEnter}
         />
       ) : (
         Object.keys(dataset.chains).map((k) => {
@@ -281,6 +357,8 @@ const ChainItems = ({
               chainID={k}
               dataset={dataset}
               handleChainTableClick={handleChainTableClick}
+              handleArrowClick={handleArrowClick}
+              handleShowDataMouseEnter={handleShowDataMouseEnter}
             />
           );
         })
@@ -289,7 +367,12 @@ const ChainItems = ({
   );
 };
 
-const QueryEngine = () => {
+type Props = {
+  editorQuery: string;
+  setEditorQuery: React.Dispatch<React.SetStateAction<string>>;
+};
+
+const QueryEngine = (props: Props) => {
   const [queryEngines, setQueryEngines] = React.useState<HYPERDOT_API.QueryEngine[]>([]);
   const [selectQueryEngine, setSelectQueryEngine] = React.useState<string>('');
   const [dataset, setDataset] = React.useState<HYPERDOT_API.QueryEngineDataset | undefined>(
@@ -307,6 +390,28 @@ const QueryEngine = () => {
   >(undefined);
 
   const [loading, setLoading] = React.useState<boolean>(false);
+  const [showPreviewData, setShowPreviewData] = React.useState<boolean>(false);
+  const [previewDataDirection, setPreviewDataDirection] = React.useState<{
+    top: number;
+    right: number;
+    left: number;
+    bottom: number;
+  }>({
+    top: 0,
+    right: 0,
+    left: 0,
+    bottom: 0,
+  });
+  const [previewData, setPreviewData] = React.useState<{
+    relay: string;
+    table: string;
+    data: HYPERDOT_API.RunQueryData | undefined;
+  }>({
+    relay: '',
+    table: '',
+    data: undefined,
+  });
+  const [previewDataLoading, setPreviewDataLoading] = React.useState<boolean>(false);
 
   React.useEffect(() => {
     setLoading(true);
@@ -346,6 +451,60 @@ const QueryEngine = () => {
 
   const handleChainTableClick = (chainID: number, chainName: string, table: string) => {
     setChainTable({ chainID: chainID, chainName: chainName, table: table });
+  };
+
+  const handleArrowClick = (value: string) => {
+    props.setEditorQuery((prev) => {
+      return prev + ' ' + value + '\n';
+    });
+  };
+
+  const handleShowDataMouseEnter = (e: React.MouseEvent, relayChain: string, table: string) => {
+    const { top, right, left, bottom } = e.currentTarget.getBoundingClientRect();
+    setPreviewDataDirection({ top: top, right: right, left: left, bottom: bottom });
+    setShowPreviewData(true);
+
+    const fromTable = toTableName(relayChain, table);
+    const query = `SELECT * FROM ${fromTable} LIMIT 10`;
+    const engine = selectQueryEngine.toLocaleLowerCase();
+    if (previewData.relay === relayChain && previewData.table === table) {
+      return;
+    }
+
+    setPreviewDataLoading(true);
+
+    // TODO: cache using map
+    queryRun({
+      query: query,
+      engine: engine,
+    })
+      .then((queryRes) => {
+        if (!queryRes.success) {
+          message.error(queryRes.errorMessage);
+          return;
+        }
+
+        setPreviewData({
+          relay: relayChain,
+          table: table,
+          data: queryRes.data,
+        });
+      })
+      .catch((err) => {
+        message.error(err.message);
+      })
+      .finally(() => {
+        setPreviewDataLoading(false);
+      });
+  };
+
+  const handleShowDataMouseLeave = (e: React.MouseEvent) => {
+    setShowPreviewData(false);
+    setPreviewData({
+      relay: '',
+      table: '',
+      data: undefined,
+    });
   };
 
   return (
@@ -392,6 +551,8 @@ const QueryEngine = () => {
               dataset={dataset}
               chain={chain}
               handleChainTableClick={handleChainTableClick}
+              handleArrowClick={handleArrowClick}
+              handleShowDataMouseEnter={handleShowDataMouseEnter}
             />
           )}
         </Skeleton>
@@ -418,6 +579,7 @@ const QueryEngine = () => {
               chainID={chainTable.chainID}
               chainTable={chainTable.table}
               dataset={dataset}
+              handleArrowClick={handleArrowClick}
             />
           </>
         )}
@@ -429,6 +591,26 @@ const QueryEngine = () => {
           setIsModalOpen={setIsModalOpen}
           setChain={setChain}
         />
+      )}
+
+      {showPreviewData && (
+        <Card
+          style={{
+            position: 'absolute',
+            top: previewDataDirection.top - 60,
+            left: previewDataDirection.left - 10,
+            padding: '16px',
+            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)',
+            zIndex: 999,
+            minHeight: '300px',
+            minWidth: '700px',
+          }}
+          onMouseLeave={handleShowDataMouseLeave}
+        >
+          <Spin spinning={previewDataLoading}>
+            {previewData.data && <PreviewDataTable previewData={previewData} />}
+          </Spin>
+        </Card>
       )}
     </div>
   );

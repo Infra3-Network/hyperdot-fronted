@@ -8,7 +8,7 @@ import { history } from 'umi';
 
 export const CreationQuery = () => {
   const [user, setUser] = React.useState<HYPERDOT_API.CurrentUser>();
-
+  const [editorQuery, setEditorQuery] = React.useState<string>('');
   React.useEffect(() => {
     getInitialState()
       .then(({ currentUser }) => {
@@ -30,12 +30,19 @@ export const CreationQuery = () => {
         <Row gutter={24}>
           <Col span={6} style={{ marginBottom: 24 }}>
             <Card>
-              <QueryEngine />
+              <QueryEngine editorQuery={editorQuery} setEditorQuery={setEditorQuery} />
             </Card>
           </Col>
 
           <Col span={17} style={{ marginBottom: 24 }}>
-            {user && <QueryEditor user={user} editable={true} />}
+            {user && (
+              <QueryEditor
+                user={user}
+                editable={true}
+                editorQuery={editorQuery}
+                setEditorQuery={setEditorQuery}
+              />
+            )}
           </Col>
         </Row>
       </>

@@ -1,5 +1,5 @@
 import { Card, Empty, Table, Row, Col, Input } from 'antd';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { ChartData, type ChartProps } from '../types';
 
 type TableChartConfig = {
@@ -30,7 +30,7 @@ export const TableChart = (config: TableChartConfig) => {
         columns={columns}
         dataSource={config.data.rows}
         size={'small'}
-        scroll={{ x: 3000, y: 300 }}
+        scroll={{ x: 1500, y: 500 }}
       />
     </>
   );
@@ -59,6 +59,13 @@ export const TableChartTemplate = (props: Props) => {
       props.index,
     );
   }
+
+  useEffect(() => {
+    // update
+    setTableConfig({
+      data: props.props.data,
+    });
+  }, [props.props.data]);
 
   return (
     <Row gutter={[0, 24]}>
