@@ -119,44 +119,37 @@ const PanelComponent = memo(
   }) => {
     const { panel, user } = props;
     return (
-      <div>
-        <Card bordered style={{ width: props.panel.width, height: props.panel.height }}>
-          {props.ctl.edit && (
-            <div
-              style={{
-                position: 'absolute',
-                top: '-2px',
-                right: '0',
+      <>
+        {props.ctl.edit && (
+          <div
+            style={{
+              position: 'absolute',
+              top: '-2px',
+              right: '0',
+            }}
+          >
+            <EditOutlined
+              onClick={() => {
+                props.action.setControlState((prev) => {
+                  return {
+                    ...prev,
+                    editPanelIndex: props.panelIndex,
+                    editPanel: props.panel,
+                    editPanelModalOpen: true,
+                  };
+                });
               }}
-            >
-              <EditOutlined
-                onClick={() => {
-                  props.action.setControlState((prev) => {
-                    return {
-                      ...prev,
-                      editPanelIndex: props.panelIndex,
-                      editPanel: props.panel,
-                      editPanelModalOpen: true,
-                    };
-                  });
-                }}
-              />
-            </div>
-          )}
-          {panel.type === 0 && <TextWidgetPanel panel={panel} />}
-          {panel.type === 1 && <VisualizationPanel panel={panel} user={user} />}
-        </Card>
-      </div>
+            />
+          </div>
+        )}
+        {panel.type === 0 && <TextWidgetPanel panel={panel} />}
+        {panel.type === 1 && <VisualizationPanel panel={panel} user={user} />}
+      </>
     );
   },
 );
 
 export const CreationDashboard = (props: Props) => {
-  const gridColsPercent = 0.45;
-  // const gridCols = 2;
-  // const gridRows = 3;
-  const [windowState, setWindowState] = React.useState<WindowState>();
-  // const [dashboards, setDashboards] = React.useState<Dashboard[]>([]);
   const [isDragging, setIsDragging] = React.useState<boolean>(false);
   const [draggedIndex, setDraggedIndex] = React.useState(null); // 存储当前拖拽的元素索引
   const [offset, setOffset] = React.useState({ x: 0, y: 0 });
@@ -176,16 +169,11 @@ export const CreationDashboard = (props: Props) => {
     setControlState: setControlState,
     setDashboard: setDashboard,
   };
-  // const [currentUser, setCurrentUser] = React.useState<HYPERDOT_API.CurrentUser>();
-  // React.useEffect(() => {
-  //   getInitialState().then((res) => {
-  //     if (!res.currentUser) {
-  //       history.push('/user/login');
-  //       return;
-  //     }
-  //     setCurrentUser(res.currentUser);
-  //   });
-  // }, []);
+
+  const windowHeight = window.innerHeight;
+  const windowWidth = window.innerWidth;
+  const minWidth = windowWidth / 2.5;
+  const minHeight = windowHeight / 2.5;
 
   const handlePanelResizeStop = (index, e, direction, ref, delta, position) => {
     const width = ref.style.width;
@@ -391,21 +379,31 @@ export const CreationDashboard = (props: Props) => {
                           }}
                           onDragStop={handleDragStop}
                           resizeGrid={[30, 50]}
-                          dragGrid={[30, 50]}
+                          dragGrid={[200, 100]}
                         >
                           <div
                             className={`${styles.draggingBox} ${
                               index === draggedIndex && isDragging ? styles.dragging : ''
                             }`}
                           >
-                            {/* {getPanel(panel)} */}
-                            <PanelComponent
-                              panel={panel}
-                              panelIndex={index}
-                              user={props.user}
-                              ctl={controlState}
-                              action={stateAction}
-                            />
+                            <Card
+                              bordered
+                              className={`${controlState.edit && styles.editPanelContainer}`}
+                              style={{
+                                minWidth: minWidth,
+                                minHeight: minHeight,
+                                width: panel.width,
+                                height: panel.height,
+                              }}
+                            >
+                              <PanelComponent
+                                panel={panel}
+                                panelIndex={index}
+                                user={props.user}
+                                ctl={controlState}
+                                action={stateAction}
+                              />
+                            </Card>
                           </div>
                         </Rnd>
                       </div>

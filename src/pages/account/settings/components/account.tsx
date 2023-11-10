@@ -113,6 +113,7 @@ const AccountView = ({ user }: Props) => {
                 width="md"
                 name="current_password"
                 label="Current Password"
+                placeholder={'Enter current password'}
                 rules={[
                   {
                     required: true,
@@ -125,6 +126,7 @@ const AccountView = ({ user }: Props) => {
                 width="md"
                 name="new_password"
                 label="New Password"
+                placeholder={'Enter new password'}
                 rules={[
                   {
                     required: true,
@@ -137,6 +139,7 @@ const AccountView = ({ user }: Props) => {
                 width="md"
                 name="confirm_password"
                 label="Confirm Password"
+                placeholder={'Confirm password'}
                 rules={[
                   {
                     required: true,

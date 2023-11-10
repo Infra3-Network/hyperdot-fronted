@@ -176,13 +176,13 @@ const BaseView = ({ user, setUser }: Props) => {
                   message: 'Please your bio!',
                 },
               ]}
-              placeholder=""
+              placeholder={'Your bio'}
             />
 
             <ProFormText
               width="md"
               name="twitter"
-              placeholder={''}
+              placeholder={'You twitter username'}
               label={<TwitterOutlined />}
               rules={[
                 {
@@ -195,7 +195,7 @@ const BaseView = ({ user, setUser }: Props) => {
             <ProFormText
               width="md"
               name="github"
-              placeholder={''}
+              placeholder={'You github username'}
               label={<MyIcon type="icon-github" />}
               rules={[
                 {
@@ -208,7 +208,7 @@ const BaseView = ({ user, setUser }: Props) => {
             <ProFormText
               width="md"
               name="discord"
-              placeholder={''}
+              placeholder={'You discord username'}
               label={<MyIcon type="icon-discord" />}
               rules={[
                 {
@@ -221,7 +221,7 @@ const BaseView = ({ user, setUser }: Props) => {
             <ProFormText
               width="md"
               name="telgram"
-              placeholder={''}
+              placeholder={'You telgram username'}
               label={<MyIcon type="icon-telgram" />}
               rules={[
                 {
@@ -234,6 +234,7 @@ const BaseView = ({ user, setUser }: Props) => {
             <ProFormText
               width="md"
               name="location"
+              placeholder={"e.g. 'San Francisco, CA'"}
               label="Location"
               rules={[
                 {

@@ -1,5 +1,5 @@
 import { NumberOutlined, TagOutlined } from '@ant-design/icons';
-import { Card, Col, Row, List } from 'antd';
+import { Card, Col, Row, List, Empty } from 'antd';
 
 type Props = {
   name: string;
@@ -7,7 +7,6 @@ type Props = {
 };
 
 const Tags = (props: Props) => {
-  console.log('tagProps ', props.tags);
   // convert props.tags to sorted array: first sort by value and if value equal then sort by key
   const tagsArray: { tag: string; count: number }[] = Object.keys(props.tags).map((k) => {
     return { tag: k, count: props.tags[k] };
@@ -29,25 +28,29 @@ const Tags = (props: Props) => {
             <span>Popular {props.name} tags</span>
           </Col>
           <Col span={24}>
-            <List
-              itemLayout="horizontal"
-              dataSource={tagsArray}
-              renderItem={(item, index) => (
-                <List.Item>
-                  <List.Item.Meta
-                    avatar={<TagOutlined />}
-                    title={<a href="#">{item.tag}</a>}
-                    // description="Ant Design, a design language for background applications, is refined by Ant UED Team"
-                  />
-                  <div>
-                    <span>
-                      <NumberOutlined />
-                    </span>
-                    <span>{item.count}</span>
-                  </div>
-                </List.Item>
-              )}
-            />
+            {tagsArray.length == 0 ? (
+              <Empty description={<span>No tags</span>} />
+            ) : (
+              <List
+                itemLayout="horizontal"
+                dataSource={tagsArray}
+                renderItem={(item, index) => (
+                  <List.Item>
+                    <List.Item.Meta
+                      avatar={<TagOutlined />}
+                      title={<a href="#">{item.tag}</a>}
+                      // description="Ant Design, a design language for background applications, is refined by Ant UED Team"
+                    />
+                    <div>
+                      <span>
+                        <NumberOutlined />
+                      </span>
+                      <span>{item.count}</span>
+                    </div>
+                  </List.Item>
+                )}
+              />
+            )}
           </Col>
         </Row>
       </Card>
