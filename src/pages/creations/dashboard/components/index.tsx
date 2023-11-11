@@ -378,8 +378,8 @@ export const CreationDashboard = (props: Props) => {
                             );
                           }}
                           onDragStop={handleDragStop}
-                          resizeGrid={[30, 50]}
-                          dragGrid={[200, 100]}
+                          resizeGrid={[10, 50]}
+                          dragGrid={[10, 20]}
                         >
                           <div
                             className={`${styles.draggingBox} ${
@@ -388,10 +388,14 @@ export const CreationDashboard = (props: Props) => {
                           >
                             <Card
                               bordered
-                              className={`${controlState.edit && styles.editPanelContainer}`}
+                              className={`${
+                                controlState.edit
+                                  ? styles.editPanelContainer
+                                  : styles.panelContainer
+                              }`}
                               style={{
-                                minWidth: minWidth,
-                                minHeight: minHeight,
+                                minWidth: `${panel.width ? '' : minWidth}}`,
+                                minHeight: `${panel.height ? '' : minHeight}}}`,
                                 width: panel.width,
                                 height: panel.height,
                               }}
