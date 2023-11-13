@@ -139,6 +139,8 @@ declare namespace HYPERDOT_API {
     is_privacy?: boolean;
     unsaved?: boolean;
     charts?: Chart[];
+    created_at?: string;
+    updated_at?: string;
   };
 
   type UserQueryResponse = {

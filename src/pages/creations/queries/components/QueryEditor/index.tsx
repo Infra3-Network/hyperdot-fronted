@@ -477,6 +477,8 @@ const QueryEditor = (props: Props) => {
         query: props.editorQuery,
         query_engine: queryNormal.engine,
         is_privacy: queryNormal.privacy,
+        created_at: props.userQuery?.created_at,
+        updated_at: props.userQuery?.created_at,
         charts: charts.map((v) => {
           if (v.config && v.config.data) {
             delete v.config.data;
@@ -488,8 +490,6 @@ const QueryEditor = (props: Props) => {
           };
         }),
       };
-      console.log('save ', body.charts);
-      // return
 
       const res = await updateQuery(body, {});
       if (res.success) {
