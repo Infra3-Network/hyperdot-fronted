@@ -15,7 +15,7 @@ const Settings: LayoutSettings & {
   pwa: false,
   logo: '/hyper64.svg',
   headerHeight: 44,
-  title: 'dot',
+  title: '',
   splitMenus: true,
 };
 
