@@ -133,7 +133,7 @@ const Dashboards = (props: ListProps) => {
   );
 };
 
-const Social = (user: HYPERDOT_API.CurrentUser) => {
+export const Social = (user: HYPERDOT_API.CurrentUser) => {
   return (
     <Row>
       {user.bio && (
