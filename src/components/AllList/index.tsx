@@ -1,9 +1,8 @@
-import hyperdot from '@/services/hyperdot';
 import { deleteQuery, updateFavoriteQuery } from '@/services/hyperdot/api';
 import { formatTimeAgo } from '@/utils';
 import { SmallDashOutlined, StarFilled, StarOutlined } from '@ant-design/icons';
 
-import { List, type MenuProps, message, Space, Dropdown, Tag, Button } from 'antd';
+import { List, type MenuProps, message, Space, Dropdown, Tag } from 'antd';
 import React from 'react';
 import { Link } from 'umi';
 import UserAvatar from '../UserAvatar';

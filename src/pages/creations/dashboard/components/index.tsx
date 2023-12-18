@@ -1,11 +1,11 @@
 import { updateDashboard } from '@/services/hyperdot/api';
 import { parseWindowString } from '@/utils';
-import { EditOutlined, HomeOutlined, UserOutlined } from '@ant-design/icons';
-import { Breadcrumb, Button, Card, Col, List, message, Row, Space } from 'antd';
+import { EditOutlined, HomeOutlined } from '@ant-design/icons';
+import { Breadcrumb, Button, Card, Col, message, Row, Space } from 'antd';
 import React, { memo } from 'react';
 
 import { Rnd } from 'react-rnd';
-import { history, Link } from 'umi';
+import { Link } from 'umi';
 import SettingsModal from './SettingsModal';
 import TextWidgetModal from './TextWidgetModal';
 import TextWidgetPanel from './TextWidgetPanel';
@@ -15,11 +15,6 @@ import EditPanelModal from './EditPanelModal';
 
 import styles from './index.less';
 import UserAvatar from '@/components/UserAvatar';
-
-type WindowState = {
-  width: number;
-  height: number;
-};
 
 type Props = {
   editable: boolean;
@@ -152,7 +147,7 @@ const PanelComponent = memo(
 export const CreationDashboard = (props: Props) => {
   const [isDragging, setIsDragging] = React.useState<boolean>(false);
   const [draggedIndex, setDraggedIndex] = React.useState(null); // 存储当前拖拽的元素索引
-  const [offset, setOffset] = React.useState({ x: 0, y: 0 });
+  const [_, setOffset] = React.useState({ x: 0, y: 0 });
 
   const [controlState, setControlState] = React.useState<ControlState>({
     edit: false,
@@ -175,7 +170,7 @@ export const CreationDashboard = (props: Props) => {
   const minWidth = windowWidth / 2.5;
   const minHeight = windowHeight / 2.5;
 
-  const handlePanelResizeStop = (index, e, direction, ref, delta, position) => {
+  const handlePanelResizeStop = (index: any, ref: HTMLElement) => {
     const width = ref.style.width;
     const height = ref.style.height;
     const panels = dashboard.panels;
@@ -361,7 +356,7 @@ export const CreationDashboard = (props: Props) => {
                             if (!controlState.edit) {
                               return;
                             }
-                            handlePanelResizeStop(index, e, direction, ref, delta, position);
+                            handlePanelResizeStop(index, ref);
                           }}
                           dragAxis={controlState.edit ? 'both' : 'none'}
                           onDrag={(e, d) => handlePanelDrag(e, d, index)}

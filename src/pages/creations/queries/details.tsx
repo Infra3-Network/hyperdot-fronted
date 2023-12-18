@@ -53,6 +53,11 @@ export const CreationQueryDetail = () => {
               return;
             }
 
+            if (!res.data.user_id) {
+              message.error('query has no user_id', 3);
+              return;
+            }
+
             getUser(res.data.user_id)
               .then((userRes) => {
                 if (!userRes.success) {
@@ -62,7 +67,6 @@ export const CreationQueryDetail = () => {
                 setUserQuery(res.data);
                 setUser(userRes.data);
                 setEditable(false);
-                console.log(userQuery, editable, user);
               })
               .catch((err) => {
                 message.error(err, 3);

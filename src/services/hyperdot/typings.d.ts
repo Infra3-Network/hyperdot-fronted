@@ -237,16 +237,16 @@ declare namespace HYPERDOT_API {
     dashboard_id: number;
     query_id: number;
     chart_id: number;
-    name: string;
-    description: string;
+    name: string | undefined;
+    description: string | undefined;
     type: number;
-    text: string;
+    text: string | undefined;
     width: string;
     height: string;
     x_pos: number;
     y_pos: number;
-    created_at: string;
-    updated_at: string;
+    created_at: string | undefined;
+    updated_at: string | undefined;
   };
 
   type Dashboard = {

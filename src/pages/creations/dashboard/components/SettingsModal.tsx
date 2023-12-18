@@ -1,4 +1,4 @@
-import { Modal, Row, Col, Input, Checkbox, Tag } from 'antd';
+import { Modal, Row, Col, Input, Checkbox } from 'antd';
 
 type Props = {
   dashboard: HYPERDOT_API.Dashboard;

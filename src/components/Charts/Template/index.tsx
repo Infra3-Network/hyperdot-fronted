@@ -11,7 +11,7 @@ import {
   Empty,
 } from 'antd';
 
-import React, { useEffect } from 'react';
+import React from 'react';
 
 import { Area, Line, Bar, Scatter, Pie } from '@ant-design/charts';
 import { QuestionCircleOutlined } from '@ant-design/icons';

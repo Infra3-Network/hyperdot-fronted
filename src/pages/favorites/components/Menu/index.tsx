@@ -2,7 +2,7 @@ import { CodeOutlined, DashboardOutlined } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
 import { Menu } from 'antd';
 import { useState } from 'react';
-import { history, Link, useParams } from 'umi';
+import { history, Link } from 'umi';
 
 const items: MenuProps['items'] = [
   {

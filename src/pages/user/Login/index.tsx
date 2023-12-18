@@ -1,4 +1,4 @@
-import { message, Form, Button, Input, Checkbox, Spin } from 'antd';
+import { message, Form, Button, Input, Checkbox } from 'antd';
 import React from 'react';
 import { history, useModel } from 'umi';
 import { login } from '@/services/hyperdot/api';
@@ -6,10 +6,8 @@ import { login } from '@/services/hyperdot/api';
 import styles from './index.less';
 import { isEmail } from '@/utils';
 import BackgroundVideo from '../Background';
-import { PageLoading } from '@ant-design/pro-layout';
 const Login: React.FC = () => {
   const { initialState, setInitialState } = useModel('@@initialState');
-  const [loading, setLoading] = React.useState(true);
   const fetchUserInfo = async () => {
     const userInfo = await initialState?.fetchUserInfo?.();
     if (userInfo) {

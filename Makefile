@@ -1,6 +1,6 @@
 VERSION ?= $(shell git rev-parse --short HEAD)
-HTTP_PROXY ?= "http://192.168.124.42:17890"
-HTTPS_PROXY ?= "http://192.168.124.42:17890"
+HTTP_PROXY ?= "http://192.168.1.5:17890"
+HTTPS_PROXY ?= "http://192.168.1.5:17890"
 
 .PHONY: build/docker
 build/docker: ## Build the docker image.

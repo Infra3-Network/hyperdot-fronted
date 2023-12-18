@@ -1,22 +1,7 @@
-import { GridContent, WaterMark } from '@ant-design/pro-layout';
-import {
-  Card,
-  Table,
-  Row,
-  Col,
-  Statistic,
-  Input,
-  Select,
-  Space,
-  message,
-  Empty,
-  Radio,
-} from 'antd';
+import { Card, Col, Row, Statistic, Input, Select, message, Empty, Radio } from 'antd';
 import { type ChartProps } from '../types';
-import { styles } from './index.less';
 import { getColumns } from '../utils';
 
-import hyperdotlogo from './hyperdot-logo.png';
 import { ArrowDownOutlined, ArrowUpOutlined } from '@ant-design/icons';
 import React from 'react';
 

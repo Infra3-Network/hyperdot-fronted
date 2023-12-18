@@ -1,7 +1,3 @@
-// BackgroundVideo.tsx
-
-import React from 'react';
-
 const BackgroundVideo = ({ src }: { src: string }) => {
   return (
     <div

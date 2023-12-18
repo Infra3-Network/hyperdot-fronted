@@ -1,12 +1,6 @@
 import { CheckCircleTwoTone } from '@ant-design/icons';
 import { Input, Space, Button, Row, Col, message } from 'antd';
-import ProForm, {
-  ProFormDependency,
-  ProFormFieldSet,
-  ProFormSelect,
-  ProFormText,
-  ProFormTextArea,
-} from '@ant-design/pro-form';
+import ProForm, { ProFormText } from '@ant-design/pro-form';
 import React from 'react';
 import styles from './AccountView.less';
 import { updateUserPassword } from '@/services/hyperdot/api';
@@ -29,19 +23,35 @@ const AccountView = ({ user }: Props) => {
       return;
     }
 
-    const res = await updateUserPassword({
+    updateUserPassword({
       current_password: formData.current_password,
       new_password: formData.new_password,
-    });
+    })
+      .then((res) => {
+        if (res.success) {
+          message.success('Change password successfully, Please login again', 2);
+          history.push('/user/login');
+          localStorage.removeItem('token');
+          return;
+        }
+      })
+      .catch((error) => {
+        // message.error(error.message);
+      })
+      .finally(() => {});
+    // const res = await updateUserPassword({
+    //   current_password: formData.current_password,
+    //   new_password: formData.new_password,
+    // });
 
-    if (res.success) {
-      message.success('Change password successfully, Please login again', 2);
-      history.push('/user/login');
-      localStorage.removeItem('token');
-      return;
-    }
+    // if (res.data.success) {
+    //   message.success('Change password successfully, Please login again', 2);
+    //   history.push('/user/login');
+    //   localStorage.removeItem('token');
+    //   return;
+    // }
 
-    message.error(res.errorMessage);
+    // message.error(res.data.errorMessage);
   };
 
   return (

@@ -96,9 +96,7 @@ export async function updateUserPassword(
   body: HYPERDOT_API.UpdateUserPasswordRequest,
   options?: { [key: string]: any },
 ) {
-  return request<{
-    data: HYPERDOT_API.UpdateUserResponse;
-  }>('/apis/v1/user/password', {
+  return request('/apis/v1/user/password', {
     method: 'PUT',
     data: body,
     ...(options || {}),

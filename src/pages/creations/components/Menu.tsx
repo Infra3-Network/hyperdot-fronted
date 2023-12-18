@@ -27,11 +27,11 @@ const CreationDashboardModal = ({ isModalOpen, setIsModalOpen }: CreationDashboa
   const [inStatus, setInStatus] = React.useState<{
     name: {
       msg: string;
-      status: string | undefined;
+      status: any;
     };
     description: {
       msg: string;
-      status: string | undefined;
+      status: any;
     };
   }>({
     name: {

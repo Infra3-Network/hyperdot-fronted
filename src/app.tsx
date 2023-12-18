@@ -1,5 +1,4 @@
 import type { Settings as LayoutSettings } from '@ant-design/pro-layout';
-import { SettingDrawer } from '@ant-design/pro-layout';
 import { PageLoading } from '@ant-design/pro-layout';
 import type { RequestConfig, RunTimeLayoutConfig } from 'umi';
 import { history, Link } from 'umi';
@@ -52,6 +51,7 @@ export async function getInitialState(): Promise<{
       fetchUserInfo,
       currentUser,
       settings: defaultSettings,
+      CreationDashboardModalOpen: false,
     };
   }
 
@@ -69,7 +69,7 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
     rightContentRender: () => <RightContent />,
     disableContentMargin: false,
     waterMarkProps: {
-      content: initialState?.currentUser?.name,
+      content: initialState?.currentUser?.username,
     },
     footerRender: () => <Footer />,
     onPageChange: () => {
@@ -128,13 +128,6 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
   };
 };
 
-// interface ResponseStructure {
-//   success: boolean;
-//   data: any;
-//   errorCode?: number;
-//   errorMessage?: string;
-// }
-
 export const request: RequestConfig = {
   // timeout: 1000,
   // headers: { 'X-Requested-With': 'XMLHttpRequest' },
@@ -144,6 +137,14 @@ export const request: RequestConfig = {
   // },
   requestInterceptors: [
     (url, options) => {
+      // perform undefined parameter detection
+      if (!url || !options) {
+        return {
+          url: url,
+          options: options,
+        };
+      }
+
       const location = history.location.pathname;
       // if (guestCanAccess(location)) {
       //   console.log('canAccess', location)
@@ -157,7 +158,11 @@ export const request: RequestConfig = {
         history.replace({
           pathname: '/user/login',
         });
-        return;
+
+        return {
+          url: url,
+          options: { ...options, interceptors: false },
+        };
       }
       const authHeader = { Authorization: `${token}` };
       return {

@@ -1,25 +1,24 @@
-import { message, Form, Button, Input, Checkbox, ConfigProvider } from 'antd';
+import { message, Form, Button, Input, ConfigProvider } from 'antd';
 import React from 'react';
-import { history, useModel } from 'umi';
-import { createAccount, login } from '@/services/hyperdot/api';
+import { history } from 'umi';
+import { createAccount } from '@/services/hyperdot/api';
 import enUS from 'antd/lib/locale/en_US';
 
 import styles from './index.less';
-import { isEmail } from '@/utils';
 import BackgroundVideo from '../Background';
 
 const Login: React.FC = () => {
-  const { initialState, setInitialState } = useModel('@@initialState');
+  // const { initialState, setInitialState } = useModel('@@initialState');
 
-  const fetchUserInfo = async () => {
-    const userInfo = await initialState?.fetchUserInfo?.();
-    if (userInfo) {
-      await setInitialState((s: any) => ({
-        ...s,
-        currentUser: userInfo,
-      }));
-    }
-  };
+  // const fetchUserInfo = async () => {
+  //   const userInfo = await initialState?.fetchUserInfo?.();
+  //   if (userInfo) {
+  //     await setInitialState((s: any) => ({
+  //       ...s,
+  //       currentUser: userInfo,
+  //     }));
+  //   }
+  // };
 
   const handleSubmit = async (values: any) => {
     const createAccountRequest: HYPERDOT_API.CreateAccountRequest = {

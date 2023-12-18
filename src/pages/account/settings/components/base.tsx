@@ -1,37 +1,15 @@
-import React, { useEffect, useState } from 'react';
-import { TwitterOutlined, UploadOutlined } from '@ant-design/icons';
-import { Button, Input, Upload, message, Avatar } from 'antd';
-import ProForm, {
-  ProFormDependency,
-  ProFormFieldSet,
-  ProFormSelect,
-  ProFormText,
-  ProFormTextArea,
-} from '@ant-design/pro-form';
-import { useRequest } from 'umi';
-import { queryCurrent } from '../service';
-import { queryProvince, queryCity } from '../service';
+import React, { useState } from 'react';
+import { TwitterOutlined } from '@ant-design/icons';
+import { Upload, message, Avatar } from 'antd';
+import ProForm, { ProFormText, ProFormTextArea } from '@ant-design/pro-form';
 
 import styles from './BaseView.less';
 import MyIcon from '@/components/Icons';
-import { getFile, updateUser, uploadUserAvatar } from '@/services/hyperdot/api';
-import { P } from '@antv/g2plot';
+import { updateUser, uploadUserAvatar } from '@/services/hyperdot/api';
 import { RcFile, UploadFile } from 'antd/lib/upload';
 import ImgCrop from 'antd-img-crop';
-// import fs from 'fs';
-import os from 'os';
-import path from 'path';
 
-const validatorPhone = (rule: any, value: string[], callback: (message?: string) => void) => {
-  if (!value[0]) {
-    callback('Please input your area code!');
-  }
-  if (!value[1]) {
-    callback('Please input your phone number!');
-  }
-  callback();
-};
-// 头像组件 方便以后独立，增加裁剪之类的功能
+// Avatar component
 const AvatarView = ({
   avatar,
   setAvatar,
@@ -80,7 +58,7 @@ const AvatarView = ({
     uploadUserAvatar(formData)
       .then((res) => {
         message.info('Avatar upload success');
-        setAvatar(res.data.object_key);
+        setAvatar(res.data.data.object_key);
       })
       .catch((err) => {
         message.error('Avatar upload failed: ' + err);
@@ -133,7 +111,8 @@ const BaseView = ({ user, setUser }: Props) => {
 
   const handleFinish = async (formData: any) => {
     const res = await updateUser(formData);
-    setUser(res.data);
+
+    setUser(res.data.data);
     message.success('Update Success');
   };
   return (

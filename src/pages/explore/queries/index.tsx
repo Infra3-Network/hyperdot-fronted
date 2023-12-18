@@ -22,7 +22,7 @@ const Queries = (props: Props) => {
   const [favoritesTimeRange, setFavoritesTimeRange] = React.useState('7d');
   const [trendingTimeRange, setTrendingTimeRange] = React.useState('4h');
   const [data, setData] = React.useState<HYPERDOT_API.ListQueryData[]>([]);
-  const [popularTags, setPopularTags] = React.useState<Map<string, number> | undefined>(undefined);
+  const [popularTags, _] = React.useState<Map<string, number> | undefined>(undefined);
 
   const handleParamChange = (type: string, newValue: any) => {
     const queries = {

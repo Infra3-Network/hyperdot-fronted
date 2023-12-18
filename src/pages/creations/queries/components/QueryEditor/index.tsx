@@ -9,26 +9,10 @@ import {
   FullscreenOutlined,
   SaveOutlined,
 } from '@ant-design/icons';
-import {
-  Tabs,
-  Row,
-  Col,
-  Button,
-  Modal,
-  Input,
-  Switch,
-  message,
-  Spin,
-  Select,
-  Breadcrumb,
-  Space,
-  Card,
-  Segmented,
-  SegmentedProps,
-} from 'antd';
+import { Tabs, Row, Col, Button, Modal, Input, Switch, message, Spin, Select } from 'antd';
 import React, { useEffect, useRef } from 'react';
 import styles from './index.less';
-import { Link, useHistory } from 'umi';
+import { useHistory } from 'umi';
 import { createQuery, queryRun, removeChart, updateQuery } from '@/services/hyperdot/api';
 import {
   ChartManager,
@@ -36,15 +20,11 @@ import {
   type ChartNodeProps,
   type ChartProps,
 } from '@/components/Charts/types';
-// import { HYPERDOT_CHART } from '@/components/Charts/typings';
 import { ChartNodeMap } from '@/components/Charts';
-import UserAvatar from '@/components/UserAvatar';
-import { GridContent } from '@ant-design/pro-layout';
 
 type NewVisualizationTabProps = {
   queryData: any;
   setTabActiveKey: any;
-  // setTabItems: any;
   handleTabClose: any;
   chartMgr: ChartManager;
   chartNodeMap: Map<string, ChartNodeProps>;
@@ -98,55 +78,6 @@ export const NewVisualizationTab = (props: NewVisualizationTabProps) => {
       type: chart,
       closeable: true,
     });
-
-    // const nextIndex = props.chartMgr.getNextIndex();
-    // props.setTabItems((prev: any[]) => {
-    //   const newItems = [...prev];
-    //   newItems.splice(prev.length - 1, 0, {
-    //     label: (
-    //       <div>
-    //         <span>
-    //           {chartNode.icon}
-    //           {chartNode.name}
-    //         </span>
-    //         <span style={{ marginLeft: '12px' }}>
-    //           <CloseOutlined
-    //             onClick={() => {
-    //               props.handleTabClose(nextIndex, props.setTabItems);
-    //             }}
-    //           />
-    //         </span>
-    //       </div>
-    //     ),
-    //     key: nextIndex.toString(),
-    //     children: chartNode.children({
-    //       manager: props.chartMgr,
-    //       params: {
-    //         index: nextIndex,
-    //         name: chartNode.name,
-    //         type: chart,
-    //         closeable: true,
-    //       },
-    //       data: props.queryData,
-    //     }, nextIndex),
-    //     style: {},
-    //     closable: true,
-    //     forceRender: false,
-    //   });
-    //   return newItems;
-    // })
-
-    // console.log('nextActiveKey = ', nextIndex)
-    // props.setTabActiveKey((nextIndex - 1).toString());
-    // props.setSegOptions((prev: any[]) => {
-    //   const newOptions = [...prev];
-    //   newOptions.splice(prev.length - 1, 0, {
-    //     label: chartNode.name,
-    //     value: nextIndex,
-    //     icon: chartNode.icon,
-    //   })
-    //   return newOptions
-    // })
   };
 
   return (
@@ -205,15 +136,6 @@ const QueryVisualization = (props: QueryVisualizationProps) => {
     } else {
       props.chartMgr.remove(index);
     }
-
-    // setTabItems((prev: any[]) => {
-    //   const newItems = [...prev];
-    //   newItems.splice(index, 1);
-    //   return newItems;
-    // });
-
-    // props.setTabProps(TabManager.remove(props.tabProps, id));
-    // setTabActiveKey(tabActiveKey);
   };
 
   const [tabActiveKey, setTabActiveKey] = React.useState<string>('0');
@@ -232,13 +154,16 @@ const QueryVisualization = (props: QueryVisualizationProps) => {
                 chartMgr: v.manager,
                 chartNodeMap: ChartNodeMap,
                 setTabActiveKey: setTabActiveKey,
-                // setTabItems: setTabItems,
                 handleTabClose: handleCloseClick,
               };
               return <NewVisualizationTab {...newProps} />;
             };
             icon = <BarChartOutlined />;
           } else {
+            if (!params.type) {
+              return null;
+            }
+
             const chartNode = ChartNodeMap.get(params.type);
             if (chartNode == undefined) {
               return null;
@@ -485,7 +410,7 @@ const QueryEditor = (props: Props) => {
           }
           return {
             ...v,
-            query_id: Number(props.userQuery.id),
+            query_id: Number(props.userQuery ? props.userQuery.id : 0),
             user_id: Number(props.user.id),
           };
         }),

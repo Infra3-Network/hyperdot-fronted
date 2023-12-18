@@ -1,6 +1,5 @@
 import { removeDashboardPanel } from '@/services/hyperdot/api';
-import { Button, Col, Input, message, Modal, Row, Space } from 'antd';
-import { useState } from 'react';
+import { Button, message, Modal, Space } from 'antd';
 
 type Props = {
   ctl: ControlState;

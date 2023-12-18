@@ -1,5 +1,5 @@
 import { getUserQueryChart } from '@/services/hyperdot/api';
-import { Card, message, Spin } from 'antd';
+import { message, Spin } from 'antd';
 import React, { useEffect } from 'react';
 import { queryRun } from '@/services/hyperdot/api';
 import { Area, Line, Bar, Scatter, Pie } from '@ant-design/charts';

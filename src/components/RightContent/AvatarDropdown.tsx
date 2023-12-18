@@ -8,7 +8,6 @@ import styles from './index.less';
 import { Link } from 'umi';
 import { outLogin } from '@/services/ant-design-pro/api';
 import type { MenuInfo } from 'rc-menu/lib/interface';
-import user from 'mock/user';
 
 export type GlobalHeaderRightProps = {
   menu?: boolean;

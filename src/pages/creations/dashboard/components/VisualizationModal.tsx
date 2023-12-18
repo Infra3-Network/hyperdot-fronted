@@ -80,6 +80,14 @@ const VisualizationModal = (props: Props) => {
       height: 'atuo',
       chart_id: chart.chart_id || 0,
       query_id: chart.query_id || 0,
+      id: 0,
+      user_id: 0,
+      dashboard_id: 0,
+      name: undefined,
+      description: undefined,
+      text: undefined,
+      created_at: undefined,
+      updated_at: undefined,
     };
 
     // add panel to dashboard
@@ -91,15 +99,6 @@ const VisualizationModal = (props: Props) => {
       return {
         ...prev,
         panels: [...prev.panels, panel],
-      };
-    });
-  };
-
-  const handleOk = () => {
-    props.action.setControlState((prev) => {
-      return {
-        ...prev,
-        visualizationModalOpen: false,
       };
     });
   };

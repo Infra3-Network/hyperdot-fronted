@@ -30,7 +30,7 @@ export const guestCanAccess = (location: string) => {
     return true;
   }
 
-  for (const [key, value] of guestCanAccessRouteMap) {
+  for (const [_, value] of guestCanAccessRouteMap) {
     if (value.regexp && value.allow && new RegExp(value.regexp).test(location)) {
       return true;
     }

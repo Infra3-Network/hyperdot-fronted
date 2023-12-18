@@ -1,5 +1,4 @@
 import {
-  Button,
   Row,
   Col,
   Select,
@@ -13,12 +12,11 @@ import {
   Slider as AntSlider,
 } from 'antd';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 
-import { Line, Area, Scatter, Column, Pie } from '@ant-design/charts';
+import { Line, Area, Column, Pie } from '@ant-design/charts';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import { TabManager } from './tabmanager';
-import styles from './charts.less';
 import { WaterMark } from '@ant-design/pro-layout';
 import { type ChartProps } from '@/components/Charts/types';
 export interface ChartNodeProps {
@@ -875,185 +873,185 @@ export const LineChart = (props: QE.ChartTabProps) => {
   );
 };
 
-interface ScatterChartConfig {
-  data: any;
-  xField: string;
-  yField: string;
-  colorField: string;
-  appendPadding: number;
-  size: number;
-  xAxis: any;
-  yAxis: any;
-}
+// interface ScatterChartConfig {
+//   data: any;
+//   xField: string;
+//   yField: string;
+//   colorField: string;
+//   appendPadding: number;
+//   size: number;
+//   xAxis: any;
+//   yAxis: any;
+// }
 
-export const ScatterChartTab = (props: QE.ChartTabProps) => {
-  const schemas: any[] = queryData.schemas;
-  const xField: string = schemas.length == 0 ? '' : schemas[0].name;
-  const yField: string = schemas.length < 1 ? '' : schemas[1].name;
-  const colorField: string = schemas.length < 2 ? '' : schemas[2].name;
-  const data: any = queryData.rows;
-  const [config, setConfig] = React.useState<ScatterChartConfig>({
-    appendPadding: 30,
-    data,
-    xField: xField,
-    yField: yField,
-    size: 5,
-    colorField: colorField,
-    yAxis: {
-      nice: true,
-      line: {
-        style: {
-          stroke: '#aaa',
-        },
-      },
-    },
-    xAxis: {
-      min: -100,
-      grid: {
-        line: {
-          style: {
-            stroke: '#eee',
-          },
-        },
-      },
-      line: {
-        style: {
-          stroke: '#aaa',
-        },
-      },
-    },
-  });
+// export const ScatterChartTab = (props: QE.ChartTabProps) => {
+//   const schemas: any[] = propsd.schemas;
+//   const xField: string = schemas.length == 0 ? '' : schemas[0].name;
+//   const yField: string = schemas.length < 1 ? '' : schemas[1].name;
+//   const colorField: string = schemas.length < 2 ? '' : schemas[2].name;
+//   const data: any = queryData.rows;
+//   const [config, setConfig] = React.useState<ScatterChartConfig>({
+//     appendPadding: 30,
+//     data,
+//     xField: xField,
+//     yField: yField,
+//     size: 5,
+//     colorField: colorField,
+//     yAxis: {
+//       nice: true,
+//       line: {
+//         style: {
+//           stroke: '#aaa',
+//         },
+//       },
+//     },
+//     xAxis: {
+//       min: -100,
+//       grid: {
+//         line: {
+//           style: {
+//             stroke: '#eee',
+//           },
+//         },
+//       },
+//       line: {
+//         style: {
+//           stroke: '#aaa',
+//         },
+//       },
+//     },
+//   });
 
-  const handleCloumnSelect = (value: any, col: string) => {
-    if (col == 'x') {
-      setConfig({ ...config, xField: value });
-    }
-    if (col == 'y') {
-      setConfig({ ...config, yField: value });
-    }
-  };
+//   const handleCloumnSelect = (value: any, col: string) => {
+//     if (col == 'x') {
+//       setConfig({ ...config, xField: value });
+//     }
+//     if (col == 'y') {
+//       setConfig({ ...config, yField: value });
+//     }
+//   };
 
-  const columns = getColumns(queryData);
+//   const columns = getColumns(queryData);
 
-  return (
-    <>
-      <Row gutter={24}>
-        <Col span={24}>
-          <div
-            style={{
-              height: '400px',
-              width: '100%',
-              border: '1px solid',
-              borderColor: 'red',
-            }}
-          >
-            <Scatter {...config} />
-          </div>
-        </Col>
-      </Row>
+//   return (
+//     <>
+//       <Row gutter={24}>
+//         <Col span={24}>
+//           <div
+//             style={{
+//               height: '400px',
+//               width: '100%',
+//               border: '1px solid',
+//               borderColor: 'red',
+//             }}
+//           >
+//             <Scatter {...config} />
+//           </div>
+//         </Col>
+//       </Row>
 
-      <Row gutter={24} style={{ paddingTop: '12px' }}>
-        <Col
-          span={24}
-          style={{
-            height: '400px',
-            width: '100%',
-            border: '1px solid',
-            borderColor: 'red',
-          }}
-        >
-          <Row gutter={24}>
-            <Col
-              span={7}
-              style={{
-                background: 'rgb(229 231 235)',
-                marginRight: '12px',
-                padding: '12px 10px 32px 10px',
-              }}
-            >
-              <Row>
-                <Col>
-                  <h2 className={styles.optionHead}>Chart Options</h2>
-                </Col>
-              </Row>
+//       <Row gutter={24} style={{ paddingTop: '12px' }}>
+//         <Col
+//           span={24}
+//           style={{
+//             height: '400px',
+//             width: '100%',
+//             border: '1px solid',
+//             borderColor: 'red',
+//           }}
+//         >
+//           <Row gutter={24}>
+//             <Col
+//               span={7}
+//               style={{
+//                 background: 'rgb(229 231 235)',
+//                 marginRight: '12px',
+//                 padding: '12px 10px 32px 10px',
+//               }}
+//             >
+//               <Row>
+//                 <Col>
+//                   <h2 className={styles.optionHead}>Chart Options</h2>
+//                 </Col>
+//               </Row>
 
-              <Row gutter={[0, 2]} style={{ margin: '12px' }}>
-                <Col span={24} style={{ background: 'white', padding: '8px 0 2px 8px' }}>
-                  <Row>
-                    <Col span={6}>
-                      <div>Title</div>
-                    </Col>
+//               <Row gutter={[0, 2]} style={{ margin: '12px' }}>
+//                 <Col span={24} style={{ background: 'white', padding: '8px 0 2px 8px' }}>
+//                   <Row>
+//                     <Col span={6}>
+//                       <div>Title</div>
+//                     </Col>
 
-                    <Col span={16}>
-                      <Input placeholder="" bordered={false} />
-                    </Col>
-                  </Row>
-                </Col>
-              </Row>
-            </Col>
+//                     <Col span={16}>
+//                       <Input placeholder="" bordered={false} />
+//                     </Col>
+//                   </Row>
+//                 </Col>
+//               </Row>
+//             </Col>
 
-            <Col
-              span={7}
-              style={{
-                background: 'rgb(229 231 235)',
-                marginRight: '12px',
-                padding: '12px 10px 32px 10px',
-              }}
-            >
-              <Row>
-                <Col>
-                  <h2 className={styles.optionHead}>Result data</h2>
-                </Col>
-              </Row>
+//             <Col
+//               span={7}
+//               style={{
+//                 background: 'rgb(229 231 235)',
+//                 marginRight: '12px',
+//                 padding: '12px 10px 32px 10px',
+//               }}
+//             >
+//               <Row>
+//                 <Col>
+//                   <h2 className={styles.optionHead}>Result data</h2>
+//                 </Col>
+//               </Row>
 
-              <Row gutter={[0, 2]} style={{ margin: '12px' }}>
-                <Col span={24} style={{ background: 'white', padding: '8px 0 2px 8px' }}>
-                  <Row>
-                    <Col span={6}>
-                      <div>X column</div>
-                    </Col>
+//               <Row gutter={[0, 2]} style={{ margin: '12px' }}>
+//                 <Col span={24} style={{ background: 'white', padding: '8px 0 2px 8px' }}>
+//                   <Row>
+//                     <Col span={6}>
+//                       <div>X column</div>
+//                     </Col>
 
-                    <Col span={16}>
-                      <Select
-                        defaultValue={xField}
-                        bordered={false}
-                        style={{ width: '100%' }}
-                        options={columns}
-                        onSelect={(value) => {
-                          handleCloumnSelect(value, 'x');
-                        }}
-                      />
-                    </Col>
-                  </Row>
-                </Col>
+//                     <Col span={16}>
+//                       <Select
+//                         defaultValue={xField}
+//                         bordered={false}
+//                         style={{ width: '100%' }}
+//                         options={columns}
+//                         onSelect={(value) => {
+//                           handleCloumnSelect(value, 'x');
+//                         }}
+//                       />
+//                     </Col>
+//                   </Row>
+//                 </Col>
 
-                <Col span={24} style={{ background: 'white', padding: '8px 0 2px 8px' }}>
-                  <Row>
-                    <Col span={6}>
-                      <div>Y column</div>
-                    </Col>
+//                 <Col span={24} style={{ background: 'white', padding: '8px 0 2px 8px' }}>
+//                   <Row>
+//                     <Col span={6}>
+//                       <div>Y column</div>
+//                     </Col>
 
-                    <Col span={16}>
-                      <Select
-                        defaultValue={yField}
-                        bordered={false}
-                        style={{ width: '100%' }}
-                        options={columns}
-                        onSelect={(value) => {
-                          handleCloumnSelect(value, 'y');
-                        }}
-                      />
-                    </Col>
-                  </Row>
-                </Col>
-              </Row>
-            </Col>
-          </Row>
-        </Col>
-      </Row>
-    </>
-  );
-};
+//                     <Col span={16}>
+//                       <Select
+//                         defaultValue={yField}
+//                         bordered={false}
+//                         style={{ width: '100%' }}
+//                         options={columns}
+//                         onSelect={(value) => {
+//                           handleCloumnSelect(value, 'y');
+//                         }}
+//                       />
+//                     </Col>
+//                   </Row>
+//                 </Col>
+//               </Row>
+//             </Col>
+//           </Row>
+//         </Col>
+//       </Row>
+//     </>
+//   );
+// };
 
 export const BarChartTab = (props: QE.ChartTabProps) => {
   const schemas: any[] = props.queryData.schemas;
@@ -1061,11 +1059,11 @@ export const BarChartTab = (props: QE.ChartTabProps) => {
     message.error('Line chart need at least 2 columns');
     return null;
   }
-  const xField: string = () => {
+  const xField: any = () => {
     return schemas[0].name;
   };
 
-  const yField: string = () => {
+  const yField: any = () => {
     return schemas[1].name;
   };
 
@@ -1076,7 +1074,7 @@ export const BarChartTab = (props: QE.ChartTabProps) => {
     yField: yField(),
     label: {
       // 可手动配置 label 数据标签位置
-      position: 'middle',
+      // position: 'middle',
       // 'top', 'bottom', 'middle',
       // 配置样式
       style: {
@@ -1101,11 +1099,11 @@ export const PieChartTab = (props: QE.ChartTabProps) => {
     message.error('Line chart need at least 2 columns');
     return null;
   }
-  const xField: string = () => {
+  const xField: any = () => {
     return schemas[0].name;
   };
 
-  const yField: string = () => {
+  const yField: any = () => {
     return schemas[1].name;
   };
 

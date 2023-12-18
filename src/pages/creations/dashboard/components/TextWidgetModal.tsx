@@ -1,4 +1,4 @@
-import { Col, Input, Modal, Row, Space } from 'antd';
+import { Col, Input, Modal, Row } from 'antd';
 import { useState } from 'react';
 
 type Props = {
@@ -8,7 +8,7 @@ type Props = {
 
 type InnerState = {
   text: string;
-  status: string;
+  status: any;
   msg: string;
 };
 

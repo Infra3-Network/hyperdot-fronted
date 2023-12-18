@@ -4,7 +4,6 @@ import { Menu } from 'antd';
 import BaseView from './components/base';
 import BindingView from './components/binding';
 import NotificationView from './components/notification';
-import SecurityView from './components/security';
 import styles from './style.less';
 import AccountView from './components/account';
 import { getInitialState } from '@/app';
@@ -85,6 +84,9 @@ const Settings: React.FC = () => {
       case 'base':
         return <BaseView user={userProps} setUser={setUserProps} />;
       case 'account':
+        if (!user) {
+          return null;
+        }
         return <AccountView user={user} />;
       case 'binding':
         return <BindingView />;
