@@ -1,17 +1,17 @@
 ﻿---
-title: 业务组件
+title: Business Components
 sidemenu: false
 ---
 
-> 此功能由[dumi](https://d.umijs.org/zh-CN/guide/advanced#umi-%E9%A1%B9%E7%9B%AE%E9%9B%86%E6%88%90%E6%A8%A1%E5%BC%8F)提供，dumi 是一个 📖 为组件开发场景而生的文档工具，用过的都说好。
+> This feature is provided by [dumi](https://d.umijs.org/en-US/guide/advanced#umi-project-structured-mode). Dumi is a 📖 documentation tool designed for component development scenarios, and those who have used it speak highly of it.
 
-# 业务组件
+# Business Components
 
-这里列举了 Pro 中所有用到的组件，这些组件不适合作为组件库，但是在业务中却真实需要。所以我们准备了这个文档，来指导大家是否需要使用这个组件。
+Here are all the components used in Pro, which are not suitable as a component library but are actually needed in business scenarios. So we have prepared this documentation to guide you on whether to use these components.
 
-## Footer 页脚组件
+## Footer Component
 
-这个组件自带了一些 Pro 的配置，你一般都需要改掉它的信息。
+This component comes with some Pro configurations, and you generally need to customize its information.
 
 ```tsx
 /**
@@ -23,9 +23,9 @@ import Footer from '@/components/Footer';
 export default () => <Footer />;
 ```
 
-## HeaderDropdown 头部下拉列表
+## HeaderDropdown Header Dropdown List
 
-HeaderDropdown 是 antd Dropdown 的封装，但是增加了移动端的特殊处理，用法也是相同的。
+HeaderDropdown is a wrapper for antd Dropdown, but with added special handling for mobile devices. The usage is the same as well.
 
 ```tsx
 /**
@@ -38,23 +38,23 @@ import HeaderDropdown from '@/components/HeaderDropdown';
 export default () => {
   const menuHeaderDropdown = (
     <Menu selectedKeys={[]}>
-      <Menu.Item key="center">个人中心</Menu.Item>
-      <Menu.Item key="settings">个人设置</Menu.Item>
+      <Menu.Item key="center">Personal Center</Menu.Item>
+      <Menu.Item key="settings">Personal Settings</Menu.Item>
       <Menu.Divider />
-      <Menu.Item key="logout">退出登录</Menu.Item>
+      <Menu.Item key="logout">Log Out</Menu.Item>
     </Menu>
   );
   return (
     <HeaderDropdown overlay={menuHeaderDropdown}>
-      <Button>hover 展示菜单</Button>
+      <Button>Show Menu on Hover</Button>
     </HeaderDropdown>
   );
 };
 ```
 
-## HeaderSearch 头部搜索框
+## HeaderSearch Header Search Box
 
-一个带补全数据的输入框，支持收起和展开 Input
+An input box with autocomplete data, supporting collapsing and expanding input.
 
 ```tsx
 /**
@@ -67,7 +67,7 @@ import HeaderSearch from '@/components/HeaderSearch';
 export default () => {
   return (
     <HeaderSearch
-      placeholder="站内搜索"
+      placeholder="Site Search"
       defaultValue="umi ui"
       options={[
         { label: 'Ant Design Pro', value: 'Ant Design Pro' },
@@ -92,21 +92,9 @@ export default () => {
 };
 ```
 
-### API
+## NoticeIcon Notification Tool
 
-| 参数            | 说明                               | 类型                         | 默认值 |
-| --------------- | ---------------------------------- | ---------------------------- | ------ |
-| value           | 输入框的值                         | `string`                     | -      |
-| onChange        | 值修改后触发                       | `(value?: string) => void`   | -      |
-| onSearch        | 查询后触发                         | `(value?: string) => void`   | -      |
-| options         | 选项菜单的的列表                   | `{label,value}[]`            | -      |
-| defaultVisible  | 输入框默认是否显示，只有第一次生效 | `boolean`                    | -      |
-| visible         | 输入框是否显示                     | `boolean`                    | -      |
-| onVisibleChange | 输入框显示隐藏的回调函数           | `(visible: boolean) => void` | -      |
-
-## NoticeIcon 通知工具
-
-通知工具提供一个展示多种通知信息的界面。
+The NoticeIcon provides an interface for displaying various notification messages.
 
 ```tsx
 /**
@@ -121,14 +109,14 @@ export default () => {
     {
       id: '000000001',
       avatar: 'https://gw.alipayobjects.com/zos/rmsportal/ThXAXghbEsBCCSDihZxY.png',
-      title: '你收到了 14 份新周报',
+      title: 'You received 14 new weekly reports',
       datetime: '2017-08-09',
       type: 'notification',
     },
     {
       id: '000000002',
       avatar: 'https://gw.alipayobjects.com/zos/rmsportal/OKJXDXrmkNshAMvwtvhu.png',
-      title: '你推荐的 曲妮妮 已通过第三轮面试',
+      title: 'The candidate you recommended, Qu Nini, has passed the third-round interview',
       datetime: '2017-08-08',
       type: 'notification',
     },
@@ -137,35 +125,35 @@ export default () => {
     <NoticeIcon
       count={10}
       onItemClick={(item) => {
-        message.info(`${item.title} 被点击了`);
+        message.info(`${item.title} has been clicked`);
       }}
-      onClear={(title: string, key: string) => message.info('点击了清空更多')}
+      onClear={(title: string, key: string) => message.info('Clicked on Clear More')}
       loading={false}
-      clearText="清空"
-      viewMoreText="查看更多"
-      onViewMore={() => message.info('点击了查看更多')}
+      clearText="Clear"
+      viewMoreText="View More"
+      onViewMore={() => message.info('Clicked on View More')}
       clearClose
     >
       <NoticeIcon.Tab
         tabKey="notification"
         count={2}
         list={list}
-        title="通知"
-        emptyText="你已查看所有通知"
+        title="Notifications"
+        emptyText="You have viewed all notifications"
         showViewMore
       />
       <NoticeIcon.Tab
         tabKey="message"
         count={2}
         list={list}
-        title="消息"
-        emptyText="您已读完所有消息"
+        title="Messages"
+        emptyText="You have read all messages"
         showViewMore
       />
       <NoticeIcon.Tab
         tabKey="event"
-        title="待办"
-        emptyText="你已完成所有待办"
+        title="To-Do"
+        emptyText="You have completed all to-dos"
         count={2}
         list={list}
         showViewMore
@@ -175,42 +163,9 @@ export default () => {
 };
 ```
 
-### NoticeIcon API
-
-| 参数 | 说明 | 类型 | 默认值 |
-| --- | --- | --- | --- |
-| count | 有多少未读通知 | `number` | - |
-| bell | 铃铛的图表 | `ReactNode` | - |
-| onClear | 点击清空数据按钮 | `(tabName: string, tabKey: string) => void` | - |
-| onItemClick | 未读消息列被点击 | `(item: API.NoticeIconData, tabProps: NoticeIconTabProps) => void` | - |
-| onViewMore | 查看更多的按钮点击 | `(tabProps: NoticeIconTabProps, e: MouseEvent) => void` | - |
-| onTabChange | 通知 Tab 的切换 | `(tabTile: string) => void;` | - |
-| popupVisible | 通知显示是否展示 | `boolean` | - |
-| onPopupVisibleChange | 通知信息显示隐藏的回调函数 | `(visible: boolean) => void` | - |
-| clearText | 清空按钮的文字 | `string` | - |
-| viewMoreText | 查看更多的按钮文字 | `string` | - |
-| clearClose | 展示清空按钮 | `boolean` | - |
-| emptyImage | 列表为空时的兜底展示 | `ReactNode` | - |
-
-### NoticeIcon.Tab API
-
-| 参数         | 说明               | 类型                                 | 默认值 |
-| ------------ | ------------------ | ------------------------------------ | ------ |
-| count        | 有多少未读通知     | `number`                             | -      |
-| title        | 通知 Tab 的标题    | `ReactNode`                          | -      |
-| showClear    | 展示清除按钮       | `boolean`                            | `true` |
-| showViewMore | 展示加载更         | `boolean`                            | `true` |
-| tabKey       | Tab 的唯一 key     | `string`                             | -      |
-| onClick      | 子项的单击事件     | `(item: API.NoticeIconData) => void` | -      |
-| onClear      | 清楚按钮的点击     | `()=>void`                           | -      |
-| emptyText    | 为空的时候测试     | `()=>void`                           | -      |
-| viewMoreText | 查看更多的按钮文字 | `string`                             | -      |
-| onViewMore   | 查看更多的按钮点击 | `( e: MouseEvent) => void`           | -      |
-| list         | 通知信息的列表     | `API.NoticeIconData`                 | -      |
-
 ### NoticeIconData
 
-```tsx | pure
+```tsx
 export interface NoticeIconData {
   id: string;
   key: string;
@@ -228,15 +183,15 @@ export interface NoticeIconData {
 
 ## RightContent
 
-RightContent 是以上几个组件的组合，同时新增了 plugins 的 `SelectLang` 插件。
+RightContent is a combination of the above components, with the addition of the SelectLang plugin in plugins.
 
-```tsx | pure
+```tsx
 <Space>
   <HeaderSearch
-    placeholder="站内搜索"
+    placeholder="Site Search"
     defaultValue="umi ui"
     options={[
-      { label: <a href="https://umijs.org/zh/guide/umi-ui.html">umi ui</a>, value: 'umi ui' },
+      { label: <a href="https://umijs.org/en/guide/umi-ui.html">umi ui</a>, value: 'umi ui' },
       {
         label: <a href="next.ant.design">Ant Design</a>,
         value: 'Ant Design',
@@ -251,7 +206,7 @@ RightContent 是以上几个组件的组合，同时新增了 plugins 的 `Selec
       },
     ]}
   />
-  <Tooltip title="使用文档">
+  <Tooltip title="Documentation">
     <span
       className={styles.action}
       onClick={() => {
