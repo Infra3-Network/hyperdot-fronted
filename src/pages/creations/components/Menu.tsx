@@ -118,13 +118,20 @@ const CreationDashboardModal = ({ isModalOpen, setIsModalOpen }: CreationDashboa
       open={isModalOpen}
       onOk={handleOk}
       onCancel={handleCancel}
-      okText="Save and open"
-      cancelText="Cancel"
+      footer={[
+        <Button key="back" onClick={handleCancel}>
+          Cancel
+        </Button>,
+        <Button id="creation-dashboard-save-btn" key="submit" type="primary" onClick={handleOk}>
+          Save and open
+        </Button>,
+      ]}
     >
       <Row gutter={[0, 12]}>
         <Col span={24}>
           <p>Dashboard name</p>
           <Input
+            id="creation-dashboard-name-input"
             placeholder={inStatus.name.msg}
             status={inStatus.name.status}
             value={createDashboardData.name}
@@ -135,6 +142,7 @@ const CreationDashboardModal = ({ isModalOpen, setIsModalOpen }: CreationDashboa
         <Col span={24}>
           <p>Description</p>
           <Input.TextArea
+            id="creation-dashboard-desc-input"
             placeholder={inStatus.description.msg}
             status={inStatus.description.status}
             value={createDashboardData.description}
@@ -176,7 +184,7 @@ const CreationDropdownMenu = () => {
     {
       key: 'dashboards',
       label: (
-        <Space>
+        <Space id="open-creation-dashboard-container">
           <MyIcon type="icon-dashboard1" />
           New dashboard
         </Space>
@@ -188,6 +196,7 @@ const CreationDropdownMenu = () => {
     <>
       <Dropdown menu={{ items, onClick }} placement="bottom" arrow>
         <Button
+          id="creation-dashboard-btn"
           size="middle"
           type="link"
           icon={<PlusCircleOutlined />}

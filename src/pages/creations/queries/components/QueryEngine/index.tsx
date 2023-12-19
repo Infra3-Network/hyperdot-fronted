@@ -507,7 +507,7 @@ const QueryEngine = (props: Props) => {
   };
 
   return (
-    <div>
+    <div id="query-engine-container">
       <Select
         className={styles.engineSelect}
         showSearch

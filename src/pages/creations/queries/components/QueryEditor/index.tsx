@@ -638,6 +638,7 @@ const QueryEditor = (props: Props) => {
             {/* Run Button */}
             <Col>
               <Button
+                id="query-editor-run-button"
                 type="primary"
                 icon={<CodeOutlined />}
                 loading={runLoading}
