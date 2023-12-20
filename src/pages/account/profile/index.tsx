@@ -142,7 +142,7 @@ export const Social = (user: HYPERDOT_API.CurrentUser) => {
             <span style={{ marginRight: '2px' }}>
               <BookOutlined />
             </span>
-            <span>{user.bio}</span>
+            <span id="profile-bio-container">{user.bio}</span>
           </div>
         </Col>
       )}
@@ -159,7 +159,7 @@ export const Social = (user: HYPERDOT_API.CurrentUser) => {
                 rel="noopener noreferrer"
                 href={'https://twitter.com/' + user.twitter}
               >
-                @{user.twitter}
+                <span id="profile-twitter-container">@{user.twitter}</span>
               </a>
             </span>
           </div>
@@ -178,7 +178,7 @@ export const Social = (user: HYPERDOT_API.CurrentUser) => {
                 rel="noopener noreferrer"
                 href={'https://github.com/' + user.github}
               >
-                @{user.github}
+                <span id="profile-github-container">@{user.github}</span>
               </a>
             </span>
           </div>
@@ -193,7 +193,7 @@ export const Social = (user: HYPERDOT_API.CurrentUser) => {
             </span>
             <span>
               <a target="_blank" rel="noopener noreferrer" href={'https://t.me/' + user.telgram}>
-                @{user.telgram}
+                <span id="profile-telgram-container">@{user.telgram}</span>
               </a>
             </span>
           </div>
@@ -212,7 +212,7 @@ export const Social = (user: HYPERDOT_API.CurrentUser) => {
                 rel="noopener noreferrer"
                 href={'https://discord.com/users' + user.discord}
               >
-                @{user.discord}
+                <span id="profile-discord-container">@{user.discord}</span>
               </a>
             </span>
           </div>
@@ -231,17 +231,17 @@ const Statistics = (user: HYPERDOT_API.CurrentUser) => {
     <>
       <Row className={styles.horner}>
         <Col span={24}>
-          <span>
+          <span id="profile-statistics-stars-container">
             {formatNumberWithCommas(user.stars)} stars <StarFilled />{' '}
           </span>
         </Col>
         <Col span={24}>
-          <span>
+          <span id="profile-statistics-queries-container">
             {formatNumberWithCommas(user.queries)} queries <CodeOutlined />{' '}
           </span>
         </Col>
         <Col span={24}>
-          <span>
+          <span id="profile-statistics-dashboards-container">
             {formatNumberWithCommas(user.dashboards)} dashboards <DashboardOutlined />{' '}
           </span>
         </Col>

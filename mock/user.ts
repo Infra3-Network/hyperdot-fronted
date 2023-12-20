@@ -42,14 +42,27 @@ export default {
     }
     res.send({
       success: true,
+      errorMessage: '',
+      errorCode: 0,
       data: {
         id: '1',
-        provider: 'password',
-        username: 'Hyperdot',
-        avatar: '',
-        userid: '00000001',
-        email: 'hyperdot@email.com',
-        bio: '',
+        uid: '',
+        username: 'momo',
+        encrypted_password: '$2a$10$2ElaYKIEpUwZncBUxp7CAeQQjiMoVztuMOAxsiIjPcZziKFcgHUMq',
+        email: 'momo@outlook.com',
+        bio: 'Peace and Love',
+        icon_url: '',
+        twitter: 'momo',
+        github: 'momo',
+        telgram: 'momo',
+        discord: 'momo',
+        location: 'San Fancisico. CA',
+        confirmed_at: null,
+        created_at: '2023-11-14T10:04:24.424828+08:00',
+        updated_at: '2023-12-20T10:08:48.630839+08:00',
+        stars: 100,
+        queries: 100,
+        dashboards: 100,
       },
     });
   },
@@ -114,15 +127,87 @@ export default {
     });
   },
 
+  'GET /apis/v1/query': (_: Request, res: Response) => {
+    res.send({
+      data: {
+        queries: [
+          {
+            created_at: '2023-12-18T14:44:30.69144+08:00',
+            description: '',
+            email: 'momo@outlook.com',
+            favorites_count: 0,
+            icon_url: '',
+            id: 1,
+            is_privacy: false,
+            name: 'Test1',
+            query:
+              'SELECT\r\n  author_ss58 AS `Author`,\r\n  number AS `Block Number`,\r\n  `hash` AS `Block Hash`,\r\n  block_time AS `Block Time`,\r\nFROM\r\n  `bigquery-public-data.crypto_polkadot.blocks0`\r\nWHERE\r\n  DATE(block_time) \u003e= "2023-11-02"\r\n  AND DATE(block_time) \u003c= "2023-11-09"\r\nLIMIT 100',
+            query_engine: 'bigquery',
+            stared: null,
+            stars: 0,
+            unsaved: false,
+            updated_at: '2023-12-18T14:44:44.954313+08:00',
+            user_id: 1,
+            username: 'momo1',
+          },
+          {
+            created_at: '2023-12-19T14:38:36.193029+08:00',
+            description: '',
+            email: 'momo@outlook.com',
+            favorites_count: 0,
+            icon_url: '',
+            id: 2,
+            is_privacy: false,
+            name: 'Test2',
+            query:
+              'SELECT\r\n  author_ss58 AS `Author`,\r\n  number AS `Block Number`,\r\n  `hash` AS `Block Hash`,\r\n  block_time AS `Block Time`,\r\nFROM\r\n  `bigquery-public-data.crypto_polkadot.blocks0`\r\nWHERE\r\n  DATE(block_time) \u003e= "2023-11-02"\r\n  AND DATE(block_time) \u003c= "2023-11-09"\r\nLIMIT 100',
+            query_engine: 'bigquery',
+            stared: null,
+            stars: 0,
+            unsaved: true,
+            updated_at: '2023-12-19T14:38:36.193029+08:00',
+            user_id: 1,
+            username: 'momo',
+          },
+        ],
+        total: 2,
+      },
+      success: true,
+    });
+  },
+
   'GET /apis/v1/query/1': (_: Request, res: Response) => {
     res.send({
       success: true,
       errorMessage: '',
       errorCode: 0,
       data: {
-        id: 7,
+        id: 1,
         user_id: 1,
-        name: 'unsaved',
+        name: 'Test1',
+        description: '',
+        query:
+          'SELECT\r\n  author_ss58 AS `Author`,\r\n  number AS `Block Number`,\r\n  `hash` AS `Block Hash`,\r\n  block_time AS `Block Time`,\r\nFROM\r\n  `bigquery-public-data.crypto_polkadot.blocks0`\r\nWHERE\r\n  DATE(block_time) \u003e= "2023-11-02"\r\n  AND DATE(block_time) \u003c= "2023-11-09"\r\nLIMIT 100',
+        query_engine: 'bigquery',
+        is_privacy: false,
+        unsaved: true,
+        stars: 0,
+        charts: [],
+        created_at: '2023-12-19T14:48:29.270166+08:00',
+        updated_at: '2023-12-19T14:48:29.270166+08:00',
+      },
+    });
+  },
+
+  'GET /apis/v1/query/2': (_: Request, res: Response) => {
+    res.send({
+      success: true,
+      errorMessage: '',
+      errorCode: 0,
+      data: {
+        id: 2,
+        user_id: 1,
+        name: 'Test2',
         description: '',
         query:
           'SELECT\r\n  author_ss58 AS `Author`,\r\n  number AS `Block Number`,\r\n  `hash` AS `Block Hash`,\r\n  block_time AS `Block Time`,\r\nFROM\r\n  `bigquery-public-data.crypto_polkadot.blocks0`\r\nWHERE\r\n  DATE(block_time) \u003e= "2023-11-02"\r\n  AND DATE(block_time) \u003c= "2023-11-09"\r\nLIMIT 100',
@@ -159,19 +244,82 @@ export default {
 
   'GET /apis/v1/dashboard': (_: Request, res: Response) => {
     res.send({
+      data: {
+        dashboards: [
+          {
+            created_at: '2023-12-19T17:27:54.404957+08:00',
+            deleted_at: '0001-01-01T08:05:43+08:05',
+            description: 'bbb',
+            email: 'momo@outlook.com',
+            favorites_count: 0,
+            icon_url: '',
+            id: 1,
+            is_privacy: false,
+            name: 'Test1',
+            stared: null,
+            tags: '',
+            updated_at: '2023-12-19T17:27:54.405+08:00',
+            user_id: 1,
+            username: 'momo',
+          },
+          {
+            created_at: '2023-11-14T10:19:55.530011+08:00',
+            deleted_at: '0001-01-01T08:06:26+08:05',
+            description: '11-02 ~ 11-09',
+            email: 'yuanchang.xu@outlook.com',
+            favorites_count: 0,
+            icon_url: '',
+            id: 2,
+            is_privacy: false,
+            name: 'Test2',
+            stared: null,
+            tags: '',
+            updated_at: '2023-11-14T10:30:54.803191+08:00',
+            user_id: 2,
+            username: 'Jackson',
+          },
+        ],
+        total: 2,
+      },
+      success: true,
+    });
+  },
+
+  'GET /apis/v1/dashboard/1': (_: Request, res: Response) => {
+    res.send({
       success: true,
       errorMessage: '',
       errorCode: 0,
       data: {
         id: 1,
         user_id: 1,
-        name: 'test',
-        description: 'test',
+        name: 'Test1',
+        description: 'Test1',
         is_privacy: false,
         tags: '',
         panels: [],
-        created_At: '2023-12-19T17:27:54.404957+08:00',
-        updated_At: '2023-12-19T17:27:54.405+08:00',
+        created_At: '2023-12-19T16:38:10.141447+08:00',
+        updated_At: '2023-12-19T16:38:10.141503+08:00',
+        deleted_at: '0001-01-01T08:05:43+08:05',
+      },
+    });
+  },
+
+  'GET /apis/v1/dashboard/2': (_: Request, res: Response) => {
+    res.send({
+      success: true,
+      errorMessage: '',
+      errorCode: 0,
+      data: {
+        id: 2,
+        user_id: 1,
+        name: 'Test2',
+        description: 'Test2',
+        is_privacy: false,
+        tags: '',
+        panels: [],
+        created_At: '2023-12-19T16:38:10.141447+08:00',
+        updated_At: '2023-12-19T16:38:10.141503+08:00',
         deleted_at: '0001-01-01T08:05:43+08:05',
       },
     });

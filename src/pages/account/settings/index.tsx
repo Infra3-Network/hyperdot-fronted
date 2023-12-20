@@ -2,8 +2,6 @@ import React, { useState, useRef, useLayoutEffect } from 'react';
 import { GridContent } from '@ant-design/pro-layout';
 import { Menu } from 'antd';
 import BaseView from './components/base';
-import BindingView from './components/binding';
-import NotificationView from './components/notification';
 import styles from './style.less';
 import AccountView from './components/account';
 import { getInitialState } from '@/app';
@@ -21,8 +19,6 @@ const Settings: React.FC = () => {
   const menuMap: Record<string, React.ReactNode> = {
     base: 'Profile',
     account: 'Account',
-    // binding: '账号绑定',
-    // notification: '新消息通知',
   };
 
   const [initConfig, setInitConfig] = useState<SettingsState>({
@@ -88,10 +84,6 @@ const Settings: React.FC = () => {
           return null;
         }
         return <AccountView user={user} />;
-      case 'binding':
-        return <BindingView />;
-      case 'notification':
-        return <NotificationView />;
       default:
         return null;
     }

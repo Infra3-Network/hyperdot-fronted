@@ -221,6 +221,7 @@ const DashboardList = (props: Props) => {
 
   return (
     <List
+      id="dashboard-list"
       itemLayout="vertical"
       size="large"
       pagination={{
@@ -253,7 +254,11 @@ const DashboardList = (props: Props) => {
         >
           <List.Item.Meta
             avatar={<UserAvatar size={26} username={item.username} icon_url={item.icon_url} />}
-            title={<Link to={'/explore/dashboards/' + item.id}>{item.name}</Link>}
+            title={
+              <Link id={`dashboard-list-link-${item.id}`} to={'/explore/dashboards/' + item.id}>
+                {item.name}
+              </Link>
+            }
           />
           <Content dashboard={item} />
         </List.Item>

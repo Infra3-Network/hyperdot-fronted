@@ -249,7 +249,11 @@ const QueryList = (props: Props) => {
         >
           <List.Item.Meta
             avatar={<UserAvatar size={26} username={item.username} icon_url={item.icon_url} />}
-            title={<Link to={'/creations/queries/' + item.id}>{item.name}</Link>}
+            title={
+              <Link id={`query-list-link-${item.id}`} to={'/creations/queries/' + item.id}>
+                {item.name}
+              </Link>
+            }
           />
           <Content query={item} />
         </List.Item>

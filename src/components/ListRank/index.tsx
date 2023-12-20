@@ -52,7 +52,9 @@ const Rank = (props: Props) => {
                 <Radio.Button value="24h">24 hours</Radio.Button>
                 <Radio.Button value="7d">7 days</Radio.Button>
                 <Radio.Button value="30d">30 days</Radio.Button>
-                <Radio.Button value="all">All time</Radio.Button>
+                <Radio.Button id="rank-alltime-btn" value="all">
+                  All time
+                </Radio.Button>
               </Radio.Group>
             </Col>
           </>
