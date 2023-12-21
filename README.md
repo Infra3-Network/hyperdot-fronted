@@ -4,23 +4,41 @@ Hyperdot is a blockchain analytics platform that allows access to and consumptio
 
 ## What is Hyperdot-fronted
 
-Hyperdot is UI of the Hyperdot project. It integrates the [hyperdot-node](https://github.com/Infra3-Network/hyperdot-node) for Polkadot using Google BigQuery provided by [substrate-etl](https://github.com/colorfulnotion/substrate-etl).
+Hyperdot-fronted, the UI component of the Hyperdot project, can be accessed through [www.hyperdot.xyz](https://www.hyperdot.xyz) in its alpha version. It serves as a powerful interface for analyzing on-chain data, creating visualizations through charts, and facilitating user collaboration and sharing of creative insights.
 
-Hyperdot-node can:
+### Features
 
-- Provide the necessary API for Hyperdot's frontend.
-- Handle the orchestration and management of the foundational infrastructure, including databases, caching, and object storage.
-- Integrate the Google BigQuery public data warehouse for Polkadot using substrate-etl.
-- Allow querying and chart creation through SQL.
-- Enable sharing of charts and dashboards.
+#### 1. Multi-Chain Data Support
 
-The components of Hyperdot-node are illustrated in the diagram below:
+Hyperdot Frontend seamlessly integrates with multiple blockchains, including but not limited to Polkadot, Kusama, Moonbeam, Acala, HydraDX, Astar, Hashed, and many other parallel chains. This integration ensures that users have a comprehensive view of the decentralized landscape.
 
-![hyperdot dashboard](docs/imgs/dashboard.png) ![hyperdot dashboard](docs/imgs/query.png) ![hyperdot dashboard](docs/imgs/query-summary.png) ![hyperdot dashboard](docs/imgs/query-summary-2.png)
+![Multi-chain support](docs/imgs/multi-chains.png)
 
-![hyperdot-node architcture](docs/imgs/hyperdot-node-arch.png)
+#### 2. On-chain Data Analysis and Query
 
-## Installation
+![hyperdot dashboard](docs/imgs/query-summary-2.png)
+
+Hyperdot Frontend allows users to perform comprehensive on-chain data analysis and queries, providing valuable insights into blockchain activities.
+
+![hyperdot dashboard](docs/imgs/query-summary.png)
+
+#### 3. Chart Visualization Creation
+
+![hyperdot dashboard](docs/imgs/dashboard-edit.png)
+
+Users can leverage hyperdot-fronted to create visually appealing charts and graphs based on the analyzed data, enabling a deeper understanding of blockchain trends.
+
+![hyperdot dashboard](docs/imgs/dashboard.png)
+
+#### 4. User-Created Content Sharing
+
+Facilitating collaboration and knowledge sharing, hyperdot-fronted enables users to create and share their data analysis and visualizations within the Hyperdot community.
+
+![hyperdot community](docs/imgs/query.png)
+
+## Getting Started
+
+Hyperdot Frontend seamlessly integrates with Hyperdot Node, utilizing the services and interfaces it provides. To learn how to run Hyperdot Node, visit [Hyperdot Node Documentation](https://github.com/Infra3-Network/hyperdot-node).
 
 There are two options for installing and running the Hyperdot-node server:
 
