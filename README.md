@@ -12,35 +12,35 @@ Hyperdot-fronted, the UI component of the Hyperdot project, can be accessed thro
 
 Hyperdot Frontend seamlessly integrates with multiple blockchains, including but not limited to Polkadot, Kusama, Moonbeam, Acala, HydraDX, Astar, Hashed, and many other parallel chains. This integration ensures that users have a comprehensive view of the decentralized landscape.
 
-![Multi-chain support](docs/imgs/multi-chains.png)
+![Multi-chain support](./docs/imgs/multi-chains.png)
 
 #### 2. On-chain Data Analysis and Query
 
-![hyperdot dashboard](docs/imgs/query-summary-2.png)
+![hyperdot dashboard](./docs/imgs/query-summary-2.png)
 
 Hyperdot Frontend allows users to perform comprehensive on-chain data analysis and queries, providing valuable insights into blockchain activities.
 
-![hyperdot dashboard](docs/imgs/query-summary.png)
+![hyperdot dashboard](./docs/imgs/query-summary.png)
 
 #### 3. Chart Visualization Creation
 
-![hyperdot dashboard](docs/imgs/dashboard-edit.png)
+![hyperdot dashboard](./docs/imgs/dashboard-edit.png)
 
 Users can leverage hyperdot-fronted to create visually appealing charts and graphs based on the analyzed data, enabling a deeper understanding of blockchain trends.
 
-![hyperdot dashboard](docs/imgs/dashboard.png)
+![hyperdot dashboard](./docs/imgs/dashboard.png)
 
 #### 4. User-Created Content Sharing
 
 Facilitating collaboration and knowledge sharing, hyperdot-fronted enables users to create and share their data analysis and visualizations within the Hyperdot community.
 
-![hyperdot community](docs/imgs/query.png)
+![hyperdot community](./docs/imgs/query.png)
 
 ## Getting Started
 
 Hyperdot Frontend seamlessly integrates with Hyperdot Node, utilizing the services and interfaces it provides. To learn how to run Hyperdot Node, visit [Hyperdot Node Documentation](https://github.com/Infra3-Network/hyperdot-node).
 
-## Docker Installation Guide
+## Docker Installation Guide (recommend)
 
 Running the application using Docker allows for minimal setup and quick deployment. It is recommended for evaluation purposes, such as local development.
 
@@ -69,15 +69,65 @@ Running the application using Docker allows for minimal setup and quick deployme
    make rm
    ```
 
-> By default, hyperdot-fronted will use hyperdot-node http://127.0.0.1:3030 , if you want to change it, you can use the following command
->
-> ```shell
-> make up PROXY_PASS=<You address>
-> ```
+   > By default, hyperdot-fronted will use hyperdot-node http://127.0.0.1:3030 , if you want to change it, you can use the following command
+   >
+   > ```shell
+   > make up PROXY_PASS=<You address>
+   > ```
 
-8. Now, the hyperdot-fronted service should be running. Try accessing http://localhost:8000 to explore!
+4. Now, the hyperdot-fronted service should be running. Try accessing http://localhost:8000 to explore!
+
+## Source Code Installation Guide
+
+1. Install dependencies
+
+   ```shell
+   npm install
+   ```
+
+   or
+
+   ```shell
+   yarn install
+   ```
+
+   or
+
+   ```shell
+   pnpm install
+   ```
+
+   > If you encounter some errors, you can try `npm install --force`.
+
+2. Start with dev mode
+
+   ```shell
+   npm run start:dev
+   ```
+
+   > Note: If you encounter following error, you can add the `NODE_OPTIONS=--openssl-legacy-provider` environment variable and retry.
+   >
+   > **Error:**
+   >
+   > ```shell
+   > node:internal/crypto/hash:68
+   >   this[kHandle] = new _Hash(algorithm, xofLen);
+   > ```
+   >
+   > **Fix:**
+   >
+   > ```shell
+   > export NODE_OPTIONS=--openssl-legacy-provider
+   > npm run start:dev
+   > ```
+
+   > Note: By default, dev mode will access the hyperdot-node http://127.0.0.1:3030 service. If you want to change this address, please modify `config/proxy.ts`.
+
+3. Now, the hyperdot-fronted service should be running. Try visiting the link you see, e.g. http://localhost:8000 to explore!
 
 ## Testing
+
+### Run tests with docker (recommend)
 
 > Note: Before running the tests, you should compile the docker image
 
@@ -132,76 +182,25 @@ Running 14 tests using 8 workers
   14 passed (36.5s)
 ```
 
-### Run Tests
+### Run tests with local
 
-Before running tests, you will need to configure Google Application Credentials and the Polkaholic API key. If you have completed the configuration, you can run the tests using the following command. Otherwise, you can refer to the [Prerequisites](#prerequisites) section on how to configure them.
+1. We use jest and playwright for testing. First, you need to install playwright
+   ```shell
+   npx playwright install
+   npx playwright install-deps
+   ```
+2. Run tests
+   ```shell
+   npx playwright test
+   ```
 
-After creating the credentials, you need to modify the configuration file:
-
-```shell
-cp tests/hyperdot-sample.test.json  tests/hyperdot.test.json
-```
-
-Modify the `tests/hyperdot.test.json` configuration by updating the `apiKey` and `projectId` in the `polkaholic` and `bigquery` sections:
-
-```json
-{
-  "polkaholic": {
-    "apiKey": "<YOUR_API_KEY>",
-    "baseUrl": "https://api.polkaholic.io"
-  },
-
-  "bigquery": {
-    "projectId": "<YOUR_PROJECT_ID>"
-  }
-}
-```
-
-Then, run the tests with the following command:
-
-```shell
-# Ensure dependencies installed
-go mod tidy
-
-go mod vendor
-
-make tests
-```
-
-### Run Lint
+### Run lint
 
 If you want to run lint to check your code, you will need to:
 
-- Install golangci-lint. You can refer to [Install](https://golangci-lint.run/usage/install/).
-
 ```shell
-make lint
+npm run lint
 ```
-
-## Troubleshooting
-
-1. For users in China, if you encounter timeout issues while compiling the program, you can try configuring a Go proxy, such as https://goproxy.io/zh/.
-
-2. For users in China, if you encounter TLS timeout issues when running the Hyperdot-node image or the pre-compiled program when accessing Google BigQuery, you can configure a proxy:
-
-   ```shell
-   # For Docker image, add the following to ~/.docker/config.json, then restart Docker
-   {
-    "proxies":
-        {
-        "default":
-            {
-                "httpProxy": "http://proxy.example.com:8080",
-                "httpsProxy": "http://proxy.example.com:8080",
-                "noProxy": "localhost,127.0.0.1,.example.com"
-            }
-        }
-    }
-
-   # For pre-compiled programs, you can set the dialing in the terminal
-   export http_proxy=<your proxy>
-   export https_proxy=<your proxy>
-   ```
 
 ## License
 
