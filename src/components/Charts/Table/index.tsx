@@ -1,6 +1,7 @@
 import { Card, Empty, Table, Row, Col, Input } from 'antd';
 import React, { useEffect } from 'react';
-import { ChartData, type ChartProps } from '../types';
+import type { ChartData } from '../types';
+import { type ChartProps } from '../types';
 
 type TableChartConfig = {
   data: ChartData;

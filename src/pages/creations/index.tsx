@@ -17,14 +17,20 @@ const items: MenuProps['items'] = [
   },
 ];
 
+/**
+ * Functional component representing the Creations menu.
+ */
 const Creations = () => {
+  // State for the currently selected menu item
   const [current, setCurrent] = useState('mail');
 
+  // Handles the menu item click event
   const onClick: MenuProps['onClick'] = (e) => {
     console.log('click ', e);
     setCurrent(e.key);
   };
 
+  // Renders the Creations menu
   return (
     <Menu
       style={{ background: 'transparent' }}

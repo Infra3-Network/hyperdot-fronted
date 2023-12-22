@@ -9,7 +9,10 @@ import { history, Link, useParams } from 'umi';
 import QueryEditor from './components/QueryEditor';
 import QueryEngine from './components/QueryEngine';
 
-export const CreationQueryDetail = () => {
+/**
+ * Functional component representing the detailed view of a Creation Query.
+ */
+const CreationQueryDetail = () => {
   let { id } = useParams<any>();
   id = Number(id);
   const [editable, setEditable] = React.useState<boolean | undefined>(undefined);

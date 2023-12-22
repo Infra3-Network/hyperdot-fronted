@@ -1,6 +1,11 @@
 import { Link } from 'umi';
 import { Result, Button } from 'antd';
 
+/**
+ * React functional component representing a 404 Not Found result page.
+ * @function
+ * @returns {JSX.Element} - JSX element representing the 404 Not Found result page.
+ */
 export default () => (
   <Result
     status="404"

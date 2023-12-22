@@ -22,6 +22,15 @@ import {
 } from '@/components/Charts/types';
 import { ChartNodeMap } from '@/components/Charts';
 
+/**
+ * Type definition for props used in a New Visualization Tab component.
+ * @typedef {Object} NewVisualizationTabProps
+ * @property {any} queryData - Data related to the query for visualization.
+ * @property {any} setTabActiveKey - Function to set the active tab key.
+ * @property {any} handleTabClose - Function to handle tab closure.
+ * @property {ChartManager} chartMgr - Instance of the ChartManager for managing charts.
+ * @property {Map<string, ChartNodeProps>} chartNodeMap - Map of chart nodes for visualization options.
+ */
 type NewVisualizationTabProps = {
   queryData: any;
   setTabActiveKey: any;
@@ -30,6 +39,12 @@ type NewVisualizationTabProps = {
   chartNodeMap: Map<string, ChartNodeProps>;
 };
 
+/**
+ * React functional component representing a New Visualization Tab.
+ * @function
+ * @param {NewVisualizationTabProps} props - Props containing information for the New Visualization Tab.
+ * @returns {JSX.Element} - JSX element representing the NewVisualizationTab component.
+ */
 export const NewVisualizationTab = (props: NewVisualizationTabProps) => {
   const [chart, setChart] = React.useState<string>('bar_chart');
   const [messageApi, contextHolder] = message.useMessage();
@@ -109,12 +124,24 @@ export const NewVisualizationTab = (props: NewVisualizationTabProps) => {
   );
 };
 
-interface QueryVisualizationProps {
+/**
+ * Props for the Query Visualization component.
+ * @type {object}
+ * @property {any} queryData - Data related to the query for visualization.
+ * @property {boolean} runLoading - Boolean indicating whether the query is in a loading state.
+ * @property {ChartManager} chartMgr - Instance of the ChartManager for managing charts.
+ */
+type QueryVisualizationProps = {
   queryData: any;
   runLoading: boolean;
   chartMgr: ChartManager;
-}
+};
 
+/**
+ * React functional component for Query Visualization.
+ * @param {QueryVisualizationProps} props - Props for the Query Visualization component.
+ * @returns {JSX.Element} - JSX element representing the Query Visualization component.
+ */
 const QueryVisualization = (props: QueryVisualizationProps) => {
   const handleCloseClick = (index: number, setTabItems: any) => {
     // remove from items
@@ -226,13 +253,29 @@ const QueryVisualization = (props: QueryVisualizationProps) => {
   );
 };
 
-interface SaveModalProps {
+/**
+ * Props for the Save Modal component.
+ * @type {object}
+ * @property {boolean} saveModalOpen - Boolean indicating whether the save modal is open.
+ * @property {Function} handleOk - Callback function for the "Ok" button in the modal.
+ * @property {Function} handleCancel - Callback function for the "Cancel" button in the modal.
+ * @property {QueryNormalState} queryNormalState - Current state of the query.
+ * @property {React.Dispatch<React.SetStateAction<QueryNormalState>>} setQueryNormalState - Function to update the query state.
+ */
+type SaveModalProps = {
   saveModalOpen: boolean;
   handleOk: any;
   handleCancel: any;
   queryNormalState: QueryNormalState;
   setQueryNormalState: React.Dispatch<React.SetStateAction<QueryNormalState>>;
-}
+};
+
+/**
+ * React functional component representing the Save Modal.
+ * @function
+ * @param {SaveModalProps} props - Props for the SaveModal component.
+ * @returns {JSX.Element} - JSX element representing the SaveModal component.
+ */
 const SaveModal = (props: SaveModalProps) => {
   const handleNameChange = (e: any) => {
     if (!e.target.value) {
@@ -283,21 +326,42 @@ const SaveModal = (props: SaveModalProps) => {
   );
 };
 
-interface QueryNormalState {
-  // query: string;
+/**
+ * Normal state representation for a query.
+ * @type {Object}
+ * @property {string} name - The name of the query.
+ * @property {boolean} privacy - The privacy status of the query.
+ * @property {string} engine - The query engine.
+ */
+type QueryNormalState = {
   name: string;
   privacy: boolean;
   engine: string;
-}
+};
 
-interface Props {
+/**
+ * Properties for a QueryEditor component.
+ * @type {Object}
+ * @property {boolean} editable - Indicates whether the query is editable.
+ * @property {string} editorQuery - The current query text in the editor.
+ * @property {React.Dispatch<React.SetStateAction<string>>} setEditorQuery - Function to update the query text in the editor.
+ * @property {HYPERDOT_API.CurrentUser} user - The current user information.
+ * @property {HYPERDOT_API.UserQuery | undefined} userQuery - Information about the user's query, if available.
+ */
+type Props = {
   editable: boolean;
   editorQuery: string;
   setEditorQuery: React.Dispatch<React.SetStateAction<string>>;
   user: HYPERDOT_API.CurrentUser;
   userQuery?: HYPERDOT_API.UserQuery;
-}
+};
 
+/**
+ * Functional component representing a query editor.
+ * @function
+ * @param {Props} props - Properties for the QueryEditor component.
+ * @returns {JSX.Element} - JSX element representing the QueryEditor.
+ */
 const QueryEditor = (props: Props) => {
   // state for save modal control
   const [saveModalOpen, setSaveModalOpen] = React.useState<boolean>(false);

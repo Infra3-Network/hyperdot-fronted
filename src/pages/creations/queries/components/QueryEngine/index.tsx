@@ -33,10 +33,26 @@ import {
 } from '@/services/hyperdot/api';
 import { type TooltipPlacement } from 'antd/es/tooltip';
 
+/**
+ * Generate a BigQuery table name based on relay and table names.
+ * @function
+ * @param {string} relay - Name of the relay.
+ * @param {string} table - Name of the table.
+ * @returns {string} - BigQuery table name.
+ */
 const toTableName = (relay: string, table: string) => {
   return 'bigquery-public-data.crypto_' + relay + '.' + table;
 };
 
+/**
+ * TooltipText functional component that displays the full title or a truncated version with a tooltip.
+ * @function
+ * @param {Object} props - Props containing the title, length, and tooltip placement.
+ * @param {string} props.title - The full title.
+ * @param {number} props.len - The maximum length of the title to display without truncation.
+ * @param {TooltipPlacement | undefined} props.placement - The placement of the tooltip.
+ * @returns {JSX.Element} - JSX element representing the TooltipText component.
+ */
 const TooltipText = ({
   title,
   len,
@@ -57,6 +73,16 @@ const TooltipText = ({
   );
 };
 
+/**
+ * ChainTableScheme functional component that displays information about a chain table.
+ * @function
+ * @param {Object} props - Props containing chainID, chainTable, dataset, and handleArrowClick.
+ * @param {number} props.chainID - The ID of the chain.
+ * @param {string} props.chainTable - The name of the chain table.
+ * @param {HYPERDOT_API.QueryEngineDataset} props.dataset - The dataset associated with the chain table.
+ * @param {function} props.handleArrowClick - Function to handle arrow click events.
+ * @returns {JSX.Element} - JSX element representing the ChainTableScheme component.
+ */
 const ChainTableScheme = ({
   chainID,
   chainTable,
@@ -125,6 +151,15 @@ const ChainTableScheme = ({
   );
 };
 
+/**
+ * RelayChains functional component that displays relay chain information.
+ * @function
+ * @param {Object} props - Props containing relayChain, chains, and setChain.
+ * @param {any} props.relayChain - The selected relay chain.
+ * @param {Map<string, any>} props.chains - Map of relay chains.
+ * @param {React.Dispatch<React.SetStateAction<any | undefined>>} props.setChain - Function to set the selected chain.
+ * @returns {JSX.Element} - JSX element representing the RelayChains component.
+ */
 const RelayChains = ({
   relayChain,
   chains,
@@ -161,6 +196,16 @@ const RelayChains = ({
   </>
 );
 
+/**
+ * PreviewDataTable functional component that displays preview data for a specific relay and table.
+ * @function
+ * @param {Object} props - Props containing previewData.
+ * @param {Object} props.previewData - Object containing relay, table, and data for preview.
+ * @param {string} props.previewData.relay - The relay for which data is previewed.
+ * @param {string} props.previewData.table - The table for which data is previewed.
+ * @param {HYPERDOT_API.RunQueryData | undefined} props.previewData.data - Preview data for the relay and table.
+ * @returns {JSX.Element} - JSX element representing the PreviewDataTable component.
+ */
 const PreviewDataTable = ({
   previewData,
 }: {
@@ -199,6 +244,16 @@ const PreviewDataTable = ({
   );
 };
 
+/**
+ * ChainModal functional component representing a modal for selecting a chain.
+ * @function
+ * @param {Object} props - Props containing information for the ChainModal.
+ * @param {HYPERDOT_API.QueryEngineDataset} props.dataset - Query engine dataset.
+ * @param {boolean} props.isModalOpen - State indicating whether the modal is open.
+ * @param {React.Dispatch<React.SetStateAction<boolean>>} props.setIsModalOpen - Function to set the modal open state.
+ * @param {React.Dispatch<React.SetStateAction<any | undefined>>} props.setChain - Function to set the selected chain.
+ * @returns {JSX.Element} - JSX element representing the ChainModal component.
+ */
 const ChainModal = ({
   dataset,
   isModalOpen,
@@ -249,6 +304,15 @@ const ChainModal = ({
   );
 };
 
+/**
+ * ChainItemProps type representing props for the ChainItem component.
+ * @typedef {Object} ChainItemProps
+ * @property {string} chainID - The ID of the chain.
+ * @property {HYPERDOT_API.QueryEngineDataset} dataset - Query engine dataset.
+ * @property {(chainID: number, chainName: string, chainTable: string) => void} handleChainTableClick - Function to handle the click event on a chain table.
+ * @property {(value: string) => void} handleArrowClick - Function to handle the click event on the arrow.
+ * @property {(e: React.MouseEvent, relayChain: string, table: string) => void} handleShowDataMouseEnter - Function to handle the mouse enter event on the show data link.
+ */
 type ChainItemProps = {
   chainID: string;
   dataset: HYPERDOT_API.QueryEngineDataset;
@@ -257,7 +321,13 @@ type ChainItemProps = {
   handleShowDataMouseEnter: (e: React.MouseEvent, relayChain: string, table: string) => void;
 };
 
-const ChainItem = (props: ChainItemProps) => {
+/**
+ * ChainItem functional component representing a chain item.
+ * @function
+ * @param {ChainItemProps} props - Props for the ChainItem component.
+ * @returns {JSX.Element} - JSX element representing the ChainItem.
+ */
+const ChainItem = (props: ChainItemProps): JSX.Element => {
   const chainID = props.chainID;
   const chain = props.dataset.chains[chainID];
   const chainTables = props.dataset.chainTables[chainID];
@@ -324,6 +394,17 @@ const ChainItem = (props: ChainItemProps) => {
   );
 };
 
+/**
+ * ChainItems functional component representing a list of chain items.
+ * @function
+ * @param {Object} props - Props for the ChainItems component.
+ * @param {HYPERDOT_API.QueryEngineDataset} props.dataset - The query engine dataset.
+ * @param {any | undefined} props.chain - The chain data or undefined.
+ * @param {(chainID: number, chainName: string, chainTable: string) => void} props.handleChainTableClick - Function to handle chain table click.
+ * @param {(value: string) => void} props.handleArrowClick - Function to handle arrow click.
+ * @param {(e: React.MouseEvent, relayChain: string, table: string) => void} props.handleShowDataMouseEnter - Function to handle show data mouse enter.
+ * @returns {JSX.Element} - JSX element representing the ChainItems.
+ */
 const ChainItems = ({
   dataset,
   chain,
@@ -366,11 +447,23 @@ const ChainItems = ({
   );
 };
 
+/**
+ * Props interface for the QueryEditor component.
+ * @interface
+ * @property {string} editorQuery - The query string for the editor.
+ * @property {React.Dispatch<React.SetStateAction<string>>} setEditorQuery - Function to set the query string.
+ */
 type Props = {
   editorQuery: string;
   setEditorQuery: React.Dispatch<React.SetStateAction<string>>;
 };
 
+/**
+ * React functional component representing the QueryEngine.
+ * @function
+ * @param {Props} props - Props containing the editor query and setEditorQuery function.
+ * @returns {JSX.Element} - JSX element representing the QueryEngine component.
+ */
 const QueryEngine = (props: Props) => {
   const [queryEngines, setQueryEngines] = React.useState<HYPERDOT_API.QueryEngine[]>([]);
   const [selectQueryEngine, setSelectQueryEngine] = React.useState<string>('');

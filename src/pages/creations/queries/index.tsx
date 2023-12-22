@@ -6,14 +6,20 @@ import React from 'react';
 import { getInitialState } from '@/app';
 import { history } from 'umi';
 
-export const CreationQuery = () => {
+/**
+ * Functional component representing the Creation Query page.
+ */
+const CreationQuery = () => {
+  // State for the current user and the editor query
   const [user, setUser] = React.useState<HYPERDOT_API.CurrentUser>();
   const [editorQuery, setEditorQuery] = React.useState<string>('');
+
+  // Fetches initial state data on component mount
   React.useEffect(() => {
     getInitialState()
       .then(({ currentUser }) => {
         if (!currentUser || !currentUser.id) {
-          // redirect login
+          // Redirect to login page if no current user is available
           history.push('/user/login');
           return;
         }
@@ -24,16 +30,19 @@ export const CreationQuery = () => {
       });
   }, []);
 
+  // Renders the Creation Query page content
   return (
     <GridContent>
       <>
         <Row gutter={24}>
+          {/* Query Engine card for inputting queries */}
           <Col span={6} style={{ marginBottom: 24 }}>
             <Card>
               <QueryEngine editorQuery={editorQuery} setEditorQuery={setEditorQuery} />
             </Card>
           </Col>
 
+          {/* Query Editor for displaying and editing queries */}
           <Col span={17} style={{ marginBottom: 24 }}>
             {user && (
               <QueryEditor

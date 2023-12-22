@@ -15,30 +15,41 @@ type SettingsState = {
   selectKey: SettingsStateKeys;
 };
 
+/**
+ * Functional component representing the user settings page.
+ */
 const Settings: React.FC = () => {
+  // Map of menu items and their corresponding keys
   const menuMap: Record<string, React.ReactNode> = {
     base: 'Profile',
     account: 'Account',
   };
 
+  // Initial configuration state for settings
   const [initConfig, setInitConfig] = useState<SettingsState>({
     mode: 'inline',
     selectKey: 'base',
   });
 
+  // State for the current user
   const [user, setUser] = useState<HYPERDOT_API.CurrentUser>();
+
+  // Reference to the main content div
   const dom = useRef<HTMLDivElement>();
+
+  // Fetches initial state data on component mount
   React.useEffect(() => {
     getInitialState()
       .then((res) => {
         setUser(res.currentUser);
       })
-      .catch((err) => {
+      .catch((_) => {
         history.push('/user/login');
         return;
       });
   }, []);
 
+  // Handles resizing and adjusts the mode accordingly
   const resize = () => {
     requestAnimationFrame(() => {
       if (!dom.current) {
@@ -56,6 +67,7 @@ const Settings: React.FC = () => {
     });
   };
 
+  // Listens for resize events and adjusts the mode accordingly
   useLayoutEffect(() => {
     if (dom.current) {
       window.addEventListener('resize', resize);
@@ -66,10 +78,12 @@ const Settings: React.FC = () => {
     };
   }, [dom.current]);
 
+  // Returns the menu items
   const getMenu = () => {
     return Object.keys(menuMap).map((item) => <Item key={item}>{menuMap[item]}</Item>);
   };
 
+  // Renders the content based on the selected menu item
   const renderChildren = (
     userProps: HYPERDOT_API.CurrentUser,
     setUserProps: React.Dispatch<React.SetStateAction<HYPERDOT_API.CurrentUser | undefined>>,
@@ -89,6 +103,7 @@ const Settings: React.FC = () => {
     }
   };
 
+  // Renders the settings page content
   return (
     <GridContent contentWidth={'Fixed'}>
       {user && (
@@ -101,6 +116,7 @@ const Settings: React.FC = () => {
           }}
         >
           <div className={styles.leftMenu}>
+            {/* Menu for selecting settings sections */}
             <Menu
               mode={initConfig.mode}
               selectedKeys={[initConfig.selectKey]}
@@ -115,6 +131,7 @@ const Settings: React.FC = () => {
             </Menu>
           </div>
           <div className={styles.right}>
+            {/* Title and content of the selected settings section */}
             <div className={styles.title}>{menuMap[initConfig.selectKey]}</div>
             {renderChildren(user, setUser)}
           </div>
@@ -123,4 +140,5 @@ const Settings: React.FC = () => {
     </GridContent>
   );
 };
+
 export default Settings;

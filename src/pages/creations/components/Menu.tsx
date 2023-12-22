@@ -13,7 +13,7 @@ import {
   Checkbox,
   message,
 } from 'antd';
-import { CheckboxChangeEvent } from 'antd/es/checkbox';
+import type { CheckboxChangeEvent } from 'antd/es/checkbox';
 import React from 'react';
 import { history, Link } from 'umi';
 

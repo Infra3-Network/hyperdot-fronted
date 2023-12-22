@@ -8,7 +8,6 @@ import QueryList from '@/components/QueryList';
 import DashboardList from '@/components/DashboardList';
 
 import styles from './index.less';
-type Props = {};
 
 const LibraryAllList = ({ currentUser }: { currentUser: HYPERDOT_API.CurrentUser }) => {
   const pageSize = 8;
@@ -252,11 +251,11 @@ const LibrarySegement = ({
       />
     </Col>
 
-    <Col></Col>
+    <Col />
   </Row>
 );
 
-const LibraryPage = (props: Props) => {
+const LibraryPage = () => {
   const { currentUser } = useModel('@@initialState', (model) => ({
     currentUser: model.initialState?.currentUser,
   }));

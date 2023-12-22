@@ -23,18 +23,47 @@ import QueryList from '@/components/QueryList';
 import DashboardList from '@/components/DashboardList';
 import { GridContent } from '@ant-design/pro-layout';
 
+/**
+ * Props for the List component.
+ */
 type ListProps = {
+  /**
+   * The current user object for the authenticated user.
+   */
   currentUser: HYPERDOT_API.CurrentUser;
-  guestUser: HYPERDOT_API.CurrentUser | undefined;
+
+  /**
+   * The user object for the guest user, if applicable.
+   * This can be undefined if there is no guest user.
+   */
+  guestUser?: HYPERDOT_API.CurrentUser;
 };
 
+/**
+ * Functional component representing a list of queries.
+ * @param props - The properties for the Queries component.
+ */
 const Queries = (props: ListProps) => {
+  // Number of items to display per page
   const pageSize = 3;
+
+  // Current page number
   const [page, setPage] = React.useState(1);
+
+  // Data to be displayed in the list
   const [data, setData] = React.useState<HYPERDOT_API.ListQueryData[]>([]);
+
+  // Total number of items
   const [total, setTotal] = React.useState(0);
 
+  // Determine the fetch method based on the presence of a guest user
   const fetchMethod = props.guestUser ? listBrowseQuery : listQuery;
+
+  /**
+   * Handles the change in page or page size.
+   * @param p - The new page number.
+   * @param ps - The new page size.
+   */
   const handleChange = (p: number, ps: number) => {
     fetchMethod({
       page: p,
@@ -55,10 +84,16 @@ const Queries = (props: ListProps) => {
       });
   };
 
+  // Initial data fetch on component mount
   React.useEffect(() => {
     handleChange(page, pageSize);
   }, []);
 
+  /**
+   * Handles the change in page or page size and updates the current page.
+   * @param p - The new page number.
+   * @param ps - The new page size.
+   */
   const onChange = (p: number, ps: number) => {
     handleChange(p, ps);
     setPage(p);
@@ -66,6 +101,7 @@ const Queries = (props: ListProps) => {
 
   return (
     <>
+      {/* Render the QueryList component if there is data to display */}
       {data && data.length > 0 && (
         <QueryList
           {...{
@@ -81,13 +117,31 @@ const Queries = (props: ListProps) => {
   );
 };
 
+/**
+ * Functional component representing a list of dashboards.
+ * @param props - The properties for the Dashboards component.
+ */
 const Dashboards = (props: ListProps) => {
+  // Number of dashboards to display per page
   const pageSize = 3;
+
+  // Current page number
   const [page, setPage] = React.useState(1);
+
+  // Data to be displayed in the list
   const [data, setData] = React.useState<HYPERDOT_API.Dashboard[]>([]);
+
+  // Total number of dashboards
   const [total, setTotal] = React.useState(0);
 
+  // Determine the fetch method based on the presence of a guest user
   const fetchMethod = props.guestUser ? listBrowseDashboard : listDashboard;
+
+  /**
+   * Handles the change in page or page size.
+   * @param p - The new page number.
+   * @param ps - The new page size.
+   */
   const handleChange = (p: number, ps: number) => {
     fetchMethod({
       page: p,
@@ -108,16 +162,24 @@ const Dashboards = (props: ListProps) => {
       });
   };
 
+  // Initial data fetch on component mount
   React.useEffect(() => {
     handleChange(page, pageSize);
   }, []);
 
+  /**
+   * Handles the change in page or page size and updates the current page.
+   * @param p - The new page number.
+   * @param ps - The new page size.
+   */
   const onChange = (p: number, ps: number) => {
     handleChange(p, ps);
     setPage(p);
   };
+
   return (
     <>
+      {/* Render the DashboardList component if there is data to display */}
       {data && data.length > 0 && (
         <DashboardList
           {...{
@@ -133,9 +195,14 @@ const Dashboards = (props: ListProps) => {
   );
 };
 
-export const Social = (user: HYPERDOT_API.CurrentUser) => {
+/**
+ * Functional component representing social links and bio for a user.
+ * @param user - The current user for whom social links and bio are displayed.
+ */
+const Social = (user: HYPERDOT_API.CurrentUser) => {
   return (
     <Row>
+      {/* Display user bio if available */}
       {user.bio && (
         <Col span={24}>
           <div style={{ alignItems: 'start' }}>
@@ -147,6 +214,7 @@ export const Social = (user: HYPERDOT_API.CurrentUser) => {
         </Col>
       )}
 
+      {/* Display user Twitter link if available */}
       {user.twitter && (
         <Col span={12}>
           <div className={styles.introduce}>
@@ -166,6 +234,7 @@ export const Social = (user: HYPERDOT_API.CurrentUser) => {
         </Col>
       )}
 
+      {/* Display user GitHub link if available */}
       {user.github && (
         <Col span={12}>
           <div className={styles.introduce}>
@@ -185,6 +254,7 @@ export const Social = (user: HYPERDOT_API.CurrentUser) => {
         </Col>
       )}
 
+      {/* Display user Telegram link if available */}
       {user.telgram && (
         <Col span={12}>
           <div className={styles.introduce}>
@@ -200,6 +270,7 @@ export const Social = (user: HYPERDOT_API.CurrentUser) => {
         </Col>
       )}
 
+      {/* Display user Discord link if available */}
       {user.discord && (
         <Col span={12}>
           <div className={styles.introduce}>
@@ -210,7 +281,7 @@ export const Social = (user: HYPERDOT_API.CurrentUser) => {
               <a
                 target="_blank"
                 rel="noopener noreferrer"
-                href={'https://discord.com/users' + user.discord}
+                href={'https://discord.com/users/' + user.discord}
               >
                 <span id="profile-discord-container">@{user.discord}</span>
               </a>
@@ -222,24 +293,29 @@ export const Social = (user: HYPERDOT_API.CurrentUser) => {
   );
 };
 
-// const formatNumberWithCommas = (num: number): string => {
-//   return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-// }
-
+/**
+ * Functional component representing statistics for a user.
+ * @param user - The current user for whom statistics are displayed.
+ */
 const Statistics = (user: HYPERDOT_API.CurrentUser) => {
   return (
     <>
+      {/* Display user stars statistics */}
       <Row className={styles.horner}>
         <Col span={24}>
           <span id="profile-statistics-stars-container">
             {formatNumberWithCommas(user.stars)} stars <StarFilled />{' '}
           </span>
         </Col>
+
+        {/* Display user queries statistics */}
         <Col span={24}>
           <span id="profile-statistics-queries-container">
             {formatNumberWithCommas(user.queries)} queries <CodeOutlined />{' '}
           </span>
         </Col>
+
+        {/* Display user dashboards statistics */}
         <Col span={24}>
           <span id="profile-statistics-dashboards-container">
             {formatNumberWithCommas(user.dashboards)} dashboards <DashboardOutlined />{' '}
@@ -250,6 +326,10 @@ const Statistics = (user: HYPERDOT_API.CurrentUser) => {
   );
 };
 
+/**
+ * Functional component representing user introduction with username, social links, and statistics.
+ * @param user - The current user for whom introduction is displayed.
+ */
 const Introduce = (user: HYPERDOT_API.CurrentUser) => {
   return (
     <>
@@ -274,6 +354,10 @@ const Introduce = (user: HYPERDOT_API.CurrentUser) => {
   );
 };
 
+/**
+ * Functional component representing a user icon.
+ * @param user - The current user for whom the icon is displayed.
+ */
 const UserIcon = (user: HYPERDOT_API.CurrentUser) => {
   if (user.icon_url) {
     return <Avatar size={128} src={'/apis/v1/file?file=' + user.icon_url} />;
@@ -282,16 +366,27 @@ const UserIcon = (user: HYPERDOT_API.CurrentUser) => {
   return <Avatar size={128}>{user.username}</Avatar>;
 };
 
+/**
+ * Functional component representing the user profile page.
+ * Retrieves and displays information about the current user or a specified guest user.
+ */
 const Profile = () => {
+  // Extracts userId from route parameters
   let { userId } = useParams<any>();
   userId = Number(userId);
+
+  // State for guest user, current user, and loading status for guest user
   const [guestUser, setGuestUser] = React.useState<HYPERDOT_API.CurrentUser | undefined>();
   const [currentUser, setCurrentUser] = React.useState<HYPERDOT_API.CurrentUser | undefined>();
   const [loadingGuest, setLoadingGuest] = React.useState<boolean>(false);
+
+  // Fetches user data on component mount
   React.useEffect(() => {
+    // Fetch data for a specific user if userId is provided
     if (userId) {
       setLoadingGuest(true);
-      // accessed user
+
+      // Fetch data for the accessed user
       getUser(userId)
         .then((res) => {
           if (!res.success) {
@@ -300,7 +395,7 @@ const Profile = () => {
           }
           setCurrentUser(res.data);
 
-          // guest user
+          // Fetch initial state for guest user
           getInitialState()
             .then((initRes) => {
               setGuestUser(initRes.currentUser);
@@ -318,7 +413,7 @@ const Profile = () => {
         });
       return;
     } else {
-      // current user
+      // Fetch data for the current user if no userId is provided
       getInitialState()
         .then((initRes) => {
           setCurrentUser(initRes.currentUser);
@@ -330,24 +425,30 @@ const Profile = () => {
     }
   }, []);
 
+  // Render the profile content if user data is available and guest user loading is complete
   return (
     <>
       {currentUser && !loadingGuest ? (
         <GridContent contentWidth={'Fixed'}>
           <Row gutter={[0, 0]} justify="center" align="top">
+            {/* Display user icon */}
             <Col span={4}>
               <UserIcon {...currentUser} />
             </Col>
+
+            {/* Display user introduction */}
             <Col span={16}>
               <Introduce {...currentUser} />
             </Col>
 
+            {/* Display user dashboards */}
             <Col span={24} style={{ marginTop: '48px' }}>
               <Card title={currentUser.username + ' dashboards'}>
                 <Dashboards currentUser={currentUser} guestUser={guestUser} />
               </Card>
             </Col>
 
+            {/* Display user queries */}
             <Col span={24} style={{ marginTop: '48px' }}>
               <Card title={currentUser.username + ' queries'}>
                 <Queries currentUser={currentUser} guestUser={guestUser} />

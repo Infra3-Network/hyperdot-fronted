@@ -103,7 +103,7 @@ const StarComponent = ({
     updateFavoriteQuery(true, {
       query_user_id: userId,
       query_id: queryId,
-    }).then((res) => {
+    }).then((_) => {
       const nextStarArray = starArray.map((v, i) => {
         if (i == index) {
           return {

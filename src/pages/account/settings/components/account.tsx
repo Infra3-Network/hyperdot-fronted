@@ -10,6 +10,10 @@ type Props = {
   user: HYPERDOT_API.CurrentUser;
 };
 
+/**
+ * Functional component representing the account view in user settings.
+ * @param user - The current user for whom the account view is displayed.
+ */
 const AccountView = ({ user }: Props) => {
   const [showPasswordChange, setShowPasswordChange] = React.useState<boolean>(false);
 
@@ -39,19 +43,6 @@ const AccountView = ({ user }: Props) => {
         // message.error(error.message);
       })
       .finally(() => {});
-    // const res = await updateUserPassword({
-    //   current_password: formData.current_password,
-    //   new_password: formData.new_password,
-    // });
-
-    // if (res.data.success) {
-    //   message.success('Change password successfully, Please login again', 2);
-    //   history.push('/user/login');
-    //   localStorage.removeItem('token');
-    //   return;
-    // }
-
-    // message.error(res.data.errorMessage);
   };
 
   return (

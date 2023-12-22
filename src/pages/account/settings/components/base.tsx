@@ -6,10 +6,9 @@ import ProForm, { ProFormText, ProFormTextArea } from '@ant-design/pro-form';
 import styles from './BaseView.less';
 import MyIcon from '@/components/Icons';
 import { updateUser, uploadUserAvatar } from '@/services/hyperdot/api';
-import { RcFile, UploadFile } from 'antd/lib/upload';
+import type { RcFile, UploadFile } from 'antd/lib/upload';
 import ImgCrop from 'antd-img-crop';
 
-// Avatar component
 const AvatarView = ({
   avatar,
   setAvatar,
@@ -106,6 +105,11 @@ type Props = {
   setUser: React.Dispatch<React.SetStateAction<HYPERDOT_API.CurrentUser | undefined>>;
 };
 
+/**
+ * Functional component representing the base view in user settings.
+ * @param user - The current user for whom the base view is displayed.
+ * @param setUser - React state setter function for updating the current user.
+ */
 const BaseView = ({ user, setUser }: Props) => {
   const [avatar, setAvatar] = useState<string>(user.icon_url ? user.icon_url : '');
 
