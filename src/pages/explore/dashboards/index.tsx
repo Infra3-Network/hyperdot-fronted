@@ -9,9 +9,12 @@ import React from 'react';
 import { history } from 'umi';
 import ExploreMenu from '../components/Menu';
 
-type Props = {};
-
-const Dashboards = (props: Props) => {
+/**
+ * React functional component representing the Dashboards.
+ * @function
+ * @returns {JSX.Element} - JSX element representing the Dashboards.
+ */
+const Dashboards = (): JSX.Element => {
   const pageSize = 10;
   const [currentUser, setCurrentUser] = React.useState<HYPERDOT_API.CurrentUser | undefined>(
     undefined,

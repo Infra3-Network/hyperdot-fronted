@@ -2,7 +2,12 @@ import { Button, Result } from 'antd';
 import React from 'react';
 import { history } from 'umi';
 
-const NoFoundPage: React.FC = () => (
+/**
+ * Functional component representing the 404 Not Found page.
+ * @function
+ * @returns {JSX.Element} - JSX element representing the NoFoundPage component.
+ */
+const NoFoundPage: React.FC = (): JSX.Element => (
   <Result
     status="404"
     title="404"

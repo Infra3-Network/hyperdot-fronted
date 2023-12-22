@@ -57,7 +57,4 @@ export default function access(
   return {
     canAccess: currentUser || guestCanAccess(location),
   };
-  // return {
-  //   canAdmin: currentUser && currentUser.access === 'admin',
-  // };
 }

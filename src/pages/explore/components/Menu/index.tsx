@@ -27,7 +27,12 @@ const items: MenuProps['items'] = [
   },
 ];
 
-const ExploreMenu: React.FC = () => {
+/**
+ * React functional component representing the ExploreMenu.
+ * @function
+ * @returns {JSX.Element} - JSX element representing the ExploreMenu.
+ */
+const ExploreMenu: React.FC = (): JSX.Element => {
   const path = history.location.pathname.split('/').slice(-1)[0];
   const [current, setCurrent] = useState(path);
 

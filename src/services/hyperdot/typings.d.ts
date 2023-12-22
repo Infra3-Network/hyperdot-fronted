@@ -98,6 +98,7 @@ declare namespace HYPERDOT_API {
     username: string;
     email: string;
     password: string;
+    confirm_password?: string;
   };
 
   type CreateAccountResponse = {

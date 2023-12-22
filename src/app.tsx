@@ -3,7 +3,6 @@ import { PageLoading } from '@ant-design/pro-layout';
 import type { RequestConfig, RunTimeLayoutConfig } from 'umi';
 import { history, Link } from 'umi';
 import RightContent from '@/components/RightContent';
-import Footer from '@/components/Footer';
 import { getCurrentUser } from './services/hyperdot/api';
 import defaultSettings from '../config/defaultSettings';
 import CreationDropdownMenu from './pages/creations/components/Menu';
@@ -63,7 +62,7 @@ export async function getInitialState(): Promise<{
 }
 
 // ProLayout 支持的api https://procomponents.ant.design/components/layout
-export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) => {
+export const layout: RunTimeLayoutConfig = ({ initialState }) => {
   return {
     logo: null,
     rightContentRender: () => <RightContent />,
@@ -71,26 +70,14 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
     waterMarkProps: {
       content: initialState?.currentUser?.username,
     },
-    footerRender: () => <Footer />,
     onPageChange: () => {
       const { location } = history;
-      // 如果没有登录，重定向到 login
+      // if not login that redirect login page
       if (!initialState?.currentUser && !guestCanAccess(location.pathname)) {
         history.push(loginPath);
       }
     },
-    links: isDev
-      ? [
-          // <Link key="openapi" to="/umi/plugin/openapi" target="_blank">
-          //   <LinkOutlined />
-          //   <span>OpenAPI 文档</span>
-          // </Link>,
-          // <Link to="/~docs" key="docs">
-          //   <BookOutlined />
-          //   <span>业务组件文档</span>
-          // </Link>,
-        ]
-      : [],
+    links: isDev ? [] : [],
     // headerContentRender(props, defaultDom) {
     //   console.log(props)
     //   return (

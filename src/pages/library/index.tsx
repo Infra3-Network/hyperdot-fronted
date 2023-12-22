@@ -9,7 +9,18 @@ import DashboardList from '@/components/DashboardList';
 
 import styles from './index.less';
 
-const LibraryAllList = ({ currentUser }: { currentUser: HYPERDOT_API.CurrentUser }) => {
+/**
+ * Functional component representing a list of all items in the library.
+ * @function
+ * @param {object} props - Component props.
+ * @param {HYPERDOT_API.CurrentUser} props.currentUser - Current user information.
+ * @returns {JSX.Element} - JSX element representing the LibraryAllList component.
+ */
+const LibraryAllList = ({
+  currentUser,
+}: {
+  currentUser: HYPERDOT_API.CurrentUser;
+}): JSX.Element => {
   const pageSize = 8;
   const [page, setPage] = React.useState(1);
   const [data, setData] = React.useState<any[]>([]);
@@ -88,7 +99,18 @@ const LibraryAllList = ({ currentUser }: { currentUser: HYPERDOT_API.CurrentUser
   );
 };
 
-const LibraryQueryList = ({ currentUser }: { currentUser: HYPERDOT_API.CurrentUser }) => {
+/**
+ * Functional component representing a list of queries in the library.
+ * @function
+ * @param {object} props - Component props.
+ * @param {HYPERDOT_API.CurrentUser} props.currentUser - Current user information.
+ * @returns {JSX.Element} - JSX element representing the LibraryQueryList component.
+ */
+const LibraryQueryList = ({
+  currentUser,
+}: {
+  currentUser: HYPERDOT_API.CurrentUser;
+}): JSX.Element => {
   const pageSize = 8;
   const [page, setPage] = React.useState(1);
   const [data, setData] = React.useState<HYPERDOT_API.ListQueryData[]>([]);
@@ -151,7 +173,18 @@ const LibraryQueryList = ({ currentUser }: { currentUser: HYPERDOT_API.CurrentUs
   );
 };
 
-const LibraryDashboardList = ({ currentUser }: { currentUser: HYPERDOT_API.CurrentUser }) => {
+/**
+ * Functional component representing a list of dashboards in the library.
+ * @function
+ * @param {object} props - Component props.
+ * @param {HYPERDOT_API.CurrentUser} props.currentUser - Current user information.
+ * @returns {JSX.Element} - JSX element representing the LibraryDashboardList component.
+ */
+const LibraryDashboardList = ({
+  currentUser,
+}: {
+  currentUser: HYPERDOT_API.CurrentUser;
+}): JSX.Element => {
   const pageSize = 8;
   const [page, setPage] = React.useState(1);
   const [data, setData] = React.useState<HYPERDOT_API.Dashboard[]>([]);
@@ -214,13 +247,21 @@ const LibraryDashboardList = ({ currentUser }: { currentUser: HYPERDOT_API.Curre
   );
 };
 
+/**
+ * Functional component representing a list in the library.
+ * @function
+ * @param {object} props - Component props.
+ * @param {string | number} props.selectSegment - Selected segment identifier.
+ * @param {HYPERDOT_API.CurrentUser} props.currentUser - Current user information.
+ * @returns {JSX.Element} - JSX element representing the LibraryList component.
+ */
 const LibraryList = ({
   selectSegment,
   currentUser,
 }: {
   selectSegment: string | number;
   currentUser: HYPERDOT_API.CurrentUser;
-}) => {
+}): JSX.Element => {
   if (selectSegment === 'All') {
     return <LibraryAllList currentUser={currentUser} />;
   } else if (selectSegment === 'Queries') {
@@ -228,17 +269,25 @@ const LibraryList = ({
   } else if (selectSegment === 'Dashboards') {
     return <LibraryDashboardList currentUser={currentUser} />;
   } else {
-    return null;
+    return <></>;
   }
 };
 
+/**
+ * Functional component representing a library segment.
+ * @function
+ * @param {object} props - Component props.
+ * @param {string | number} props.selectSegment - Selected segment identifier.
+ * @param {React.Dispatch<React.SetStateAction<string | number>>} props.setSelectSegment - State setter for the selected segment.
+ * @returns {JSX.Element} - JSX element representing the LibrarySegment component.
+ */
 const LibrarySegement = ({
   selectSegment,
   setSelectSegment,
 }: {
   selectSegment: string | number;
   setSelectSegment: React.Dispatch<React.SetStateAction<string | number>>;
-}) => (
+}): JSX.Element => (
   <Row justify={'space-between'}>
     <Col>
       <Segmented
@@ -255,7 +304,12 @@ const LibrarySegement = ({
   </Row>
 );
 
-const LibraryPage = () => {
+/**
+ * Functional component representing a library page.
+ * @function
+ * @returns {JSX.Element} - JSX element representing the LibraryPage component.
+ */
+const LibraryPage = (): JSX.Element => {
   const { currentUser } = useModel('@@initialState', (model) => ({
     currentUser: model.initialState?.currentUser,
   }));
@@ -263,7 +317,7 @@ const LibraryPage = () => {
 
   if (!currentUser) {
     history.push('/user/login');
-    return null;
+    return <></>;
   }
 
   return (

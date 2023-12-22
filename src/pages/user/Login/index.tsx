@@ -6,7 +6,13 @@ import { login } from '@/services/hyperdot/api';
 import styles from './index.less';
 import { isEmail } from '@/utils';
 import BackgroundVideo from '../Background';
-const Login: React.FC = () => {
+
+/**
+ * Functional component representing the login page.
+ * @function
+ * @returns {JSX.Element} - JSX element representing the Login component.
+ */
+const Login: React.FC = (): JSX.Element => {
   const { initialState, setInitialState } = useModel('@@initialState');
   const fetchUserInfo = async () => {
     const userInfo = await initialState?.fetchUserInfo?.();
@@ -35,14 +41,12 @@ const Login: React.FC = () => {
         localStorage.setItem('token', msg.data?.token);
         message.success('Login successfully!');
         await fetchUserInfo();
-        /** 此方法会跳转到 redirect 参数所在的位置 */
         if (!history) return;
         const { query } = history.location;
         const { redirect } = query as { redirect: string };
         history.push(redirect || '/');
         return;
       }
-      // 如果失败去设置用户错误信息
       return;
     } catch (error) {
       message.error('Login failed, please retry!');
@@ -52,14 +56,11 @@ const Login: React.FC = () => {
   return (
     <div className={styles.container}>
       <BackgroundVideo src={'/5_15488489005727.mp4'} />
-      {/* <div className={styles.lang} data-lang>
-        {SelectLang && <SelectLang />}
-      </div> */}
+
       <div className={styles.containerLeft} />
       <div className={`${styles.content} `}>
         <Form
           name="basic"
-          // labelCol={{ span: 8 }}
           wrapperCol={{ span: 16 }}
           style={{ maxWidth: 600 }}
           initialValues={{ remember: true }}
@@ -115,7 +116,6 @@ const Login: React.FC = () => {
           </Form.Item>
         </Form>
       </div>
-      {/* <Footer /> */}
     </div>
   );
 };

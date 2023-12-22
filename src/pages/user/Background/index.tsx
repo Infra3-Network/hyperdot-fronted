@@ -1,4 +1,11 @@
-const BackgroundVideo = ({ src }: { src: string }) => {
+/**
+ * Functional component representing a background video.
+ * @function
+ * @param {Object} props - Props containing the video source.
+ * @param {string} props.src - The source URL of the video.
+ * @returns {JSX.Element} - JSX element representing the BackgroundVideo component.
+ */
+const BackgroundVideo = ({ src }: { src: string }): JSX.Element => {
   return (
     <div
       style={{

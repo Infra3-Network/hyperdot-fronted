@@ -7,24 +7,16 @@ import enUS from 'antd/lib/locale/en_US';
 import styles from './index.less';
 import BackgroundVideo from '../Background';
 
-const Login: React.FC = () => {
-  // const { initialState, setInitialState } = useModel('@@initialState');
-
-  // const fetchUserInfo = async () => {
-  //   const userInfo = await initialState?.fetchUserInfo?.();
-  //   if (userInfo) {
-  //     await setInitialState((s: any) => ({
-  //       ...s,
-  //       currentUser: userInfo,
-  //     }));
-  //   }
-  // };
-
+/**
+ * Functional component representing the registration page.
+ * @function
+ * @returns {JSX.Element} - JSX element representing the Register component.
+ */
+const Register: React.FC = (): JSX.Element => {
   const handleSubmit = async (values: any) => {
     const createAccountRequest: HYPERDOT_API.CreateAccountRequest = {
       ...values,
     };
-    console.log('createAccount ', createAccountRequest, values);
 
     if (values.confirm_password !== createAccountRequest.password) {
       message.error('Passwords do not match');
@@ -122,4 +114,4 @@ const Login: React.FC = () => {
   );
 };
 
-export default Login;
+export default Register;
