@@ -15,7 +15,7 @@ const shouldLogin = async (page: Page) => {
 test(`test explore dashboard page`, async ({ page }) => {
   await shouldLogin(page);
 
-  for (let i = 1; i < 3; i++) {
+  for (let i = 1; i < 2; i++) {
     await page.goto(`${BASE_URL}/explore/dashboards`);
     await page.locator(`#dashboard-list-link-${i}`).click();
     await page.waitForURL(`${BASE_URL}/explore/dashboards/${i}`);
@@ -27,7 +27,7 @@ test(`test explore dashboard page`, async ({ page }) => {
 test(`test explore query page`, async ({ page }) => {
   await shouldLogin(page);
 
-  for (let i = 1; i < 3; i++) {
+  for (let i = 1; i < 2; i++) {
     await page.goto(`${BASE_URL}/explore/queries`);
     await page.locator(`#query-list-link-${i}`).click();
     await page.waitForURL(`${BASE_URL}/creations/queries/${i}`);

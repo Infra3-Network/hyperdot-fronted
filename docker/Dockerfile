@@ -25,12 +25,15 @@ COPY . .
 
 ENV NODE_OPTIONS=--openssl-legacy-provider
 
-RUN npm install --force && npm run build
+RUN npm install --force 
+RUn npm run build
+RUN npx playwright install
 
-RUN  npx playwright install
+RUN cp /app/docker/nginx.conf /etc/nginx/nginx.conf
 
-RUN cp /app/docker/nginx.conf /etc/nginx/conf.d/default.conf
 EXPOSE 80
+
+ENV PROXY_PASS=http://127.0.0.1:3030
 
 RUN chmod +x /app/docker/entrypoint.sh
 
