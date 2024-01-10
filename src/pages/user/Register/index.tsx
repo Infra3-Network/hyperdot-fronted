@@ -76,7 +76,7 @@ const Register: React.FC = (): JSX.Element => {
             </Form.Item>
 
             <Form.Item<HYPERDOT_API.CreateAccountRequest>
-              label="Chose a password"
+              label="Choose a password"
               name="password"
               rules={[{ required: true, message: 'Please input your password!' }]}
             >
