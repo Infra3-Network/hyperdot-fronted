@@ -110,7 +110,7 @@ const Login: React.FC = (): JSX.Element => {
                   history.push('/user/register');
                 }}
               >
-                Need an account? Sing up here
+                Need an account? Sign up here
               </Button>
             </div>
           </Form.Item>
