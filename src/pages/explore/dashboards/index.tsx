@@ -22,7 +22,7 @@ const Dashboards = (): JSX.Element => {
   const [page, setPage] = React.useState(1);
   const [total, setTotal] = React.useState(0);
   const [order, setOrder] = React.useState('favorites');
-  const [favoritesTimeRange, setFavoritesTimeRange] = React.useState('7d');
+  const [favoritesTimeRange, setFavoritesTimeRange] = React.useState('all');
   const [trendingTimeRange, setTrendingTimeRange] = React.useState('4h');
   const [data, setData] = React.useState<HYPERDOT_API.Dashboard[]>([]);
   const [popularTags, setPopularTags] = React.useState<Map<string, number> | undefined>(undefined);
