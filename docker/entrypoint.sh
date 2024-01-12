@@ -18,10 +18,13 @@ else
       location / {
           try_files \$uri \$uri/index.html /index.html;
       }
-      location /apis {
+      location /apis {
           proxy_pass $PROXY_PASS;
           proxy_set_header   X-Forwarded-Proto \$scheme;
           proxy_set_header   X-Real-IP         \$remote_addr;
+          proxy_send_timeout 1800;
+          proxy_read_timeout 1800;
+          proxy_connect_timeout 1800;
       }
   }" | tee /etc/nginx/conf.d/default.conf > /dev/null
 
